@@ -38,6 +38,7 @@
   const S = {
     online: false,
     mobileUrl: '',
+    vestibular: '',  // link do vestibular com UTM do evento (vem do servidor)
     todayCount: 0,
     queueNext: [],
     lead: null,      // { id, name, interest } — null no modo ocioso
@@ -568,7 +569,7 @@
             <span class="c-green" data-scramble="600">seja criado por você.</span>
           </h1>
           <div class="finale-cta">
-            <div class="mini-qr">${qrSvg(C.links.vestibular)}</div>
+            <div class="mini-qr">${qrSvg(S.vestibular || C.links.vestibular)}</div>
             <div>
               <p class="cta-big">Descubra o que você pode criar.</p>
               <p>Inscrições e calendário em <b>vestibularfatec.com.br</b></p>
@@ -606,7 +607,7 @@
   function go(i) {
     clearTimeout(S.timer);
     if (i < 0) i = 0;
-    if (i >= STEPS.length) return end();
+    if (i >= STEPS.length) return end(true);
     const prev = STEPS[S.i];
     const step = STEPS[i];
     S.i = i;
@@ -654,14 +655,15 @@
     reportScene();
   }
 
-  function end() {
+  // completo = chegou ao fim do crachá; false = encerrado antes (Esc ou painel). Vai para o funil.
+  function end(completo = false) {
     clearTimeout(S.timer);
     cancelAnimationFrame(ekg.raf);
     S.i = -1;
     S.lead = null;
     S.paused = false;
     renderIdle();
-    post('/api/tv/done', {}); // libera o próximo da fila e limpa o painel do operador
+    post('/api/tv/done', { completo }); // libera o próximo da fila e limpa o painel do operador
   }
 
   /* ---------- HUD ---------- */
@@ -710,6 +712,7 @@
       const d = JSON.parse(e.data);
       S.online = true;
       S.mobileUrl = d.mobileUrl;
+      S.vestibular = d.vestibular;
       S.todayCount = d.todayCount;
       if (S.i < 0) {
         if ($('.scene-idle:not(.is-out)')) { drawQR(); $('#todayCount').textContent = d.todayCount; }
@@ -737,6 +740,7 @@
       S.queueNext = JSON.parse(e.data).next || [];
     });
     es.addEventListener('react', (e) => react(JSON.parse(e.data)));
+    es.addEventListener('evento', (e) => { S.vestibular = JSON.parse(e.data).vestibular; });
     // comandos do painel do operador (notebook)
     es.addEventListener('cmd', (e) => {
       const { cmd } = JSON.parse(e.data);

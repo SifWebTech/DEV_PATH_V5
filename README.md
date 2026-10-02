@@ -1,6 +1,8 @@
 # DEV PATH V5 — Sistemas para Internet · Fatec Jales
 
-Ação de captação para estande: o visitante escaneia o QR Code na TV, faz o cadastro no próprio celular, toca em **Começar** e a TV apresenta os 6 semestres do curso com o nome dele. No fim, o crachá de futuro tecnólogo aparece na TV e no celular.
+Ação de captação para estande: o visitante escaneia o QR Code na TV, faz o cadastro no próprio celular, toca em **Começar** e a TV apresenta os 6 semestres do curso com o nome dele. No fim, o crachá de futuro tecnólogo aparece na TV e no celular, pronto para os stories.
+
+A V5 mede o estande como uma ação de marketing: cada passo do visitante (abriu o QR, cadastrou, assistiu, salvou o crachá, abriu o vestibular) vira um número no painel do operador.
 
 ```
  TV (notebook)                       Celular do visitante
@@ -31,7 +33,24 @@ Para fechar a apresentação na TV: clique nela e aperte **Alt + F4**. Se ela ab
 
 ### Painel do operador (tela do notebook)
 
-Mostra quem está na TV, a cena atual, a fila e os leads chegando. Os botões **Voltar, Pausar, Avançar, Encerrar e Demonstração** comandam a TV pelo servidor, então funcionam mesmo com a janela da TV sem foco. Com o painel em foco, os atalhos de teclado também funcionam (← → espaço Esc Enter).
+Entre com a senha (padrão **`fatec`**, aparece na janela preta). O painel mostra:
+
+- **TV e fila:** quem está na TV, a cena atual e quem espera. Os botões **Voltar, Pausar, Avançar, Encerrar e Demonstração** comandam a TV pelo servidor, então funcionam mesmo com a janela da TV sem foco. Com o painel em foco, os atalhos de teclado também funcionam (← → espaço Esc Enter).
+- **Evento:** dê um nome à ação (ex.: "Feira de Profissões 2026") antes de começar. Cada lead e cada métrica ficam marcados com ele, e dá para comparar eventos diferentes.
+- **Funil do estande**, ao vivo:
+
+  | Etapa | Como é medida |
+  |---|---|
+  | Abriu pelo QR Code | a página do celular abriu (uma vez por aparelho) |
+  | Começou o cadastro | tocou no formulário |
+  | Cadastrou | enviou o formulário |
+  | Tocou em Começar | entrou na fila da TV |
+  | Assistiu até o crachá | a apresentação chegou ao fim sem ser encerrada |
+  | Salvou o crachá | tocou em "Salvar crachá para os stories" |
+  | Abriu o vestibular | tocou no link do vestibular no celular |
+
+  Além disso: taxa de conversão de cada etapa, interesses mais escolhidos, cadastros por hora e **reações por cena** (quais partes da apresentação mais empolgam).
+- **Leads:** filtro por evento e por interesse. O botão **Baixar planilha** respeita os filtros, então dá para mandar uma mensagem diferente para quem quer "ter o próprio negócio" e para quem quer "criar aplicativos". O botão **Excluir** atende pedidos de exclusão (LGPD).
 
 ### Atalhos direto na janela da TV
 
@@ -50,16 +69,30 @@ Mostra quem está na TV, a cena atual, a fila e os leads chegando. Os botões **
 
 `cena` vai de 1 a 14 (1 terminal, 2 gancho, 3 mapa, 4–9 semestres, 10 criar, 11 carreiras, 12 mercado, 13 Fatec, 14 crachá). `perfil` aceita `design`, `logic`, `apps` ou `business`.
 
-## Leads
+## Leads e dados
 
-- Ficam em **`data/leads.csv`** (abre direto no Excel, separador `;`, com acentos).
-- Painel ao vivo: `http://localhost:8787/operador`, senha **`fatec`**. Para trocar: `set ADMIN_KEY=outrasenha` antes de `node server.js`.
-- Instagram é salvo como link (`instagram.com/perfil`).
-- O formulário exige consentimento (LGPD) e informa a finalidade do uso dos dados.
+- Os cadastros ficam em **`data/leads.csv`** (abre direto no Excel, separador `;`, com acentos). Colunas: data e hora, nome, contato, tipo de contato, interesse, consentimento, id e evento.
+- O visitante escolhe como quer ser contatado: **e-mail, Instagram ou WhatsApp**. Instagram e WhatsApp viram links clicáveis na planilha (`instagram.com/perfil`, `wa.me/5517999990000`).
+- O formulário exige consentimento (LGPD) e informa a finalidade. **O próprio visitante pode excluir os dados** pelo celular ("Excluir meus dados"), e o operador também pode, pelo painel.
+- `data/eventos.jsonl` guarda o funil: uma linha por evento, só com ids aleatórios (sem nome nem contato). Por isso as métricas continuam valendo mesmo depois de um lead ser excluído.
+- `data/estado.json` guarda a fila e quem está na TV. Se o notebook travar ou a janela preta for fechada, rode o `INICIAR.bat` de novo: o servidor volta com a fila e os celulares reconectam sozinhos.
+- Nada disso vai para o GitHub (`.gitignore`).
+- Planilha da V4: na primeira execução da V5, o servidor adiciona a coluna "evento" e guarda uma cópia da original em `data/leads-backup-v4.csv`. Os leads antigos aparecem no painel como evento "Antes da V5".
+- Senha do painel: `set ADMIN_KEY=outrasenha` antes de `node server.js`. A senha não vai mais na URL: o login cria um cookie que vale por 12 horas. Se o servidor reiniciar, é preciso entrar de novo.
+
+### Link do vestibular com UTM
+
+Os links e o QR Code do vestibular levam `?utm_source=devpath&utm_medium=celular|tv&utm_campaign=<nome-do-evento>`. Quem administra o site do vestibular pode ver nas estatísticas dele quantas visitas vieram do estande. Do nosso lado, o painel conta os cliques feitos pelo celular.
+
+### Crachá para os stories
+
+No fim, o botão **Salvar crachá para os stories** gera no próprio celular uma imagem 1080×1920 com nome, perfil e disciplinas, sem precisar de internet. Na rede do estande (http), o celular mostra a imagem para o visitante tocar e segurar para salvar. Em https, abre direto o menu de compartilhar.
 
 ## Editar textos
 
 Tudo que aparece na tela está em **`public/js/content.js`**: semestres, disciplinas, traduções para a linguagem do aluno, batimentos do "medidor de paixão", carreiras, setores, diferenciais da Fatec e os 4 perfis do crachá. As durações das cenas estão no topo de `public/js/tv.js` (`STEPS`, ~2 min 50 s no total).
+
+Cada semestre mostra **todas** as disciplinas do horário oficial (43 no total, conferidas com o horário de SI do 2º semestre de 2026), no campo `disciplinas`: `[nome oficial, tradução, destaque]`. As três marcadas com `true` ganham a cor do semestre.
 
 ## Estrutura
 
@@ -67,12 +100,24 @@ Tudo que aparece na tela está em **`public/js/content.js`**: semestres, discipl
 DEV_PATH_V5/
 ├── INICIAR.bat          duplo clique: servidor + TV em tela cheia + painel
 ├── abrir-telas.ps1      detecta a TV (HDMI) e abre cada tela no lugar certo
-├── server.js            servidor local (Node puro): QR, fila, leads, tempo real (SSE)
-├── data/leads.csv       criado no primeiro cadastro
+├── server.js            liga o servidor (Node puro, sem npm install)
+├── server/
+│   ├── config.js        opções (porta, senha, evento, pastas)
+│   ├── http.js          rotas da API e arquivos estáticos
+│   ├── sessao.js        fila, TV e tempo real (SSE); salva em estado.json
+│   ├── leads.js         cadastro, validação e exclusão (LGPD)
+│   ├── funil.js         eventos e métricas do funil
+│   ├── store.js         leitura e gravação em data/
+│   ├── auth.js          login do painel do operador
+│   └── util.js          utilidades
+├── data/                criada no primeiro uso (fora do Git)
+│   ├── leads.csv        cadastros (Excel)
+│   ├── eventos.jsonl    funil, sem dados pessoais
+│   └── estado.json      fila e TV, para voltar depois de uma queda
 └── public/
     ├── index.html       TV (palco 1920×1080 que se ajusta a qualquer tela)
     ├── m.html           celular
-    ├── admin.html       painel do operador + leads (/operador)
+    ├── admin.html       painel do operador: TV, funil, leads (/operador)
     ├── css/             base.css (cores e fontes), tv.css, mobile.css
     ├── js/              content.js (textos), tv.js, circuit.js (fundo), mobile.js
     ├── fonts/           Unbounded + JetBrains Mono (offline)
@@ -80,6 +125,22 @@ DEV_PATH_V5/
 ```
 
 Tudo roda **sem internet**: fontes e biblioteca de QR estão na pasta.
+
+## O que mudou da V4 para a V5
+
+| V4 | V5 |
+|---|---|
+| Cada semestre destacava 3 disciplinas; o resto passava numa faixa pequena no rodapé | Todas as 43 disciplinas aparecem na tela, com nome oficial e tradução |
+| Painel mostrava só a lista de leads | Funil completo com conversão por etapa, interesses, cadastros por hora e reações por cena |
+| Sem noção de evento | Cada lead e métrica ficam marcados com o evento; dá para comparar ações |
+| Crachá só por print da tela | Imagem 1080×1920 para stories gerada no celular |
+| Link do vestibular sem rastreio | Link e QR com UTM do evento; cliques contados no painel |
+| Contato por e-mail ou Instagram | E-mail, Instagram ou WhatsApp |
+| Exclusão de dados só manual, na planilha | Visitante exclui pelo celular; operador exclui pelo painel |
+| Senha do painel na URL (`?key=fatec`) | Login com cookie de sessão e limite de tentativas |
+| Fila em memória: perdida se o servidor caísse | Fila e TV salvas em disco e recuperadas ao reiniciar |
+| `server.js` único com tudo | Servidor dividido em módulos em `server/` |
+| Planilha exportada inteira | Exportação filtrada por evento e interesse |
 
 ## Histórico: o que mudou da V3 para a V4
 
@@ -91,7 +152,7 @@ Tudo roda **sem internet**: fontes e biblioteca de QR estão na pasta.
 | Navegação por cliques, cada semestre era um "slide" | Apresentação automática; um produto real é construído na tela ao longo dos 6 semestres |
 | Roxo no 5º semestre, fora da paleta | Paleta neon laranja, verde, azul e branco em tudo |
 | Fontes do Google (falham sem internet) | Fontes locais |
-| Disciplinas com nomes técnicos | Cada destaque traduzido ("o back-end que faz tudo funcionar") com o nome oficial embaixo; a lista completa passa em faixa |
+| Disciplinas com nomes técnicos | Cada destaque traduzido ("o back-end que faz tudo funcionar") com o nome oficial embaixo |
 | — | Medidor de paixão: batimento sobe de 72 para 140 bpm a cada semestre |
 | — | Reações do celular aparecem na TV; crachá final no celular para print/stories |
 
@@ -101,5 +162,7 @@ Tudo roda **sem internet**: fontes e biblioteca de QR estão na pasta.
 - **A TV mostra "modo demonstração"**: a página foi aberta direto do arquivo, sem o servidor. Abra pelo `INICIAR.bat`.
 - **O QR mostra um IP errado** (notebook com várias redes): `set PUBLIC_URL=http://192.168.x.x:8787/m` antes de `node server.js`.
 - **Alguém saiu da fila e a TV começou para ninguém**: pressione Esc para chamar o próximo.
+- **O painel pede a senha de novo**: o servidor foi reiniciado (o login fica na memória). Entre de novo; a fila e as métricas continuam lá.
+- **"Salvou o crachá" parece baixo**: quem tira print em vez de tocar no botão não é contado. Vale incentivar o botão na conversa do estande.
 - A oferta curricular vigente deve ser confirmada com a Fatec Jales.
 - **Abriu o painel de outro programa (ex.: AdGuard Home) em vez da apresentação**: outro programa ocupa a porta. O DEV PATH usa a 8787 e, se ela estiver ocupada, pula sozinho para a próxima livre (veja a porta na janela preta do servidor). Feche as janelas antigas e rode o `INICIAR.bat` de novo.

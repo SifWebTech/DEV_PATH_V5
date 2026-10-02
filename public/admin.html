@@ -15,15 +15,21 @@
     h1 b { color: var(--green); text-shadow: var(--green-glow); }
     h2 { font: 700 16px var(--display); margin-bottom: 14px; }
     .login { display: flex; gap: 10px; margin-left: auto; }
-    .login[hidden] { display: none; }
-    input { height: 42px; padding: 0 14px; border-radius: 10px; border: 1px solid #2b4a8a; background: #081028; }
+    .login[hidden], .evento[hidden], #logout[hidden] { display: none; }
+    input, select { height: 42px; padding: 0 14px; border-radius: 10px; border: 1px solid #2b4a8a; background: #081028; color: var(--white); font: inherit; font-size: 14px; }
     button, a.btn { height: 42px; padding: 0 18px; border-radius: 10px; border: 1px solid var(--blue); background: none; color: var(--blue); display: inline-grid; place-items: center; text-decoration: none; font-size: 14px; }
     .msg { color: var(--orange); margin-top: 12px; }
     .msg:empty { display: none; }
 
+    .evento { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+    .evento label { font-size: 13px; color: var(--dim); }
+    .evento input { width: 260px; }
+    #logout { border-color: var(--line); color: var(--dim); }
+
     .grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; margin-top: 22px; }
-    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
-    .card { padding: 22px; border-radius: 16px; border: 1px solid var(--line); background: #081028cc; }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    @media (max-width: 860px) { .grid, .grid-2 { grid-template-columns: 1fr; } .evento { margin-left: 0; flex-wrap: wrap; } .evento input { width: 100%; } }
+    .card { padding: 22px; border-radius: 16px; border: 1px solid var(--line); background: #081028cc; min-width: 0; }
 
     .tv-state { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--dim); }
     .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--orange); box-shadow: var(--orange-glow); }
@@ -49,24 +55,60 @@
     .url { margin-top: 18px; font-size: 13px; color: var(--dim); line-height: 1.6; }
     .url b { color: var(--green); }
 
-    .leads-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 28px 0 14px; }
-    .leads-head h2 { margin: 0; }
-    a.btn { background: var(--green); border-color: var(--green); color: var(--ink); font-weight: 700; }
-    .stats { margin-left: auto; color: var(--dim); }
+    .sec-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 32px 0 14px; }
+    .sec-head h2 { margin: 0; font-size: 20px; }
+    .sec-head .right { margin-left: auto; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+    /* números principais */
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    @media (max-width: 860px) { .kpis { grid-template-columns: 1fr 1fr; } }
+    .kpi { padding: 18px 20px; border-radius: 14px; border: 1px solid var(--line); background: #081028cc; }
+    .kpi b { display: block; font: 800 34px/1 var(--display); letter-spacing: -1px; }
+    .kpi span { display: block; margin-top: 8px; font-size: 13px; color: var(--dim); line-height: 1.4; }
+
+    /* barras horizontais (uma série, uma cor; o número fica escrito ao lado) */
+    .bars { display: grid; gap: 10px; }
+    .bars li { display: grid; grid-template-columns: minmax(140px, 44%) 1fr auto; gap: 12px; align-items: center; font-size: 14px; }
+    .bars .lbl { color: var(--white); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bars .track { display: block; height: 18px; border-radius: 0 4px 4px 0; background: #ffffff0a; }
+    .bars .fill { display: block; height: 100%; min-width: 2px; border-radius: 0 4px 4px 0; background: var(--green); }
+    .bars .val { min-width: 92px; text-align: right; color: var(--white); font-variant-numeric: tabular-nums; }
+    .bars .val small { color: var(--dim); margin-left: 6px; }
+    .bars li:hover .fill { filter: brightness(1.25); }
+    .empty-chart { color: var(--dim); font-size: 14px; }
+    .note { margin-top: 12px; font-size: 12px; color: var(--dim); line-height: 1.5; }
+
+    /* cadastros por hora: colunas */
+    .cols { display: flex; align-items: flex-end; gap: 6px; height: 160px; padding-top: 22px; border-bottom: 1px solid var(--line); }
+    .cols div { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 0; }
+    .cols i { display: block; width: 100%; max-width: 38px; min-height: 2px; border-radius: 4px 4px 0 0; background: var(--green); }
+    .cols em { font-style: normal; font-size: 12px; color: var(--white); margin-bottom: 4px; }
+    .cols-x { display: flex; gap: 6px; margin-top: 6px; }
+    .cols-x span { flex: 1; text-align: center; font-size: 11px; color: var(--dim); min-width: 0; }
+
+    a.btn.csv { background: var(--green); border-color: var(--green); color: var(--ink); font-weight: 700; }
+    .stats { color: var(--dim); }
     .stats b { color: var(--orange); font: 800 22px var(--display); }
     .table { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
     table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    th, td { padding: 11px 14px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+    th, td { padding: 11px 12px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
     th { color: var(--dim); font-weight: 500; background: #081028; }
-    td:nth-child(5) { color: var(--green); }
+    td.int { color: var(--green); }
+    td.ev { white-space: normal; min-width: 140px; color: var(--dim); }
+    td .del { height: 30px; padding: 0 12px; font-size: 12px; border-color: #ff7a1a66; color: var(--orange); }
     .hint { margin-top: 14px; font-size: 12px; color: var(--dim); }
-    kbd { padding: 1px 6px; border: 1px solid var(--line); border-radius: 4px; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="top">
       <h1>DEV PATH <b>operador</b></h1>
+      <form class="evento" id="eventoForm" hidden>
+        <label for="evento">Evento</label>
+        <input id="evento" maxlength="60" placeholder="Ex.: Feira de Profissões 2026">
+        <button type="submit">Salvar</button>
+      </form>
+      <button id="logout" type="button" hidden>Sair</button>
       <form class="login" id="loginForm">
         <label class="sr-only" for="key">Senha</label>
         <input id="key" type="password" placeholder="Senha do painel" autocomplete="current-password">
@@ -100,17 +142,56 @@
         </section>
       </div>
 
-      <div class="leads-head">
+      <!-- ============ MÉTRICAS ============ -->
+      <div class="sec-head">
+        <h2>Funil do estande</h2>
+        <div class="right">
+          <label class="sr-only" for="mEvento">Evento das métricas</label>
+          <select id="mEvento"></select>
+        </div>
+      </div>
+
+      <div class="kpis" id="kpis"></div>
+
+      <div class="grid grid-2">
+        <section class="card">
+          <h2>Do QR Code ao vestibular</h2>
+          <ul class="bars" id="funil"></ul>
+          <p class="note">Cada pessoa conta uma vez por etapa. A % é em relação à etapa anterior. Quem tira print do crachá em vez de tocar em "Salvar" não aparece em "Salvou o crachá".</p>
+        </section>
+        <section class="card">
+          <h2>O que mais chama atenção</h2>
+          <ul class="bars" id="interesses"></ul>
+          <h2 style="margin-top:26px">Cadastros por hora</h2>
+          <div class="cols" id="horas"></div>
+          <div class="cols-x" id="horasX"></div>
+        </section>
+      </div>
+      <section class="card" style="margin-top:18px">
+        <h2>Reações por cena</h2>
+        <ul class="bars" id="cenas"></ul>
+        <p class="note">Mostra quais partes da apresentação mais empolgam: bom para decidir o que encurtar ou destacar.</p>
+      </section>
+
+      <!-- ============ LEADS ============ -->
+      <div class="sec-head">
         <h2>Leads</h2>
-        <a class="btn" id="csv">Baixar planilha (CSV)</a>
         <p class="stats" id="stats"></p>
+        <div class="right">
+          <label class="sr-only" for="lEvento">Filtrar por evento</label>
+          <select id="lEvento"></select>
+          <label class="sr-only" for="lInteresse">Filtrar por interesse</label>
+          <select id="lInteresse"></select>
+          <a class="btn csv" id="csv">Baixar planilha (CSV)</a>
+        </div>
       </div>
       <div class="table">
         <table>
-          <thead><tr><th>Data e hora</th><th>Nome</th><th>Contato</th><th>Tipo</th><th>Interesse</th></tr></thead>
+          <thead><tr><th>Data e hora</th><th>Nome</th><th>Contato</th><th>Interesse</th><th>Evento</th><th><span class="sr-only">Ações</span></th></tr></thead>
           <tbody id="rows"></tbody>
         </table>
       </div>
+      <p class="hint">A planilha baixada respeita os filtros: escolha um interesse para mandar a mensagem certa para cada grupo. "Excluir" atende pedidos de exclusão (LGPD) e apaga o lead da planilha.</p>
     </div>
   </div>
 
@@ -118,14 +199,22 @@
   <script>
     const $ = (s) => document.querySelector(s);
     const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    let key = sessionStorage.getItem('devpath-key') || '';
+    const INTEREST = Object.fromEntries(Object.entries(DEVPATH.profiles).map(([k, p]) => [k, p.label]));
+    const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
     let state = null;
-    const q = () => '?key=' + encodeURIComponent(key);
+    let timers = [];
+    let events = null;
 
+    async function api(url, opts) {
+      const res = await fetch(url, opts);
+      if (res.status === 401) { fail(); throw new Error('auth'); }
+      return res;
+    }
+    const postJSON = (url, body) => api(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+
+    /* ---------- TV e fila ---------- */
     async function loadState() {
-      const res = await fetch('/api/op/state' + q());
-      if (res.status === 401) return fail();
-      state = await res.json();
+      state = await (await api('/api/op/state')).json();
       const playing = !!state.scene;
       $('#tvState').classList.toggle('on', state.tvOnline);
       $('#tvText').textContent = state.tvOnline ? 'TV conectada' : 'TV desconectada: abra ' + location.origin + ' na TV';
@@ -142,48 +231,132 @@
         ? state.queue.map((n, k) => `<li><b>${k + 1}</b>${esc(n)}</li>`).join('')
         : '<li class="empty">Ninguém esperando.</li>';
       $('#mobileUrl').textContent = state.mobileUrl;
+      if (document.activeElement !== $('#evento')) $('#evento').value = state.evento;
+    }
+
+    /* ---------- métricas ---------- */
+    function bars(el, rows, empty) {
+      const max = Math.max(1, ...rows.map((r) => r.total));
+      el.innerHTML = rows.length
+        ? rows.map((r) => `<li title="${esc(r.tip || r.nome + ': ' + r.total)}">
+            <span class="lbl">${esc(r.nome)}</span>
+            <span class="track"><span class="fill" style="width:${(r.total / max) * 100}%"></span></span>
+            <span class="val">${r.total}${r.extra ? `<small>${r.extra}</small>` : ''}</span></li>`).join('')
+        : `<li class="empty-chart">${empty}</li>`;
+    }
+
+    function fillEventSelects(list, atual) {
+      const names = list.map((e) => e.nome);
+      if (!names.includes(atual)) names.unshift(atual);
+      const key = names.join('|');
+      if (events === key) return;
+      events = key;
+      for (const [sel, todos] of [['#mEvento', 'Todos os eventos'], ['#lEvento', 'Todos os eventos']]) {
+        const keep = $(sel).value;
+        $(sel).innerHTML = `<option value="">${todos}</option>` +
+          names.map((n) => `<option value="${esc(n)}">${esc(n)}${n === atual ? ' (atual)' : ''}</option>`).join('');
+        $(sel).value = keep && names.includes(keep) ? keep : (sel === '#mEvento' ? atual : '');
+      }
+    }
+
+    async function loadMetrics() {
+      // na primeira carga (ou depois de renomear o evento) mostra o evento atual
+      const sel = events === null ? (state?.evento || '') : $('#mEvento').value;
+      const m = await (await api('/api/op/metricas?evento=' + encodeURIComponent(sel))).json();
+      fillEventSelects(m.eventos, state?.evento || '');
+      const f = Object.fromEntries(m.funil.map((e) => [e.tipo, e.total]));
+      const vistos = f.concluido + m.interrompidos;
+      $('#kpis').innerHTML = [
+        [f.lead, 'cadastros'],
+        [pct(f.lead, f.qr_aberto), 'de quem abriu o QR Code se cadastrou'],
+        [pct(f.concluido, vistos), `assistiram até o crachá (${m.interrompidos} interrompidas)`],
+        [f.vestibular_clique, 'abriram o site do vestibular pelo celular'],
+      ].map(([v, t]) => `<div class="kpi"><b>${v}</b><span>${t}</span></div>`).join('');
+
+      bars($('#funil'), m.funil.map((e, k) => ({
+        nome: e.nome, total: e.total,
+        extra: k ? pct(e.total, m.funil[k - 1].total) : '',
+        tip: k ? `${e.nome}: ${e.total} (${pct(e.total, m.funil[k - 1].total)} da etapa anterior)` : `${e.nome}: ${e.total}`,
+      })), 'Sem dados ainda.');
+
+      const totalInt = Object.values(m.interesses).reduce((a, b) => a + b, 0);
+      bars($('#interesses'), Object.keys(INTEREST).map((k) => ({ nome: INTEREST[k], total: m.interesses[k] || 0, extra: pct(m.interesses[k] || 0, totalInt) })),
+        'Nenhum cadastro ainda.');
+
+      const maxH = Math.max(1, ...m.porHora.map((h) => h.total));
+      $('#horas').innerHTML = m.porHora.map((h) => `<div title="${h.hora}: ${h.total} cadastro(s)"><em>${h.total}</em><i style="height:${(h.total / maxH) * 100}%"></i></div>`).join('')
+        || '<p class="empty-chart">Nenhum cadastro ainda.</p>';
+      $('#horasX').innerHTML = m.porHora.map((h) => `<span>${h.hora}</span>`).join('');
+
+      bars($('#cenas'), m.cenas.map((c) => ({ nome: c.cena, total: c.total })), 'Nenhuma reação ainda. Elas chegam quando o visitante toca nos emojis durante a apresentação.');
+    }
+
+    /* ---------- leads ---------- */
+    function leadQuery() {
+      const q = new URLSearchParams();
+      if ($('#lEvento').value) q.set('evento', $('#lEvento').value);
+      if ($('#lInteresse').value) q.set('interesse', $('#lInteresse').value);
+      return q.toString() ? '?' + q : '';
     }
 
     async function loadLeads() {
-      const res = await fetch('/api/leads' + q());
-      if (res.status === 401) return fail();
-      const { leads, todayCount } = await res.json();
-      $('#csv').href = '/api/leads.csv' + q();
-      $('#stats').innerHTML = `<b>${todayCount}</b> hoje, <b>${leads.length}</b> no total`;
+      const { leads, todayCount } = await (await api('/api/op/leads' + leadQuery())).json();
+      $('#csv').href = '/api/op/leads.csv' + leadQuery();
+      $('#stats').innerHTML = `<b>${todayCount}</b> hoje, <b>${leads.length}</b> ${leadQuery() ? 'no filtro' : 'no total'}`;
       $('#rows').innerHTML = leads.length
-        ? leads.map((l) => `<tr><td>${esc(l.when)}</td><td>${esc(l.name)}</td><td>${esc(l.contact)}</td><td>${esc(l.contactType)}</td><td>${esc(DEVPATH.profiles[l.interest]?.label || l.interest)}</td></tr>`).join('')
-        : '<tr><td colspan="5" style="color:var(--dim);text-align:center;padding:26px">Nenhum cadastro ainda. Eles aparecem aqui assim que alguém preencher pelo QR Code.</td></tr>';
+        ? leads.map((l) => `<tr><td>${esc(l.when)}</td><td>${esc(l.name)}</td><td>${esc(l.contact)}</td>
+            <td class="int">${esc(INTEREST[l.interest] || l.interest)}</td><td class="ev">${esc(l.evento)}</td>
+            <td><button class="del" data-del="${esc(l.id)}" data-name="${esc(l.name)}">Excluir</button></td></tr>`).join('')
+        : '<tr><td colspan="6" style="color:var(--dim);text-align:center;padding:26px">Nenhum cadastro aqui ainda. Eles aparecem assim que alguém preencher pelo QR Code.</td></tr>';
     }
 
+    $('#rows').addEventListener('click', async (e) => {
+      const b = e.target.closest('[data-del]');
+      if (!b || !confirm(`Excluir ${b.dataset.name} da planilha? Não dá para desfazer.`)) return;
+      await postJSON('/api/op/leads/excluir', { id: b.dataset.del });
+      refresh();
+    });
+
+    /* ---------- login, evento, comandos ---------- */
     function fail() {
-      $('#msg').textContent = 'Senha incorreta. A senha aparece na janela preta do servidor.';
+      timers.forEach(clearInterval); timers = [];
       $('#panel').hidden = true;
-      sessionStorage.removeItem('devpath-key');
-      throw new Error('auth');
+      $('#eventoForm').hidden = true;
+      $('#logout').hidden = true;
+      $('#loginForm').hidden = false;
     }
 
     async function cmd(name) {
-      const res = await fetch('/api/op/cmd' + q(), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cmd: name }) });
+      const res = await postJSON('/api/op/cmd', { cmd: name });
       if (res.status === 409) $('#msg').textContent = 'A TV não está conectada.';
       setTimeout(loadState, 250);
     }
 
+    let pending = null;
+    const refresh = () => { clearTimeout(pending); pending = setTimeout(() => { loadMetrics().catch(() => {}); loadLeads().catch(() => {}); }, 300); };
+
     async function start() {
       try {
         await loadState();
+        await loadMetrics();
         await loadLeads();
-        $('#msg').textContent = '';
-        $('#panel').hidden = false;
-        $('#loginForm').hidden = true;
-        sessionStorage.setItem('devpath-key', key);
-        setInterval(() => loadState().catch(() => {}), 1000);
-        setInterval(() => loadLeads().catch(() => {}), 5000);
-      } catch {}
+      } catch { return; }
+      $('#msg').textContent = '';
+      $('#panel').hidden = false;
+      $('#eventoForm').hidden = false;
+      $('#logout').hidden = false;
+      $('#loginForm').hidden = true;
+      timers.push(setInterval(() => loadState().catch(() => {}), 1000));
+      timers.push(setInterval(refresh, 15000));
+      // atualização ao vivo: o servidor avisa a cada novo passo do funil
+      const es = new EventSource('/api/stream?role=op');
+      es.addEventListener('funil', refresh);
+      es.addEventListener('auth', () => es.close());
     }
 
     document.querySelectorAll('[data-cmd]').forEach((b) => b.addEventListener('click', () => cmd(b.dataset.cmd)));
     addEventListener('keydown', (e) => {
-      if ($('#panel').hidden || e.target.tagName === 'INPUT') return;
+      if ($('#panel').hidden || ['INPUT', 'SELECT'].includes(e.target.tagName)) return;
       const map = { ArrowRight: 'next', ArrowLeft: 'prev', ' ': 'pause', Escape: 'stop', Enter: 'demo' };
       const name = map[e.key];
       if (!name) return;
@@ -191,8 +364,32 @@
       const playing = !!state?.scene;
       if (name === 'demo' ? !playing : playing) cmd(name);
     });
-    $('#loginForm').addEventListener('submit', (e) => { e.preventDefault(); key = $('#key').value; start(); });
-    if (key) start();
+
+    $('#loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const res = await fetch('/api/op/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: $('#key').value }) });
+      if (!res.ok) { $('#msg').textContent = (await res.json()).error; return; }
+      $('#key').value = '';
+      start();
+    });
+    $('#logout').addEventListener('click', async () => { await fetch('/api/op/logout', { method: 'POST' }); fail(); });
+    $('#eventoForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const { evento } = await (await postJSON('/api/op/evento', { nome: $('#evento').value })).json();
+      $('#evento').value = evento;
+      $('#evento').blur();
+      events = null;
+      await loadState();
+      await loadMetrics();
+      loadLeads().catch(() => {});
+    });
+    $('#mEvento').addEventListener('change', () => loadMetrics().catch(() => {}));
+    $('#lEvento').addEventListener('change', () => loadLeads().catch(() => {}));
+    $('#lInteresse').innerHTML = '<option value="">Todos os interesses</option>' +
+      Object.entries(INTEREST).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
+    $('#lInteresse').addEventListener('change', () => loadLeads().catch(() => {}));
+
+    start(); // se o cookie de login ainda vale, entra direto
   </script>
 </body>
 </html>

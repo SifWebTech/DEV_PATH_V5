@@ -40,8 +40,8 @@ input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px #2
 .err { color: var(--orange); font-size: 13px; }
 .err:empty { display: none; }
 
-.seg { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 12px; background: #081028; border: 1px solid #2b4a8a; }
-.seg button { height: 40px; border: 0; border-radius: 9px; background: none; font-size: 14px; color: var(--dim); }
+.seg { display: grid; grid-template-columns: 1fr 1fr 1fr; padding: 4px; border-radius: 12px; background: #081028; border: 1px solid #2b4a8a; }
+.seg button { height: 40px; min-width: 0; border: 0; border-radius: 9px; background: none; font-size: 14px; color: var(--dim); }
 .seg button[aria-checked=true] { background: var(--blue); color: var(--ink); font-weight: 700; box-shadow: 0 0 16px #22b8ff66; }
 
 .chips { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -66,7 +66,7 @@ input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px #2
 .btn-main:active { transform: scale(.98); }
 .btn-main:disabled { opacity: .6; }
 .btn-ghost { margin-top: 12px; border: 1.5px solid var(--blue); color: var(--blue); background: none; }
-.btn-text { display: block; margin: 18px auto 0; border: 0; background: none; color: var(--dim); font-size: 14px; text-decoration: underline; }
+.btn-text { display: block; text-align: center; margin: 18px auto 0; border: 0; background: none; color: var(--dim); font-size: 14px; text-decoration: underline; }
 .form-error { color: var(--orange); font-size: 14px; line-height: 1.5; }
 .form-error:empty { display: none; }
 
@@ -126,3 +126,13 @@ input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px #2
 .m-badge footer { display: grid; gap: 2px; margin-top: 22px; padding-top: 16px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--dim); }
 .m-badge footer b { color: var(--white); }
 #vDone .btn-main { margin-top: 26px; }
+#vDone .btn-ghost { margin-top: 14px; }
+.btn-del { margin-top: 26px; font-size: 13px; color: #5e719a; }
+
+/* imagem do crachá para stories (gerada no próprio celular) */
+.shot { margin-top: 18px; text-align: center; }
+.shot img { display: block; width: 72%; margin: 0 auto; border-radius: 16px; box-shadow: 0 0 0 1px var(--line), 0 0 40px #22b8ff33; }
+.shot .m-note { margin-top: 12px; }
+
+.form-notice { margin-top: 16px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--green); color: var(--green); background: #2bff8812; font-size: 14px; line-height: 1.5; }
+.form-notice:empty { display: none; }

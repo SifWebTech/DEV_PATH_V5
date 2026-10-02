@@ -20,7 +20,8 @@
     <!-- 1. cadastro -->
     <section class="view" id="vForm">
       <h1 class="m-title">Sua jornada dev começa <span class="c-green">aqui.</span></h1>
-      <p class="m-lead">Em 2 minutos você vê na TV como é estudar Sistemas para Internet, do 1º ao 6º semestre.</p>
+      <p class="m-lead">Em 3 minutos você vê na TV como é estudar Sistemas para Internet, do 1º ao 6º semestre.</p>
+      <p class="form-notice" id="formNotice" role="status"></p>
 
       <form id="leadForm" novalidate>
         <label class="field">
@@ -34,6 +35,7 @@
           <div class="seg" role="radiogroup" aria-labelledby="contactLabel">
             <button type="button" role="radio" aria-checked="true" data-ctype="email">E-mail</button>
             <button type="button" role="radio" aria-checked="false" data-ctype="instagram">Instagram</button>
+            <button type="button" role="radio" aria-checked="false" data-ctype="whatsapp">WhatsApp</button>
           </div>
           <input name="contact" id="fContact" type="email" inputmode="email" autocomplete="email" maxlength="80" placeholder="voce@email.com" required>
           <small class="err" data-err="contact"></small>
@@ -47,7 +49,7 @@
 
         <label class="consent">
           <input type="checkbox" id="fConsent">
-          <span>Autorizo a Fatec Jales a usar esses dados para me enviar informações sobre o curso e o vestibular. Posso pedir a exclusão a qualquer momento.</span>
+          <span>Autorizo a Fatec Jales a usar esses dados para me enviar informações sobre o curso e o vestibular pelo contato informado. Posso excluir meus dados a qualquer momento, inclusive por esta página.</span>
         </label>
         <small class="err" data-err="consent"></small>
 
@@ -68,7 +70,7 @@
           Começar
         </span>
       </button>
-      <p class="m-note">A apresentação dura cerca de 2 minutos e meio.</p>
+      <p class="m-note">A apresentação dura cerca de 3 minutos.</p>
     </section>
 
     <!-- 3. ao vivo -->
@@ -92,10 +94,16 @@
     <section class="view" id="vDone" hidden>
       <p class="m-kicker">Seu crachá do futuro tecnólogo</p>
       <article class="m-badge" id="mBadge"></article>
-      <p class="m-note">Tire um print e compartilhe nos stories.</p>
-      <a class="btn-main" id="vestLink" target="_blank" rel="noopener">Conhecer o vestibular Fatec</a>
-      <a class="btn-ghost" id="fatecLink" target="_blank" rel="noopener">Site da Fatec Jales</a>
+      <button class="btn-main" id="saveBadge" type="button">Salvar crachá para os stories</button>
+      <div class="shot" id="shot" hidden>
+        <img id="shotImg" alt="Imagem do seu crachá para compartilhar">
+        <p class="m-note">Toque e segure a imagem para salvar na galeria.</p>
+        <a class="btn-ghost" id="shotDl" download="cracha-devpath.png">Baixar imagem</a>
+      </div>
+      <a class="btn-ghost" id="vestLink" target="_blank" rel="noopener">Inscrições no vestibular Fatec</a>
+      <a class="btn-text" id="fatecLink" target="_blank" rel="noopener">Site da Fatec Jales</a>
       <button class="btn-text" id="againBtn">Ver a apresentação de novo</button>
+      <button class="btn-text btn-del" id="deleteBtn">Excluir meus dados</button>
     </section>
   </main>
 
