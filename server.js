@@ -1,5 +1,5 @@
 /*
- * DEV PATH V4 — servidor local do estande
+ * DEV PATH V5 — servidor local do estande
  * ------------------------------------------------------------
  * Liga o celular do visitante à TV pela rede Wi-Fi do notebook.
  * Usa apenas módulos nativos do Node (não precisa de npm install).
@@ -357,7 +357,7 @@ server.listen(PORT, '::');
 server.on('listening', () => {
   fs.writeFileSync(path.join(DATA_DIR, '.porta'), String(PORT)); // lido pelo abrir-telas.ps1
   const ip = lanAddress();
-  console.log('\n  DEV PATH V4 — Sistemas para Internet · Fatec Jales\n');
+  console.log('\n  DEV PATH V5 — Sistemas para Internet · Fatec Jales\n');
   console.log(`  TV (abra no notebook):   http://localhost:${PORT}`);
   console.log(`  Celular (QR Code):       ${mobileUrl()}`);
   console.log(`  Operador + leads:        http://localhost:${PORT}/operador   (senha: ${ADMIN_KEY})`);

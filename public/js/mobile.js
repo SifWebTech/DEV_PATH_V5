@@ -1,5 +1,5 @@
 /*
- * DEV PATH V4 — celular do visitante
+ * DEV PATH V5 — celular do visitante
  * cadastro → botão começar → acompanha a TV e reage → recebe o crachá
  * O id do cadastro fica no aparelho, então recarregar a página não perde o lugar.
  */

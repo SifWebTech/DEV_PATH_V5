@@ -1,4 +1,4 @@
-# DEV PATH V4 - abre as duas telas (chamado pelo INICIAR.bat)
+# DEV PATH V5 - abre as duas telas (chamado pelo INICIAR.bat)
 #  - TV (segunda tela via HDMI, modo "Estender"): apresentacao em tela cheia (kiosk)
 #  - Notebook (tela principal): painel do operador
 # Sem segunda tela, abre a apresentacao normalmente no notebook.

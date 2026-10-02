@@ -1,4 +1,4 @@
-# DEV PATH V4 — Sistemas para Internet · Fatec Jales
+# DEV PATH V5 — Sistemas para Internet · Fatec Jales
 
 Ação de captação para estande: o visitante escaneia o QR Code na TV, faz o cadastro no próprio celular, toca em **Começar** e a TV apresenta os 6 semestres do curso com o nome dele. No fim, o crachá de futuro tecnólogo aparece na TV e no celular.
 
@@ -64,7 +64,7 @@ Tudo que aparece na tela está em **`public/js/content.js`**: semestres, discipl
 ## Estrutura
 
 ```
-DEV_PATH_V4/
+DEV_PATH_V5/
 ├── INICIAR.bat          duplo clique: servidor + TV em tela cheia + painel
 ├── abrir-telas.ps1      detecta a TV (HDMI) e abre cada tela no lugar certo
 ├── server.js            servidor local (Node puro): QR, fila, leads, tempo real (SSE)
@@ -81,7 +81,7 @@ DEV_PATH_V4/
 
 Tudo roda **sem internet**: fontes e biblioteca de QR estão na pasta.
 
-## O que mudou em relação à V3
+## Histórico: o que mudou da V3 para a V4
 
 | V3 | V4 |
 |---|---|

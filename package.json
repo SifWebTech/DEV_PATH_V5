@@ -1,8 +1,8 @@
 {
-  "name": "devpath-v4",
-  "version": "4.0.0",
+  "name": "devpath-v5",
+  "version": "5.0.0",
   "private": true,
-  "description": "DEV PATH V4 — apresentação interativa celular + TV do curso de Sistemas para Internet (Fatec Jales)",
+  "description": "DEV PATH V5 — apresentação interativa celular + TV do curso de Sistemas para Internet (Fatec Jales)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

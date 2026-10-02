@@ -1,5 +1,5 @@
 /*
- * DEV PATH V4 — TV / apresentação
+ * DEV PATH V5 — TV / apresentação
  * ------------------------------------------------------------
  * Palco fixo de 1920×1080 escalado para a tela. A apresentação é
  * uma lista de cenas (STEPS) com duração própria. Os seis semestres
