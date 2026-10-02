@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>DEV PATH · Operador</title>
+  <link rel="stylesheet" href="css/base.css">
+  <style>
+    /* Painel do operador: fica na tela do notebook enquanto a TV mostra a apresentação */
+    body { min-height: 100vh; padding: 24px 16px 40px; }
+    .wrap { max-width: 1180px; margin: 0 auto; }
+    .top { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; }
+    h1 { font: 800 26px var(--display); letter-spacing: -1px; }
+    h1 b { color: var(--green); text-shadow: var(--green-glow); }
+    h2 { font: 700 16px var(--display); margin-bottom: 14px; }
+    .login { display: flex; gap: 10px; margin-left: auto; }
+    .login[hidden] { display: none; }
+    input { height: 42px; padding: 0 14px; border-radius: 10px; border: 1px solid #2b4a8a; background: #081028; }
+    button, a.btn { height: 42px; padding: 0 18px; border-radius: 10px; border: 1px solid var(--blue); background: none; color: var(--blue); display: inline-grid; place-items: center; text-decoration: none; font-size: 14px; }
+    .msg { color: var(--orange); margin-top: 12px; }
+    .msg:empty { display: none; }
+
+    .grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; margin-top: 22px; }
+    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+    .card { padding: 22px; border-radius: 16px; border: 1px solid var(--line); background: #081028cc; }
+
+    .tv-state { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--dim); }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--orange); box-shadow: var(--orange-glow); }
+    .on .dot { background: var(--green); box-shadow: var(--green-glow); }
+    .now { margin-top: 16px; font: 800 30px/1.15 var(--display); letter-spacing: -1px; }
+    .scene { margin-top: 6px; color: var(--dim); font-size: 15px; }
+    .scene b { color: var(--white); }
+    .bar { margin-top: 14px; height: 8px; border-radius: 4px; background: #ffffff14; overflow: hidden; }
+    .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--orange), var(--blue), var(--green)); transition: width .6s; }
+
+    .controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; }
+    .controls button { height: 64px; flex-direction: column; gap: 2px; font: 700 15px var(--display); border-color: #2b4a8a; color: var(--white); }
+    .controls button small { font: 11px var(--mono); color: var(--dim); }
+    .controls button:hover:not(:disabled) { border-color: var(--blue); box-shadow: 0 0 18px #22b8ff44; }
+    .controls button:disabled { opacity: .35; cursor: default; }
+    #bPause.paused { border-color: var(--orange); color: var(--orange); }
+    #bStop { border-color: #ff7a1a88; }
+    #bDemo { grid-column: 1 / -1; height: 52px; border-color: var(--green); color: var(--green); }
+
+    .queue li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .queue li b { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--blue); color: var(--blue); font-size: 12px; }
+    .queue .empty { color: var(--dim); font-size: 14px; border: 0; }
+    .url { margin-top: 18px; font-size: 13px; color: var(--dim); line-height: 1.6; }
+    .url b { color: var(--green); }
+
+    .leads-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 28px 0 14px; }
+    .leads-head h2 { margin: 0; }
+    a.btn { background: var(--green); border-color: var(--green); color: var(--ink); font-weight: 700; }
+    .stats { margin-left: auto; color: var(--dim); }
+    .stats b { color: var(--orange); font: 800 22px var(--display); }
+    .table { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 11px 14px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+    th { color: var(--dim); font-weight: 500; background: #081028; }
+    td:nth-child(5) { color: var(--green); }
+    .hint { margin-top: 14px; font-size: 12px; color: var(--dim); }
+    kbd { padding: 1px 6px; border: 1px solid var(--line); border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <h1>DEV PATH <b>operador</b></h1>
+      <form class="login" id="loginForm">
+        <label class="sr-only" for="key">Senha</label>
+        <input id="key" type="password" placeholder="Senha do painel" autocomplete="current-password">
+        <button type="submit">Entrar</button>
+      </form>
+    </div>
+    <p class="msg" id="msg" role="alert"></p>
+
+    <div id="panel" hidden>
+      <div class="grid">
+        <section class="card" aria-labelledby="tvTitle">
+          <h2 id="tvTitle" class="sr-only">Na TV agora</h2>
+          <p class="tv-state" id="tvState"><span class="dot"></span><span id="tvText">TV desconectada</span></p>
+          <p class="now" id="now">QR Code na tela</p>
+          <p class="scene" id="scene">Aguardando alguém escanear.</p>
+          <div class="bar"><i id="bar"></i></div>
+          <div class="controls">
+            <button id="bPrev" data-cmd="prev">Voltar<small>←</small></button>
+            <button id="bPause" data-cmd="pause">Pausar<small>espaço</small></button>
+            <button id="bNext" data-cmd="next">Avançar<small>→</small></button>
+            <button id="bStop" data-cmd="stop">Encerrar<small>esc</small></button>
+            <button id="bDemo" data-cmd="demo">Iniciar demonstração sem celular <small>(enter)</small></button>
+          </div>
+          <p class="hint">Os atalhos funcionam com esta janela em foco. Encerrar volta a TV para o QR Code e chama o próximo da fila.</p>
+        </section>
+
+        <section class="card" aria-labelledby="qTitle">
+          <h2 id="qTitle">Fila</h2>
+          <ol class="queue" id="queue"></ol>
+          <p class="url">Endereço do QR Code:<br><b id="mobileUrl">—</b></p>
+        </section>
+      </div>
+
+      <div class="leads-head">
+        <h2>Leads</h2>
+        <a class="btn" id="csv">Baixar planilha (CSV)</a>
+        <p class="stats" id="stats"></p>
+      </div>
+      <div class="table">
+        <table>
+          <thead><tr><th>Data e hora</th><th>Nome</th><th>Contato</th><th>Tipo</th><th>Interesse</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/content.js"></script>
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    let key = sessionStorage.getItem('devpath-key') || '';
+    let state = null;
+    const q = () => '?key=' + encodeURIComponent(key);
+
+    async function loadState() {
+      const res = await fetch('/api/op/state' + q());
+      if (res.status === 401) return fail();
+      state = await res.json();
+      const playing = !!state.scene;
+      $('#tvState').classList.toggle('on', state.tvOnline);
+      $('#tvText').textContent = state.tvOnline ? 'TV conectada' : 'TV desconectada: abra ' + location.origin + ' na TV';
+      $('#now').textContent = playing ? (state.current?.name || 'Demonstração') : 'QR Code na tela';
+      $('#scene').innerHTML = playing
+        ? `Cena ${state.scene.index} de ${state.scene.total}: <b>${esc(state.scene.label)}</b>${state.scene.paused ? ' (pausado)' : ''}`
+        : 'Aguardando alguém escanear.';
+      $('#bar').style.width = playing ? (state.scene.index / state.scene.total) * 100 + '%' : '0';
+      $('#bPause').classList.toggle('paused', !!state.scene?.paused);
+      $('#bPause').firstChild.textContent = state.scene?.paused ? 'Continuar' : 'Pausar';
+      ['#bPrev', '#bPause', '#bNext', '#bStop'].forEach((b) => { $(b).disabled = !playing || !state.tvOnline; });
+      $('#bDemo').disabled = playing || !state.tvOnline;
+      $('#queue').innerHTML = state.queue.length
+        ? state.queue.map((n, k) => `<li><b>${k + 1}</b>${esc(n)}</li>`).join('')
+        : '<li class="empty">Ninguém esperando.</li>';
+      $('#mobileUrl').textContent = state.mobileUrl;
+    }
+
+    async function loadLeads() {
+      const res = await fetch('/api/leads' + q());
+      if (res.status === 401) return fail();
+      const { leads, todayCount } = await res.json();
+      $('#csv').href = '/api/leads.csv' + q();
+      $('#stats').innerHTML = `<b>${todayCount}</b> hoje, <b>${leads.length}</b> no total`;
+      $('#rows').innerHTML = leads.length
+        ? leads.map((l) => `<tr><td>${esc(l.when)}</td><td>${esc(l.name)}</td><td>${esc(l.contact)}</td><td>${esc(l.contactType)}</td><td>${esc(DEVPATH.profiles[l.interest]?.label || l.interest)}</td></tr>`).join('')
+        : '<tr><td colspan="5" style="color:var(--dim);text-align:center;padding:26px">Nenhum cadastro ainda. Eles aparecem aqui assim que alguém preencher pelo QR Code.</td></tr>';
+    }
+
+    function fail() {
+      $('#msg').textContent = 'Senha incorreta. A senha aparece na janela preta do servidor.';
+      $('#panel').hidden = true;
+      sessionStorage.removeItem('devpath-key');
+      throw new Error('auth');
+    }
+
+    async function cmd(name) {
+      const res = await fetch('/api/op/cmd' + q(), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cmd: name }) });
+      if (res.status === 409) $('#msg').textContent = 'A TV não está conectada.';
+      setTimeout(loadState, 250);
+    }
+
+    async function start() {
+      try {
+        await loadState();
+        await loadLeads();
+        $('#msg').textContent = '';
+        $('#panel').hidden = false;
+        $('#loginForm').hidden = true;
+        sessionStorage.setItem('devpath-key', key);
+        setInterval(() => loadState().catch(() => {}), 1000);
+        setInterval(() => loadLeads().catch(() => {}), 5000);
+      } catch {}
+    }
+
+    document.querySelectorAll('[data-cmd]').forEach((b) => b.addEventListener('click', () => cmd(b.dataset.cmd)));
+    addEventListener('keydown', (e) => {
+      if ($('#panel').hidden || e.target.tagName === 'INPUT') return;
+      const map = { ArrowRight: 'next', ArrowLeft: 'prev', ' ': 'pause', Escape: 'stop', Enter: 'demo' };
+      const name = map[e.key];
+      if (!name) return;
+      e.preventDefault();
+      const playing = !!state?.scene;
+      if (name === 'demo' ? !playing : playing) cmd(name);
+    });
+    $('#loginForm').addEventListener('submit', (e) => { e.preventDefault(); key = $('#key').value; start(); });
+    if (key) start();
+  </script>
+</body>
+</html>

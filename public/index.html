@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#040816">
+  <title>DEV PATH · TV</title>
+  <meta name="description" content="Apresentação interativa do curso de Sistemas para Internet da Fatec Jales.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='8' fill='%23040816'/%3E%3Cpath d='M15 11 7 20l8 9M25 11l8 9-8 9' fill='none' stroke='%232bff88' stroke-width='3.4' stroke-linecap='round'/%3E%3Cpath d='M22 9l-4 22' stroke='%23ff7a1a' stroke-width='3.4' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/tv.css">
+</head>
+<body>
+  <!-- Fundo: trilhas de circuito com pulsos de energia (js/circuit.js) -->
+  <canvas id="circuit" aria-hidden="true"></canvas>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <!-- Palco fixo 1920×1080, escalado para caber em qualquer TV (js/tv.js → fit) -->
+  <div id="viewport">
+    <div id="stage" data-scene="idle">
+      <header class="hud">
+        <div class="logo" aria-label="DEV PATH">
+          <span class="logo-mark">&lt;<i>/</i>&gt;</span>
+          <span class="logo-word">dev<b>path</b></span>
+          <span class="logo-sub">Sistemas para Internet<br>Fatec Jales</span>
+        </div>
+        <ol class="hud-progress" id="hudProgress" aria-label="Progresso da apresentação"></ol>
+        <div class="hud-live" id="hudLive"><span class="live-dot"></span><span id="hudLiveText">aguardando conexão</span></div>
+      </header>
+
+      <main id="sceneRoot" aria-live="polite"></main>
+
+      <div id="reactions" aria-hidden="true"></div>
+      <div id="toast" role="status"></div>
+      <div id="flash" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <!-- Atalhos do operador (só aparecem com a tecla H) -->
+  <aside id="help" hidden>
+    <h2>Atalhos do operador</h2>
+    <dl>
+      <dt>Enter</dt><dd>iniciar demonstração sem celular</dd>
+      <dt>→ / ←</dt><dd>avançar / voltar cena</dd>
+      <dt>Espaço</dt><dd>pausar / continuar</dd>
+      <dt>Esc</dt><dd>encerrar e voltar ao QR Code</dd>
+      <dt>F</dt><dd>tela cheia</dd>
+      <dt>H</dt><dd>mostrar / esconder esta ajuda</dd>
+    </dl>
+  </aside>
+
+  <script src="vendor/qrcode.min.js"></script>
+  <script src="js/content.js"></script>
+  <script src="js/circuit.js"></script>
+  <script src="js/tv.js"></script>
+</body>
+</html>

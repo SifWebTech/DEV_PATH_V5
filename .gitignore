@@ -1,0 +1,4 @@
+# dados pessoais dos visitantes (LGPD) e estado local do servidor
+data/leads.csv
+data/.porta
+node_modules/

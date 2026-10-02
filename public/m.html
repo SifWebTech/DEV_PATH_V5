@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#040816">
+  <title>DEV PATH · Sistemas para Internet</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='8' fill='%23040816'/%3E%3Cpath d='M15 11 7 20l8 9M25 11l8 9-8 9' fill='none' stroke='%232bff88' stroke-width='3.4' stroke-linecap='round'/%3E%3Cpath d='M22 9l-4 22' stroke='%23ff7a1a' stroke-width='3.4' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+  <header class="m-head">
+    <span class="logo-mark">&lt;<i>/</i>&gt;</span>
+    <span class="logo-word">dev<b>path</b></span>
+    <span class="m-head-sub">Fatec Jales</span>
+  </header>
+
+  <main id="app">
+    <!-- 1. cadastro -->
+    <section class="view" id="vForm">
+      <h1 class="m-title">Sua jornada dev começa <span class="c-green">aqui.</span></h1>
+      <p class="m-lead">Em 2 minutos você vê na TV como é estudar Sistemas para Internet, do 1º ao 6º semestre.</p>
+
+      <form id="leadForm" novalidate>
+        <label class="field">
+          <span>Como você se chama?</span>
+          <input name="name" id="fName" autocomplete="name" maxlength="40" placeholder="Seu nome" required>
+          <small class="err" data-err="name"></small>
+        </label>
+
+        <div class="field">
+          <span id="contactLabel">Onde a gente te encontra?</span>
+          <div class="seg" role="radiogroup" aria-labelledby="contactLabel">
+            <button type="button" role="radio" aria-checked="true" data-ctype="email">E-mail</button>
+            <button type="button" role="radio" aria-checked="false" data-ctype="instagram">Instagram</button>
+          </div>
+          <input name="contact" id="fContact" type="email" inputmode="email" autocomplete="email" maxlength="80" placeholder="voce@email.com" required>
+          <small class="err" data-err="contact"></small>
+        </div>
+
+        <fieldset class="field">
+          <legend>O que mais chama sua atenção?</legend>
+          <div class="chips" id="interestChips"></div>
+          <small class="err" data-err="interest"></small>
+        </fieldset>
+
+        <label class="consent">
+          <input type="checkbox" id="fConsent">
+          <span>Autorizo a Fatec Jales a usar esses dados para me enviar informações sobre o curso e o vestibular. Posso pedir a exclusão a qualquer momento.</span>
+        </label>
+        <small class="err" data-err="consent"></small>
+
+        <button class="btn-main" type="submit" id="saveBtn">Salvar e continuar</button>
+        <p class="form-error" id="formError" role="alert"></p>
+      </form>
+    </section>
+
+    <!-- 2. pronto para começar -->
+    <section class="view" id="vReady" hidden>
+      <p class="m-kicker" id="readyHello"></p>
+      <h1 class="m-title">Olhe para a TV e toque no botão.</h1>
+      <button class="start" id="startBtn" aria-label="Começar a apresentação na TV">
+        <span class="start-ring"></span>
+        <span class="start-ring r2"></span>
+        <span class="start-core">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          Começar
+        </span>
+      </button>
+      <p class="m-note">A apresentação dura cerca de 2 minutos e meio.</p>
+    </section>
+
+    <!-- 3. ao vivo -->
+    <section class="view" id="vLive" hidden>
+      <div class="live-status" id="liveStatus"></div>
+      <div class="live-scene">
+        <p>Agora na TV</p>
+        <h2 id="sceneLabel">Preparando…</h2>
+        <div class="live-bar"><i id="sceneBar"></i></div>
+      </div>
+      <p class="react-title">Reaja na TV</p>
+      <div class="reacts">
+        <button data-react="fire" aria-label="Fogo">🔥</button>
+        <button data-react="heart" aria-label="Coração">💚</button>
+        <button data-react="mind" aria-label="Mente explodindo">🤯</button>
+        <button data-react="rocket" aria-label="Foguete">🚀</button>
+      </div>
+    </section>
+
+    <!-- 4. crachá -->
+    <section class="view" id="vDone" hidden>
+      <p class="m-kicker">Seu crachá do futuro tecnólogo</p>
+      <article class="m-badge" id="mBadge"></article>
+      <p class="m-note">Tire um print e compartilhe nos stories.</p>
+      <a class="btn-main" id="vestLink" target="_blank" rel="noopener">Conhecer o vestibular Fatec</a>
+      <a class="btn-ghost" id="fatecLink" target="_blank" rel="noopener">Site da Fatec Jales</a>
+      <button class="btn-text" id="againBtn">Ver a apresentação de novo</button>
+    </section>
+  </main>
+
+  <script src="js/content.js"></script>
+  <script src="js/mobile.js"></script>
+</body>
+</html>
