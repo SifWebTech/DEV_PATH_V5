@@ -27,7 +27,7 @@
     { type: 'boot', dur: 8, label: 'Inicializando seu futuro' },
     { type: 'hook', dur: 8, label: 'Você e a tecnologia' },
     { type: 'map', dur: 8, label: 'O caminho em 6 semestres' },
-    ...C.semesters.map((s) => ({ type: 'journey', sem: s.n, dur: 13, label: `${s.n}º semestre: ${s.stage}` })),
+    ...C.semesters.map((s) => ({ type: 'journey', sem: s.n, dur: 15, label: `${s.n}º semestre: ${s.stage}` })),
     { type: 'create', dur: 10, label: 'O que você vai poder criar' },
     { type: 'careers', dur: 10, label: 'Onde você pode chegar' },
     { type: 'market', dur: 8, label: 'Tecnologia em todo lugar' },
@@ -277,7 +277,7 @@
           <p class="j-kicker"><b id="jNum">01</b><span>/06 semestre</span></p>
           <h2 class="j-title" id="jTitle"></h2>
           <p class="j-hook" id="jHook"></p>
-          <p class="j-unlock-label">você desbloqueia</p>
+          <p class="j-unlock-label" id="jCount">disciplinas do semestre</p>
           <ul class="unlocks" id="jUnlocks"></ul>
 
           <div class="love">
@@ -336,7 +336,6 @@
           <div class="confetti" id="confetti"></div>
         </div>
 
-        <div class="marquee" aria-label="Todas as disciplinas do semestre"><div class="marquee-in" id="jAll"></div></div>
       </section>`, () => { startEkg(); updateJourney(n); });
   }
 
@@ -365,15 +364,12 @@
     hook.textContent = s.hook;
     hook.classList.add('in');
 
-    $('#jUnlocks').innerHTML = s.highlights.map(([official, plain], k) => `
-      <li style="--k:${k}">
-        <span class="u-key">+</span>
-        <div><b>${esc(plain)}</b><small>${esc(official)}</small></div>
-      </li>`).join('');
-
-    // todas as disciplinas, em faixa corrida
-    const all = s.all.map((d) => `<span>${esc(d)}</span>`).join('');
-    $('#jAll').innerHTML = all + all;
+    // todas as disciplinas do semestre: nome oficial em evidência, tradução embaixo
+    $('#jCount').textContent = `as ${s.disciplinas.length} disciplinas do ${n}º semestre`;
+    $('#jUnlocks').innerHTML = s.disciplinas.map(([official, plain, star], k) => `
+      <li style="--k:${k}"${star ? ' class="star"' : ''}>
+        <b>${esc(official).replace(/ ([IVX]+)$/, '\u00a0$1')}</b><small>${esc(plain)}</small>
+      </li>`).join(''); // \u00a0 = espaço que não quebra: o "I" não fica sozinho na linha
 
     // medidor de paixão
     $('#bpm').textContent = s.bpm;

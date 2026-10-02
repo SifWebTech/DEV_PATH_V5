@@ -59,7 +59,7 @@ Mostra quem está na TV, a cena atual, a fila e os leads chegando. Os botões **
 
 ## Editar textos
 
-Tudo que aparece na tela está em **`public/js/content.js`**: semestres, disciplinas, traduções para a linguagem do aluno, batimentos do "medidor de paixão", carreiras, setores, diferenciais da Fatec e os 4 perfis do crachá. As durações das cenas estão no topo de `public/js/tv.js` (`STEPS`, ~2 min 40 s no total).
+Tudo que aparece na tela está em **`public/js/content.js`**: semestres, disciplinas, traduções para a linguagem do aluno, batimentos do "medidor de paixão", carreiras, setores, diferenciais da Fatec e os 4 perfis do crachá. As durações das cenas estão no topo de `public/js/tv.js` (`STEPS`, ~2 min 50 s no total).
 
 ## Estrutura
 

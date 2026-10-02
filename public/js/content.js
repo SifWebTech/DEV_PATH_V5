@@ -4,9 +4,10 @@
  * Todo o texto da apresentação mora aqui. Para mudar uma frase,
  * disciplina ou carreira, edite este arquivo e recarregue a TV.
  *
- * Os nomes oficiais das disciplinas (campo `all`) conferem com o
- * horário oficial de SI do 2º semestre de 2026. O campo `highlights` traduz as mais
- * interessantes para a linguagem de quem está no ensino médio.
+ * Disciplinas: cada semestre lista TODAS as disciplinas do horário oficial
+ * de SI (2º semestre de 2026), em `disciplinas`: [nome oficial, tradução, destaque].
+ * A tradução explica a disciplina na linguagem de quem está no ensino médio;
+ * as marcadas com destaque (true) ganham cor e aparecem primeiro na TV.
  */
 window.DEVPATH = {
   links: {
@@ -56,12 +57,16 @@ window.DEVPATH = {
       hook: 'Tudo que existe na tela começou como uma ideia e um raciocínio.',
       bpm: 72,
       mood: 'curiosidade',
-      highlights: [
-        ['Algoritmos e Lógica de Programação', 'o jeito de pensar por trás de todo app'],
-        ['Design Digital', 'cores, tipografia e composição de telas'],
-        ['Padrões de Projeto de Sítios Internet I', 'sua primeira página no ar'],
+      disciplinas: [
+        ['Algoritmos e Lógica de Programação', 'o jeito de pensar por trás de todo app', true],
+        ['Design Digital', 'cores, tipografia e composição de telas', true],
+        ['Padrões de Projeto de Sítios Internet I', 'sua primeira página no ar', true],
+        ['Bases da Internet', 'como a web funciona por dentro'],
+        ['Criação de Conteúdo na Web', 'textos, imagens e vídeos que atraem'],
+        ['Fundamentos de Matemática Elementar', 'a base dos cálculos da programação'],
+        ['Leitura e Produção de Textos', 'comunicar ideias com clareza'],
+        ['Inglês I', 'a língua da tecnologia'],
       ],
-      all: ['Algoritmos e Lógica de Programação', 'Design Digital', 'Inglês I', 'Criação de Conteúdo na Web', 'Fundamentos de Matemática Elementar', 'Leitura e Produção de Textos', 'Bases da Internet', 'Padrões de Projeto de Sítios Internet I'],
     },
     {
       n: 2,
@@ -71,12 +76,15 @@ window.DEVPATH = {
       hook: 'O rascunho vira uma interface que dá vontade de usar.',
       bpm: 86,
       mood: 'interesse',
-      highlights: [
-        ['Prática de Design', 'interfaces bonitas e fáceis de usar'],
-        ['Padrões de Projetos de Sítios II', 'layouts que se adaptam a qualquer tela'],
-        ['Redes e Internet', 'como os dispositivos conversam entre si'],
+      disciplinas: [
+        ['Prática de Design', 'interfaces bonitas e fáceis de usar', true],
+        ['Padrões de Projetos de Sítios II', 'layouts que se adaptam a qualquer tela', true],
+        ['Redes e Internet', 'como os dispositivos conversam entre si', true],
+        ['Estrutura de Dados', 'organizar informação para o código voar'],
+        ['Matemática Discreta', 'a matemática por trás dos computadores'],
+        ['Legislação Aplicada à Internet', 'direitos, LGPD e regras do mundo digital'],
+        ['Inglês II', 'ler documentação e trocar ideias'],
       ],
-      all: ['Inglês II', 'Prática de Design', 'Legislação Aplicada à Internet', 'Redes e Internet', 'Estrutura de Dados', 'Matemática Discreta', 'Padrões de Projetos de Sítios II'],
     },
     {
       n: 3,
@@ -86,12 +94,15 @@ window.DEVPATH = {
       hook: 'A página começa a guardar, buscar e entender informações.',
       bpm: 98,
       mood: 'empolgação',
-      highlights: [
-        ['Banco de Dados e Internet I', 'guardar e encontrar informações'],
-        ['Programação de Sítios Internet', 'páginas que viram sistemas de verdade'],
-        ['Acessibilidade', 'tecnologia que funciona para todas as pessoas'],
+      disciplinas: [
+        ['Banco de Dados e Internet I', 'guardar e encontrar informações', true],
+        ['Programação de Sítios Internet', 'páginas que viram sistemas de verdade', true],
+        ['Acessibilidade', 'tecnologia que funciona para todas as pessoas', true],
+        ['Engenharia de Software para Web', 'planejar sistemas do jeito certo'],
+        ['Servidores e seus Sistemas Operacionais', 'as máquinas que mantêm tudo no ar'],
+        ['Estatística', 'transformar dados em decisões'],
+        ['Inglês III', 'inglês técnico do dia a dia dev'],
       ],
-      all: ['Estatística', 'Servidores e seus Sistemas Operacionais', 'Banco de Dados e Internet I', 'Engenharia de Software para Web', 'Acessibilidade', 'Programação de Sítios Internet', 'Inglês III'],
     },
     {
       n: 4,
@@ -101,12 +112,15 @@ window.DEVPATH = {
       hook: 'Interface, servidor e banco de dados passam a trabalhar juntos — com segurança.',
       bpm: 112,
       mood: 'foco total',
-      highlights: [
-        ['Desenvolvimento para Servidores I', 'o back-end que faz tudo funcionar'],
-        ['Segurança em Sistemas para Internet', 'proteger pessoas e dados'],
-        ['Projeto de Navegação e Interação', 'UX: caminhos que fazem sentido'],
+      disciplinas: [
+        ['Desenvolvimento para Servidores I', 'o back-end que faz tudo funcionar', true],
+        ['Segurança em Sistemas para Internet', 'proteger pessoas e dados', true],
+        ['Projeto de Navegação e Interação', 'UX: caminhos que fazem sentido', true],
+        ['Banco de Dados e Internet II', 'dados mais rápidos e poderosos'],
+        ['Prática de Gestão de Projetos', 'prazos, equipe e entregas'],
+        ['Tópicos Especiais em Sistemas para Internet I', 'as novidades do mercado'],
+        ['Inglês IV', 'reuniões e apresentações em inglês'],
       ],
-      all: ['Prática de Gestão de Projetos', 'Segurança em Sistemas para Internet', 'Inglês IV', 'Desenvolvimento para Servidores I', 'Banco de Dados e Internet II', 'Projeto de Navegação e Interação', 'Tópicos Especiais em Sistemas para Internet I'],
     },
     {
       n: 5,
@@ -116,12 +130,15 @@ window.DEVPATH = {
       hook: 'Seu sistema chega ao celular e encontra pessoas reais.',
       bpm: 126,
       mood: 'paixão',
-      highlights: [
-        ['Desenvolvimento para Dispositivos Móveis I', 'seu primeiro app no celular'],
-        ['Projeto de Prototipagem e Teste de Usabilidade', 'testar com pessoas antes de lançar'],
-        ['Negócios e Marketing Eletrônicos', 'tecnologia que vira negócio'],
+      disciplinas: [
+        ['Desenvolvimento para Dispositivos Móveis I', 'seu primeiro app no celular', true],
+        ['Projeto de Prototipagem e Teste de Usabilidade', 'testar com pessoas antes de lançar', true],
+        ['Negócios e Marketing Eletrônicos', 'tecnologia que vira negócio', true],
+        ['Desenvolvimento para Servidores II', 'APIs que aguentam muita gente'],
+        ['Projeto do TG em Sistemas para Internet I', 'começa o seu projeto final'],
+        ['Tópicos Especiais em Sistemas para Internet II', 'tecnologias em alta'],
+        ['Inglês V', 'inglês para a carreira'],
       ],
-      all: ['Negócios e Marketing Eletrônicos', 'Inglês V', 'Desenvolvimento para Dispositivos Móveis I', 'Projeto do TG em Sistemas para Internet I', 'Tópicos Especiais em Sistemas para Internet II', 'Desenvolvimento para Servidores II', 'Projeto de Prototipagem e Teste de Usabilidade'],
     },
     {
       n: 6,
@@ -131,12 +148,15 @@ window.DEVPATH = {
       hook: 'Tudo se conecta: seu projeto sai do papel e vai para o mundo.',
       bpm: 140,
       mood: 'não dá mais pra parar',
-      highlights: [
-        ['Desenvolvimento para Dispositivos Móveis II', 'apps completos e conectados'],
-        ['Arquitetura Orientada a Serviços', 'APIs e sistemas que se integram'],
-        ['Criação de Empresas para Internet', 'sua startup sai do papel'],
+      disciplinas: [
+        ['Desenvolvimento para Dispositivos Móveis II', 'apps completos e conectados', true],
+        ['Arquitetura Orientada a Serviços', 'APIs e sistemas que se integram', true],
+        ['Criação de Empresas para Internet', 'sua startup sai do papel', true],
+        ['Projeto de TG em Sistemas para Internet II', 'seu projeto final pronto'],
+        ['Projeto de Encontrabilidade', 'ser encontrado no Google (SEO)'],
+        ['Tópicos Especiais em Sistemas para Internet III', 'o que vem por aí na tecnologia'],
+        ['Inglês VI', 'pronto para o mercado global'],
       ],
-      all: ['Projeto de TG em Sistemas para Internet II', 'Criação de Empresas para Internet', 'Arquitetura Orientada a Serviços', 'Tópicos Especiais em Sistemas para Internet III', 'Projeto de Encontrabilidade', 'Inglês VI', 'Desenvolvimento para Dispositivos Móveis II'],
     },
   ],
 
