@@ -96,6 +96,8 @@ Cada semestre mostra **todas** as disciplinas do horário oficial (43 no total, 
 
 ## Estrutura
 
+Como cada arquivo funciona por dentro, comando por comando: veja a pasta [`docs/`](docs/README.md).
+
 ```
 DEV_PATH_V5/
 ├── INICIAR.bat          duplo clique: servidor + TV em tela cheia + painel
