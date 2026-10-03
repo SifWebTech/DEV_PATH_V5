@@ -83,7 +83,7 @@
 
   function spawn() {
     const t = traces[Math.floor(Math.random() * traces.length)];
-    pulses.push({ t, d: 0, speed: 160 + Math.random() * 220 + energy * 380, tail: 70 + energy * 90 });
+    pulses.push({ t, d: 0, speed: 250 + Math.random() * 100 + energy * 1000, tail: 150 + energy * 150 });
   }
 
   function frame(now) {
