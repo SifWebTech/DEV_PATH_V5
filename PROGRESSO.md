@@ -20,8 +20,8 @@
 | 02/10/2026 | `a95317e` | Tudo renomeado de V4 para V5 (versão 5.0.0). |
 | 02/10/2026 | `b759bfe` | **Semestres mostram todas as 43 disciplinas** na TV (antes só 3 por semestre; o resto passava numa faixa no rodapé). Nome oficial grande + tradução; 3 destaques com a cor do semestre. Cada semestre passou de 13 s para 15 s. |
 | 02/10/2026 | `0ad9027` | **Fases 1 a 4 da arquitetura V5** (detalhes abaixo). |
-| 02/10/2026 | *sem commit* | Ajustes visuais no circuito do fundo (ver "Pendências"). |
-| 03/10/2026 | *sem commit* | **Documentação técnica** em `docs/`: um arquivo por assunto (HTML, CSS, fontes WOFF2, JS do navegador, servidor, JSON/CSV, BAT/PS1, Git), explicando cada comando e o porquê de cada sequência. |
+| 03/10/2026 | `a62e081` | Circuito do fundo mais discreto: opacidade .6 e pulsos mais lentos. |
+| 03/10/2026 | `9e2c0fc` | **Documentação técnica** em `docs/`: um arquivo por assunto (HTML, CSS, fontes WOFF2, JS do navegador, servidor, JSON/CSV, BAT/PS1, Git), explicando cada comando e o porquê de cada sequência. |
 
 ## Fases da V5 (todas concluídas)
 
@@ -35,12 +35,12 @@
 
 ## Pendências (estado atual)
 
-- [ ] **Alterações sem commit**, ainda em teste na TV:
+- [x] **Ajuste do circuito salvo** no commit `a62e081` (03/10/2026):
   - `public/css/tv.css`: `#circuit` com `opacity: .6` (circuito do fundo mais transparente).
   - `public/js/circuit.js`, linha 86, alterada pelo usuário: pulsos mais lentos e com cauda menor
     (`speed: 150 + Math.random() * 100 + energy * 100, tail: 50 + energy * 50`;
     o original era `speed: 160 + Math.random() * 220 + energy * 380, tail: 70 + energy * 90`).
-  - Falta decidir se ficam e subir para o GitHub.
+  - Para voltar ao original: `git revert a62e081`.
 - [ ] **Ensaio completo** no notebook + TV + celular real antes do evento.
 - [ ] Na **primeira execução** da V5 com os dados reais, o servidor adiciona a coluna "evento" ao `data/leads.csv` e salva o original em `data/leads-backup-v4.csv`. É automático; só conferir.
 - [ ] Antes do evento: dar o **nome do evento** no painel e, se quiser, trocar a senha (`set ADMIN_KEY=...`).
