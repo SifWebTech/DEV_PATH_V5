@@ -32,7 +32,8 @@
 | 20/10/2026 | `d6bac05` | **Publicado no Render**: https://devpath-uhhd.onrender.com (`/healthz` → postgres). Endereço da TV no `INICIAR-NUVEM.bat`. |
 | 20/10/2026 | `a7d5958` | **Narração animada em todas as telas**: roteiro reescrito com mais empolgação (vozes +12% e +6 Hz), falas novas no mapa e no mercado, fechamento com convite para o vestibular de Sistemas para Internet na Fatec Jales e aviso do crachá e dos links no celular. **"Olá, {nome}!" gerado pelo servidor** (`server/voz.js`, voz Thalita) porque a voz do navegador fica bloqueada na TV aberta sem clique. Música: opção 2. Circuito do fundo vai de 60% a 15% de opacidade ao longo das cenas (velocidade igual). Apresentação parada há mais de 10 min com a TV fechada não recomeça sozinha (o caso "Maria"). Testado no Edge: 14 cenas com fala, MP3 com o nome, opacidade e sem erros. |
 | 20/10/2026 | `207249f` | **Painel do operador revisado**: o funil conta a mesma coisa em todas as etapas (o celular) e quem chegou a uma etapa conta nas anteriores, então nenhuma % passa de 100%; "Salvou o crachá" e "Abriu o vestibular" são % de quem tocou em Começar; "cadastros" desconta os excluídos (bate com a tabela); "assistiram até o crachá" conta cadastros, não eventos repetidos; interesses somam 100%; gráfico por hora sem pular horas; "hoje" segue o filtro da tabela. **3 trilhas novas de rock** com solo de guitarra e de baixo (opções 4, 5 e 6). |
-| 20/10/2026 | (este commit) | **3 trilhas com solo de bateria e de contrabaixo** (opções 7 hard rock, 8 funk, 9 rock acelerado): bateria ganhou tons e um solo de 8 compassos (groove nos tons, bumbo duplo, tercinas, rufada, virada final). |
+| 20/10/2026 | `3e30f14` | **3 trilhas com solo de bateria e de contrabaixo** (opções 7 hard rock, 8 funk, 9 rock acelerado): bateria ganhou tons e um solo de 8 compassos (groove nos tons, bumbo duplo, tercinas, rufada, virada final). |
+| 20/10/2026 | (este commit) | **As 9 músicas em sequência**: `config.music` virou uma lista; o motor de áudio toca cada uma inteira, emenda na seguinte com 2 s de transição e volta à primeira depois da última (só a atual e a próxima ficam na memória). Ordem 7, 4, 1, 8, 5, 2, 9, 6, 3. Testado no Edge sem som: a troca da 1ª para a 2ª acontece no fim da música e a 3ª já é baixada. |
 
 ## Fases da V5 (todas concluídas)
 
@@ -47,7 +48,7 @@
 
 ## Pendências (estado atual)
 
-- [ ] **Escolher a música**: hoje toca a opção 2 (future house). Ouvir as novas opções 4, 5 e 6 (rock com solo de guitarra e de baixo) e 7, 8 e 9 (solo de bateria e de contrabaixo) em `public/audio/music/` e trocar em `public/js/narration.js → config.music`.
+- [x] **Música**: as nove trilhas tocam em sequência, em loop (`public/js/narration.js → config.music`). Para tirar uma, apague a linha dela na lista.
 - [ ] Preencher os links do celular em `public/js/content.js → links` (`curso`, `instagram`, `contato`: estão como TODO, sem URL inventada).
 - [x] Migração para a nuvem (multi-rede) implementada, testada e na `main` (docs 12 e 13).
 - [x] Provedor escolhido: **Render (servidor) + Neon (PostgreSQL)**, grátis. Projeto pronto (`render.yaml`, docs 14) e no GitHub.

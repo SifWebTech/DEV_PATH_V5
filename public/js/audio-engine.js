@@ -3,7 +3,7 @@
  * ------------------------------------------------------------
  * Três canais com volume próprio, todos passando por um volume geral (mudo):
  *
- *   música   (loop sem emenda) ──────────────────────┐
+ *   música   (loop sem emenda, ou lista) ──────────────────────┐
  *   narração (MP3) ─▶ corta-graves ─▶ presença ─▶ compressor ─┼─▶ geral ─▶ compressor geral ─▶ caixas de som
  *   efeitos ──────────────────────────────────────┘
  *
@@ -153,6 +153,7 @@
 
   async function makeMusic() {
     if (!E.ctx) return null;
+    if (Array.isArray(E.cfg.music)) return playlist(E.cfg.music);
     if (await exists(E.cfg.music) !== false) {
       try {
         const buf = await loadBuffer(E.cfg.music);
@@ -169,6 +170,50 @@
       } catch { E.known.set(E.cfg.music, false); }
     }
     return E.cfg.synthMusic ? synthAmbient() : null;
+  }
+
+  /* Lista de músicas (config.music = [mp3, mp3, …]): cada uma toca inteira uma vez e passa para a
+   * seguinte com uma transição curta (uma sai enquanto a outra entra); depois da última, volta à primeira.
+   * Só ficam na memória a música atual e a próxima, que é baixada enquanto a atual toca.
+   * Os horários são do relógio do áudio (ctx.currentTime), então a troca acontece no tempo exato. */
+  function playlist(urls) {
+    const X = 2;                       // segundos de transição entre uma música e a seguinte
+    let i = 0, primeira = true, falhas = 0, proxima = null;
+    const carregar = (k) => fetch(urls[k % urls.length])
+      .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(r.status))))
+      .then((data) => E.ctx.decodeAudioData(data))
+      .catch(() => null);              // arquivo que falta: pula para a próxima
+
+    async function tocar(quando) {
+      const buf = await (proxima || carregar(i));
+      i = (i + 1) % urls.length;
+      proxima = carregar(i);
+      if (!buf) {
+        if (++falhas >= urls.length) return; // nenhuma música carrega: fica em silêncio
+        return tocar(quando);
+      }
+      falhas = 0;
+      const [ini, fim] = trimSilence(buf);
+      const dur = fim - ini;
+      const t0 = Math.max(quando, E.ctx.currentTime + 0.05);
+      const g = E.ctx.createGain();
+      const src = E.ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(g).connect(E.bus.music);
+      g.gain.setValueAtTime(primeira ? 1 : 0, t0);
+      g.gain.linearRampToValueAtTime(1, t0 + X);
+      g.gain.setValueAtTime(1, t0 + dur - X);
+      g.gain.linearRampToValueAtTime(0, t0 + dur);
+      src.start(t0, ini, dur);
+      src.onended = () => { src.disconnect(); g.disconnect(); };
+      primeira = false;
+      // prepara a seguinte uns segundos antes da transição (o relógio do áudio marca o ponto exato)
+      const troca = t0 + dur - X;
+      setTimeout(() => tocar(troca), Math.max(0, (troca - E.ctx.currentTime - 6) * 1000));
+    }
+
+    let started = false;
+    return { start() { if (!started) { started = true; tocar(E.ctx.currentTime); } } };
   }
 
   // Início e fim do som de verdade (em segundos), ignorando até 0,2 s de silêncio em cada ponta
