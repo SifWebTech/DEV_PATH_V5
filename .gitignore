@@ -10,3 +10,11 @@ ferramentas/amostras-vozes/
 
 # segredos (senha do banco, SESSION_SECRET, ADMIN_KEY)
 .env
+
+# Neon: env com a senha do banco (neon env pull) e vínculo local do projeto
+.env.local
+.env.*.local
+.neon
+
+# Claude Code: permissões locais e skills instaladas (reinstaláveis pelo skills-lock.json)
+.claude/

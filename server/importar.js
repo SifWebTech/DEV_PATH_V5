@@ -3,6 +3,7 @@
  *
  *   DATABASE_URL=postgresql://… npm run importar          (lê ./data)
  *   DATABASE_URL=… DATA_DIR=C:\backup\data npm run importar
+ *   npm run importar                                       (com o .env.local do `neon env pull`)
  *
  * Pode rodar mais de uma vez: leads repetidos são ignorados (mesmo id), e o funil só é
  * importado se a tabela interactions ainda estiver vazia (para não contar em dobro).
@@ -12,6 +13,12 @@
 const fs = require('fs');
 const path = require('path');
 
+// sem DATABASE_URL no terminal, vale a do .env.local / .env (o `neon env pull` escreve no .env.local)
+for (const file of ['.env.local', '.env']) {
+  const f = path.join(__dirname, '..', file);
+  if (fs.existsSync(f)) process.loadEnvFile(f);
+}
+
 const dbUrl = process.env.DATABASE_URL;
 if (!dbUrl) {
   console.error('Defina DATABASE_URL (o banco de destino) antes de importar.');
@@ -20,9 +27,11 @@ if (!dbUrl) {
 
 async function main() {
   // 1. lê os arquivos (modo arquivos do store, sem banco)
+  const unpooled = process.env.DATABASE_URL_UNPOOLED;
   delete process.env.DATABASE_URL;
   const config = require('./config');
   config.DATABASE_URL = '';
+  if (unpooled) process.env.DATABASE_URL_UNPOOLED = unpooled;
   const store = require('./store');
   await store.init();
   const leads = store.readLeads();
@@ -31,8 +40,11 @@ async function main() {
 
   // 2. grava no banco (abre o store de novo, agora no modo PostgreSQL: aplica as migrations)
   const { Pool } = require('pg');
-  const local = /@(localhost|127\.0\.0\.1)[:/]/.test(dbUrl);
-  const pool = new Pool({ connectionString: dbUrl, ssl: local || /sslmode=/.test(dbUrl) ? undefined : { rejectUnauthorized: false } });
+  // importação = carga em lote: conexão direta do Neon quando houver (DATABASE_URL_UNPOOLED)
+  // sslmode=require do Neon escrito como verify-full, igual ao store.js (mesma segurança, sem aviso do pg)
+  const url = (process.env.DATABASE_URL_UNPOOLED || dbUrl).replace(/([?&]sslmode=)(require|prefer|verify-ca)(?=&|$)/, '$1verify-full');
+  const local = /@(localhost|127\.0\.0\.1)[:/]/.test(url);
+  const pool = new Pool({ connectionString: url, ssl: local || /sslmode=/.test(url) ? undefined : { rejectUnauthorized: false } });
   const db = { query: (t, v) => pool.query(t, v) };
   const migrations = path.join(__dirname, 'migrations');
   await db.query('CREATE TABLE IF NOT EXISTS schema_migrations (name text PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now())');

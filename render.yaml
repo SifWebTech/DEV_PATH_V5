@@ -6,7 +6,7 @@ services:
     runtime: node
     plan: free                 # grátis: dorme após 15 min sem acesso (a TV aberta o mantém acordado)
     region: virginia           # mais perto do Brasil entre as regiões do Render; crie o banco Neon em AWS us-east-1
-    buildCommand: npm ci
+    buildCommand: npm ci && npm run build
     startCommand: npm start
     healthCheckPath: /healthz
     autoDeploy: true
@@ -26,4 +26,6 @@ services:
       - key: ADMIN_KEY
         sync: false            # o Render pergunta na criação: senha do painel (10+ caracteres)
       - key: DATABASE_URL
-        sync: false            # o Render pergunta na criação: connection string do Neon
+        sync: false            # o Render pergunta na criação: connection string do Neon COM pooler (-pooler no endereço)
+      - key: DATABASE_URL_UNPOOLED
+        sync: false            # conexão direta do Neon (sem -pooler), usada só nas migrations

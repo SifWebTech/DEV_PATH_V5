@@ -83,17 +83,27 @@ function loadCsv() {
 
 /* ---------------- PostgreSQL ---------------- */
 
-async function openPostgres() {
+// provedores gerenciados exigem SSL; sslmode na própria URL (o Neon manda sslmode=require) tem prioridade
+function poolFor(url, max) {
   let Pool;
   try { ({ Pool } = require('pg')); } catch {
     throw new Error('DATABASE_URL definida, mas o pacote "pg" não está instalado. Rode: npm install');
   }
-  const url = config.DATABASE_URL;
   const local = /@(localhost|127\.0\.0\.1|\[::1\])[:/]/.test(url);
-  // provedores gerenciados exigem SSL; sslmode na própria URL tem prioridade
+  // "sslmode=require" (como vem do Neon) já é tratado pelo pg como verify-full (certificado conferido);
+  // escrever isso explicitamente mantém a segurança quando o pg mudar o significado de "require"
+  url = url.replace(/([?&]sslmode=)(require|prefer|verify-ca)(?=&|$)/, '$1verify-full');
   const ssl = local || /sslmode=/.test(url) ? undefined : { rejectUnauthorized: false };
-  pool = new Pool({ connectionString: url, ssl, max: 5 });
-  await migrate();
+  return new Pool({ connectionString: url, ssl, max });
+}
+
+async function openPostgres() {
+  // node-postgres com pool: o servidor fica sempre ligado e reaproveita as conexões.
+  // No Neon, DATABASE_URL é a conexão com pooler (PgBouncer): ideal para o dia a dia.
+  pool = poolFor(config.DATABASE_URL, 5);
+  // Migrations pela conexão direta (DATABASE_URL_UNPOOLED), como o Neon recomenda; sem ela, pela mesma
+  const direct = config.DATABASE_URL_UNPOOLED ? poolFor(config.DATABASE_URL_UNPOOLED, 1) : pool;
+  try { await migrate(direct); } finally { if (direct !== pool) await direct.end().catch(() => {}); }
   backend = 'postgres';
 
   const leads = await sql(`SELECT id, registered_at, name, contact, contact_type, interest, consent, evento, event_code, display_code
@@ -109,13 +119,13 @@ async function openPostgres() {
 }
 
 // Aplica, em ordem, os arquivos de server/migrations/ que ainda não rodaram (nunca apaga tabelas)
-async function migrate() {
-  await sql('CREATE TABLE IF NOT EXISTS schema_migrations (name text PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now())');
-  const done = new Set((await sql('SELECT name FROM schema_migrations')).rows.map((r) => r.name));
+async function migrate(db) {
+  await db.query('CREATE TABLE IF NOT EXISTS schema_migrations (name text PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now())');
+  const done = new Set((await db.query('SELECT name FROM schema_migrations')).rows.map((r) => r.name));
   const dir = path.join(__dirname, 'migrations');
   for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.sql')).sort()) {
     if (done.has(file)) continue;
-    const client = await pool.connect();
+    const client = await db.connect();
     try {
       await client.query('BEGIN');
       await client.query(fs.readFileSync(path.join(dir, file), 'utf8'));
@@ -134,8 +144,20 @@ async function migrate() {
 /* ---------------- interface ---------------- */
 
 async function init() {
-  if (config.DATABASE_URL) await openPostgres();
-  else {
+  if (config.DATABASE_URL) {
+    try {
+      await openPostgres();
+    } catch (err) {
+      // Em produção, sem banco não sobe (os dados sumiriam a cada deploy). Fora dela (notebook sem
+      // internet), segue com os arquivos de data/ e avisa.
+      if (config.PRODUCTION) throw err;
+      console.warn(`  ⚠ Banco indisponível (${err.message}). Usando os arquivos de data/.`);
+      await pool?.end().catch(() => {});
+      pool = null;
+      backend = 'arquivos';
+    }
+  }
+  if (backend === 'arquivos') {
     mem.leads = loadCsv();
     mem.events = fs.existsSync(EVENTS_FILE)
       ? fs.readFileSync(EVENTS_FILE, 'utf8').split('\n').filter(Boolean).flatMap((line) => {

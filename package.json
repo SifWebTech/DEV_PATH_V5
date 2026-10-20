@@ -6,11 +6,18 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "build": "npm run check",
     "check": "node --check server.js && node -e \"for (const f of require('fs').readdirSync('server').filter(f => f.endsWith('.js'))) require('child_process').execFileSync(process.execPath, ['--check', 'server/' + f])\"",
     "importar": "node server/importar.js"
   },
   "dependencies": {
     "pg": "^8.13.0"
   },
-  "engines": { "node": ">=20.12" }
+  "engines": {
+    "node": ">=20.12"
+  },
+  "devDependencies": {
+    "@neon/config": "^1.9.2",
+    "@neon/env": "^1.6.3"
+  }
 }

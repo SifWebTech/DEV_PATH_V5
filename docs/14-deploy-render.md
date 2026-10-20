@@ -10,21 +10,21 @@ GitHub (SifWebTech/DEV_PATH_V5) ──deploy automático──▶ Render (devpat
 
 ## 1. Código no GitHub
 
-O Render publica a partir do GitHub. A migração para a nuvem está na branch `feat/cloud-multinetwork`.
+O Render publica a partir do GitHub, branch `main` (a migração para a nuvem já está nela). Basta a `main` estar enviada:
 
 ```powershell
-git push -u origin feat/cloud-multinetwork
+git push
 ```
-
-Antes do deploy, escolha um dos dois caminhos:
-- juntar na `main` (`git checkout main`, `git merge feat/cloud-multinetwork`, `git push`). O `render.yaml` publica a branch padrão do repositório;
-- ou, no Render, depois de criado, trocar a branch em *Settings → Build & Deploy → Branch*.
 
 ## 2. Banco no Neon
 
 1. Entre em **neon.com** → *Sign up* (dá para usar a conta do GitHub).
 2. *Create project*: nome `devpath`, **Postgres 17**, região **AWS US East (N. Virginia)**. Ela fica perto do servidor do Render (região `virginia`); como o servidor guarda tudo também na memória, a distância até o Brasil não atrasa a TV.
-3. Na tela do projeto: **Connect** → copie a *connection string* (`postgresql://…neon.tech/neondb?sslmode=require`).
+3. Na tela do projeto: **Connect** → copie **duas** *connection strings*:
+   - com **Connection pooling ligado** (o endereço tem `-pooler`): vai em `DATABASE_URL`, usada no dia a dia;
+   - com **Connection pooling desligado** (conexão direta): vai em `DATABASE_URL_UNPOOLED`, usada só para criar as tabelas.
+
+   Pelo terminal, `neon env pull` grava as duas no `.env.local` (fora do Git). O servidor lê esse arquivo sozinho.
 
 Não crie tabelas: o servidor cria sozinho no primeiro início (migration `001_cloud.sql`).
 
@@ -32,10 +32,11 @@ Não crie tabelas: o servidor cria sozinho no primeiro início (migration `001_c
 
 1. Entre em **render.com** → *Get started* com a conta do GitHub, e autorize o acesso ao repositório `DEV_PATH_V5`.
 2. *New* → **Blueprint** → escolha o repositório. O Render lê o `render.yaml` e mostra o serviço `devpath` (plano Free).
-3. Ele pede as duas variáveis marcadas como secretas:
+3. Ele pede as três variáveis marcadas como secretas:
    - `ADMIN_KEY`: a senha do painel `/operador` (10+ caracteres; `fatec` é recusada em produção);
-   - `DATABASE_URL`: a connection string do Neon.
-4. *Apply*. O Render roda `npm ci` e `npm start`.
+   - `DATABASE_URL`: a connection string do Neon **com pooler**;
+   - `DATABASE_URL_UNPOOLED`: a connection string do Neon **direta** (sem `-pooler`).
+4. *Apply*. O Render roda `npm ci && npm run build` (confere a sintaxe dos arquivos do servidor) e `npm start`.
 
 O resto já vem do `render.yaml`:
 
@@ -92,7 +93,9 @@ $env:DATABASE_URL = "postgresql://…neon.tech/neondb?sslmode=require"
 npm run importar
 ```
 
-Pode repetir: não duplica.
+Com o `.env.local` do `neon env pull`, nem precisa da primeira linha: o `npm run importar` já acha o banco e usa a conexão direta (`DATABASE_URL_UNPOOLED`). Pode repetir: não duplica.
+
+**Estande sem internet:** o `INICIAR.bat` liga `DEVPATH_OFFLINE=1`, então no notebook os dados vão sempre para `data/`, mesmo com o banco configurado no `.env.local`. Fora desse modo, se o banco não responder, o servidor avisa e usa os arquivos (em produção ele não sobe sem banco).
 
 ## 9. Domínio próprio (opcional)
 
