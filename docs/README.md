@@ -1,5 +1,7 @@
 # Documentação técnica do DEV PATH V5
 
+> **Vai apresentar o projeto?** Comece por [15-documentacao-para-professores.md](15-documentacao-para-professores.md). **Vai operar o estande?** Siga o [16-manual-de-uso.md](16-manual-de-uso.md).
+
 Esta pasta explica **cada arquivo do projeto**: o que faz, comando por comando, e **por que as coisas estão nessa ordem**.
 O `README.md` da raiz ensina a *usar* o projeto no estande; aqui o assunto é *como ele funciona por dentro*.
 
@@ -22,6 +24,8 @@ O `README.md` da raiz ensina a *usar* o projeto no estande; aqui o assunto é *c
 | 12 | [12-auditoria-cloud-multirede.md](12-auditoria-cloud-multirede.md) | o que prendia o celular à mesma rede, riscos e plano |
 | 13 | [13-arquitetura-cloud-multirede.md](13-arquitetura-cloud-multirede.md) | nuvem: evento/telão/sessão, rotas, SSE, PostgreSQL, segurança, deploy |
 | 14 | [14-deploy-render.md](14-deploy-render.md) | passo a passo para publicar grátis no Render + Neon |
+| 15 | [15-documentacao-para-professores.md](15-documentacao-para-professores.md) | **para a apresentação**: problema, solução, estratégias de marketing, métricas, tecnologia, LGPD e testes |
+| 16 | [16-manual-de-uso.md](16-manual-de-uso.md) | **manual do estande**, passo a passo com imagens: montagem, painel, visitante, pós-evento e problemas |
 
 ## Mapa do projeto
 

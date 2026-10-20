@@ -4,6 +4,8 @@ Ação de captação para estande: o visitante escaneia o QR Code na TV, faz o c
 
 A V5 mede o estande como uma ação de marketing: cada passo do visitante (abriu o QR, cadastrou, assistiu, salvou o crachá, abriu o vestibular) vira um número no painel do operador.
 
+> **Apresentação do projeto:** [docs/15-documentacao-para-professores.md](docs/15-documentacao-para-professores.md) · **Manual do estande com imagens:** [docs/16-manual-de-uso.md](docs/16-manual-de-uso.md) · **No ar:** https://devpath-uhhd.onrender.com
+
 ```
  TV (notebook)                       Celular do visitante
  ┌──────────────────────┐            ┌──────────────────┐
@@ -30,7 +32,7 @@ Sem nenhuma dessas variáveis, tudo funciona como antes no notebook do estande (
 
 ## Narração, música e efeitos
 
-A TV fala: uma **narradora (Thalita)** e um **narrador (Antonio)** se intercalam, com vozes neurais gravadas em MP3; a voz chama o visitante pelo nome ("Olá, Felipe."), conduz os seis semestres e cada cena avança quando a fala termina. Enquanto a voz fala, a música de fundo abaixa sozinha (ducking) e os itens citados acendem na tela no instante em que são ditos ("COMPETÊNCIA DESBLOQUEADA ✓" no fim de cada semestre). A legenda mostra o mesmo texto.
+A TV fala, 100% em português do Brasil: uma **narradora (Francisca)** e um **narrador (Antonio)** se intercalam, com vozes neurais gravadas em MP3 e entonação própria em cada frase; o servidor gera a saudação com o nome do visitante ("Olá, Felipe! Que bom ter você aqui!"), a narração conduz os seis semestres (com a evolução do inglês em todos eles) e cada cena avança quando a fala termina. Enquanto a voz fala, a música de fundo abaixa sozinha (ducking) e os itens citados acendem na tela no instante em que são ditos ("COMPETÊNCIA DESBLOQUEADA ✓" no fim de cada semestre). A legenda mostra o mesmo texto.
 
 | Tecla na TV | Painel `/operador` | Faz |
 |---|---|---|
@@ -40,8 +42,8 @@ A TV fala: uma **narradora (Thalita)** e um **narrador (Antonio)** se intercalam
 
 - **Som na TV:** o `INICIAR.bat` abre a TV já com o som liberado. Se a TV mostrar **"ATIVAR ÁUDIO E INICIAR EVENTO"**, clique uma vez nela (ou aperte uma tecla) antes de chamar o público.
 - **Volume, textos e música:** `public/js/narration.js` (`config.volume`, `config.music`, `scenes`).
-- **Mudou um texto?** Rode `python ferramentas/gerar_narracao.py` (precisa de internet e de `python -m pip install edge-tts`): ele regrava só os MP3 que mudaram.
-- **Outra música:** `python ferramentas/gerar_musica.py` gera as 3 opções animadas em `public/audio/music/`; escolha em `config.music`.
+- **Mudou um texto?** Rode `python ferramentas/gerar_narracao.py` (precisa de internet, do ffmpeg e de `python -m pip install edge-tts numpy`): ele regrava só os MP3 que mudaram. Para comparar as três vozes do Brasil: `--amostras`.
+- **Música:** `python ferramentas/gerar_musica.py` gera as 9 trilhas originais em `public/audio/music/` (eletrônicas, rock com solo de guitarra e de baixo, rock com solo de bateria e de contrabaixo). Hoje as 9 tocam em sequência, em loop; a lista fica em `config.music`.
 - Tudo funciona sem os MP3 (voz do navegador e trilha sintetizada) e sem som nenhum (legenda + tempo fixo).
 - Como funciona por dentro: [docs/10-sistema-narracao.md](docs/10-sistema-narracao.md). Roteiro completo: [docs/11-roteiro-narracao.md](docs/11-roteiro-narracao.md).
 
@@ -121,7 +123,7 @@ No fim, o botão **Salvar crachá para os stories** gera no próprio celular uma
 
 ## Editar textos
 
-Tudo que aparece na tela está em **`public/js/content.js`**: semestres, disciplinas, traduções para a linguagem do aluno, batimentos do "medidor de paixão", carreiras, setores, diferenciais da Fatec e os 4 perfis do crachá. As durações das cenas estão no topo de `public/js/tv.js` (`STEPS`, ~2 min 50 s no total).
+Tudo que aparece na tela está em **`public/js/content.js`**: semestres, disciplinas, traduções para a linguagem do aluno, batimentos do "medidor de paixão", carreiras, setores, diferenciais da Fatec e os 4 perfis do crachá. Com narração, cada cena dura o tempo da fala (a apresentação inteira leva cerca de 4 minutos); as durações em `STEPS`, no topo de `public/js/tv.js`, valem quando a narração está desligada.
 
 Cada semestre mostra **todas** as disciplinas do horário oficial (43 no total, conferidas com o horário de SI do 2º semestre de 2026), no campo `disciplinas`: `[nome oficial, tradução, destaque]`. As três marcadas com `true` ganham a cor do semestre.
 
