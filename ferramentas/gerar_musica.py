@@ -8,8 +8,13 @@ Músicas originais, feitas por código (sem samples, sem licença de terceiros),
   opcao-4-rock-guitarra.mp3 140 BPM, Mi menor   — rock: guitarra distorcida em galope, solo de guitarra e de baixo
   opcao-5-funk-rock.mp3     116 BPM, Lá (blues) — funk rock: guitarra "chique-chique", baixo com slap, solos
   opcao-6-pop-punk.mp3      160 BPM, Ré maior   — pop punk: power chords em colcheias, solo rápido e solo de baixo
-Nas três de rock: compassos 1–4 guitarra e bateria, 5–16 banda inteira, 17–24 solo de guitarra,
+  opcao-7-rock-bateria.mp3  132 BPM, Lá menor   — hard rock: solo de bateria (bumbo duplo, tons) e solo de contrabaixo
+  opcao-8-funk-groove.mp3   108 BPM, Mi (blues) — funk: solo de bateria sincopado e contrabaixo com slap
+  opcao-9-rock-acelerado.mp3 172 BPM, Sol maior — rock acelerado: solo de bateria em alta e solo de contrabaixo
+Nas opções 4–6: compassos 1–4 guitarra e bateria, 5–16 banda inteira, 17–24 solo de guitarra,
 25–28 solo de baixo, 29–32 todo mundo junto com a frase final da guitarra.
+Nas opções 7–9: compassos 1–4 guitarra e bateria, 5–12 banda inteira, 13–20 solo de bateria,
+21–28 solo de contrabaixo, 29–32 todo mundo junto com a frase final da guitarra.
 Cada uma tem 32 compassos e fecha em loop perfeito (o final emenda no começo).
 A TV toca a que estiver em public/js/narration.js → config.music.
 
@@ -81,6 +86,22 @@ ESTILOS = {
         arquivo='opcao-6-pop-punk.mp3', bpm=160, semente=67, rock=True,
         acordes=['D3', 'A2', 'B2', 'G2'], ritmo='punk', bateria='punk', baixo_estilo='oitos',
         escala=('D', 'maior_pent'), distorcao=9,
+    ),
+    # ---- banda de rock com solo de bateria e solo de contrabaixo (a guitarra só acompanha e fecha) ----
+    7: dict(
+        arquivo='opcao-7-rock-bateria.mp3', bpm=132, semente=71, rock=True, solos='bateria',
+        acordes=['A2', 'F2', 'G2', 'E2'], ritmo='galope', bateria='rock', baixo_estilo='oitos',
+        escala=('A', 'menor_pent'), distorcao=8,
+    ),
+    8: dict(
+        arquivo='opcao-8-funk-groove.mp3', bpm=108, semente=83, rock=True, solos='bateria',
+        acordes=['E2', 'E2', 'A2', 'B2'], ritmo='funk', bateria='funk', baixo_estilo='funk',
+        escala=('E', 'blues'), distorcao=3,
+    ),
+    9: dict(
+        arquivo='opcao-9-rock-acelerado.mp3', bpm=172, semente=97, rock=True, solos='bateria',
+        acordes=['G2', 'D3', 'E2', 'C3'], ritmo='punk', bateria='punk', baixo_estilo='oitos',
+        escala=('G', 'maior_pent'), distorcao=9,
     ),
 }
 
@@ -253,9 +274,77 @@ class Faixa:
         out.append((pos, notas[raiz], total - pos, 2.0))       # fecha na tônica com bend de um tom
         return out
 
+    def tom(self, f):
+        """Tom da bateria: pele que afina para baixo logo depois da batida."""
+        n = int(0.5 * SR)
+        tt = t_(n)
+        curva = f * (1 + 0.6 * np.exp(-tt * 25))
+        corpo = np.sin(2 * np.pi * np.cumsum(curva) / SR) * np.exp(-tt * 8)
+        pele = filtro(self.rng.standard_normal(n), 2000, 'hp') * np.exp(-tt * 60) * 0.25
+        return np.tanh((corpo + pele) * 1.4)
+
+    def solo_bateria(self, bat, fx, b0, k):
+        """Um compasso do solo de bateria (k = 0…7): cada compasso é uma ideia diferente, o último é a virada final."""
+        P = self.passo
+        toms = [(240, -0.5), (180, -0.2), (130, 0.2), (95, 0.5)]           # agudo, médio, grave, surdo
+
+        def bate(passo, som, pan=0.0, g=0.5):
+            self.por(bat, b0 + passo * P, som, pan=pan, ganho=g)
+
+        def tom(passo, i, g=0.55):
+            bate(passo, self.tom(toms[i][0]), toms[i][1], g)
+
+        plano = ['groove_toms', 'duplo_bumbo', 'tercinas', 'caixa_rolo', 'sincopado', 'toms_descendo', 'duplo_bumbo', 'virada_final']
+        estilo = plano[k]
+        if estilo == 'groove_toms':
+            for s in (0, 6, 8):
+                bate(s, self.bumbo(), g=0.7)
+            for s in (4, 12):
+                bate(s, self.caixa(), g=0.6)
+            for s, i in ((2, 3), (10, 3), (14, 2), (7, 0), (15, 1)):
+                tom(s, i)
+        elif estilo == 'duplo_bumbo':
+            self.por(fx, b0, self.prato(), pan=-0.25, ganho=0.22)
+            for s in range(16):
+                bate(s, self.bumbo(), g=0.42)
+            for s in (4, 12):
+                bate(s, self.caixa(), g=0.62)
+        elif estilo == 'tercinas':                     # grupos de 3 sobre o compasso de 4: caixa, tom, tom
+            for s in range(16):
+                if s % 3 == 0:
+                    bate(s, self.bumbo(), g=0.6)
+                    bate(s, self.caixa(), g=0.5)
+                else:
+                    tom(s, 1 if s % 3 == 1 else 2, 0.45)
+        elif estilo == 'caixa_rolo':                   # rufada que cresce
+            for s in range(16):
+                bate(s, self.caixa(), pan=0.05, g=0.18 + 0.42 * s / 15)
+            for s in (0, 4, 8, 12):
+                bate(s, self.bumbo(), g=0.65)
+        elif estilo == 'sincopado':
+            for s in (0, 3, 6, 10, 13):
+                bate(s, self.bumbo(), g=0.68)
+            for s in (4, 12):
+                bate(s, self.caixa(), g=0.6)
+            for s, i in ((7, 0), (9, 1), (11, 2), (14, 3), (15, 3)):
+                tom(s, i)
+        elif estilo == 'toms_descendo':
+            for s in range(16):
+                tom(s, s // 4, 0.42 + 0.04 * (s % 4))
+            for s in (0, 4, 8, 12):
+                bate(s, self.bumbo(), g=0.6)
+        else:  # virada final: rufada na caixa e descida pelos tons até o prato do compasso seguinte
+            for s in range(8):
+                bate(s, self.caixa(), g=0.25 + 0.05 * s)
+            for s in range(8, 16):
+                tom(s, (s - 8) // 2, 0.6)
+            for s in (0, 4, 8, 12):
+                bate(s, self.bumbo(), g=0.65)
+
     def render_rock(self):
         e, B, P = self.e, self.bar, self.passo
         bat, rit, grv, solo, fx = (self.stereo() for _ in range(5))
+        bateria_solo = e.get('solos') == 'bateria'
         tonica, tipo = e['escala']
         notas_guitarra = escala(tonica, tipo, 4)
         notas_baixo = escala(tonica, tipo, 2)
@@ -265,10 +354,20 @@ class Faixa:
             raiz = nota(e['acordes'][bar % 4])
             power = [raiz, raiz * 1.5, raiz * 2]
             rb = raiz / 2 if raiz / 2 > 38 else raiz
-            intro = bar < 4                    # 0–3 guitarra e bateria · 4–15 banda · 16–23 solo de guitarra
-            solo_baixo = 24 <= bar < 28        # 24–27 solo de baixo · 28–31 todo mundo junto
-            if bar in (0, 4, 8, 16, 24, 28):
+            intro = bar < 4                    # 0–3 guitarra e bateria
+            if bateria_solo:                   # 4–11 banda · 12–19 solo de bateria · 20–27 solo de baixo · 28–31 final
+                solo_bat = 12 <= bar < 20
+                solo_baixo = 20 <= bar < 28
+                pratos = (0, 4, 12, 20, 28)
+            else:                              # 4–15 banda · 16–23 solo de guitarra · 24–27 solo de baixo · 28–31 final
+                solo_bat = False
+                solo_baixo = 24 <= bar < 28
+                pratos = (0, 4, 8, 16, 24, 28)
+            if bar in pratos:
                 self.por(fx, b0, self.prato(), pan=0.25, ganho=0.3)
+            if solo_bat:                       # só a bateria toca
+                self.solo_bateria(bat, fx, b0, bar - 12)
+                continue
 
             # bateria
             if e['bateria'] == 'punk':
@@ -290,7 +389,7 @@ class Faixa:
                     self.por(bat, b0 + k * P, self.caixa(), pan=0.1 * (k - 13), ganho=0.3 + 0.08 * (k - 12))
 
             # guitarra base
-            g = 0.55 if bar >= 16 and bar < 28 else 0.8
+            g = 0.55 if (20 if bateria_solo else 16) <= bar < 28 else 0.8
             if solo_baixo:
                 self.por(rit, b0, self.guitarra(power, self.beat * 1.5, dist=D), pan=-0.35, ganho=g)
             elif e['ritmo'] == 'galope':
@@ -312,7 +411,7 @@ class Faixa:
 
             # baixo
             if solo_baixo:
-                if bar == 24:
+                if bar in ((20, 24) if bateria_solo else (24,)):   # frases de 4 compassos
                     for passo, f, d, _ in self.frase(notas_baixo, 4, rapida=True):
                         self.por(grv, b0 + passo * P, self.baixo_eletrico(f, d * P * 0.95, slap=d <= 1), ganho=0.85)
             elif not intro:
@@ -325,7 +424,7 @@ class Faixa:
                         self.por(grv, b0 + k * P, self.baixo_eletrico(f, P * 1.8), ganho=0.7)
 
             # solo de guitarra (16–23) e frase final mais rápida (28–31)
-            if bar in (16, 20, 28):
+            if bar in ((28,) if bateria_solo else (16, 20, 28)):
                 for passo, f, d, curva in self.frase(notas_guitarra, 4, rapida=bar == 28):
                     s = self.guitarra([f], d * P * 0.95, bend=curva, vibrato=d >= 3, dist=D * 1.6)
                     self.por(solo, b0 + passo * P, s, pan=0.1, ganho=0.5)

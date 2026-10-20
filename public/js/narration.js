@@ -46,9 +46,10 @@ window.DEVPATH_NARRACAO = {
     duckMs: 700,              // tempo para a música abaixar quando a voz começa
     restoreMs: 900,           // tempo para a música voltar quando a voz termina
 
-    // trilha (ferramentas/gerar_musica.py compõe as seis opções):
+    // trilha (ferramentas/gerar_musica.py compõe as nove opções):
     //   opcao-1-synthwave.mp3 · opcao-2-future-house.mp3 · opcao-3-electro-pop.mp3
     //   com solo de guitarra e de baixo: opcao-4-rock-guitarra.mp3 · opcao-5-funk-rock.mp3 · opcao-6-pop-punk.mp3
+    //   com solo de bateria e de contrabaixo: opcao-7-rock-bateria.mp3 · opcao-8-funk-groove.mp3 · opcao-9-rock-acelerado.mp3
     music: 'audio/music/opcao-2-future-house.mp3',
     synthMusic: true,         // sem o MP3 acima, o navegador sintetiza uma trilha discreta (false = silêncio)
     sfx: {
