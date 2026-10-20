@@ -205,7 +205,7 @@
       <h2>${esc(lead.name)}</h2>
       <p class="m-role">${esc(p.role)}</p>
       <ul>${p.stack.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
-      <footer><b>Sistemas para Internet</b><span>Fatec Jales</span></footer>`;
+      <footer><img class="fatec-logo" src="img/fatec-jales.png" alt="Fatec Jales Prof. José Camargo" style="--fatec-h: 44px"><b>Sistemas para Internet</b></footer>`;
     // o servidor registra o clique e redireciona com a UTM do evento
     $('#vestLink').href = '/ir/vestibular?lead=' + encodeURIComponent(lead.id);
     $('#shot').hidden = true;
@@ -317,9 +317,18 @@
     const devW = g.measureText('dev').width;
     g.font = `300 58px ${DISPLAY}`; g.fillStyle = COL.blue;
     g.fillText('path', x + 22 + devW, 168);
-    g.font = `500 30px ${MONO}`; g.fillStyle = COL.dim; g.textAlign = 'right';
-    g.fillText('Fatec Jales', W - 80, 166);
-    g.textAlign = 'left';
+    // logo da Fatec Jales numa plaquinha branca, à direita (sem a imagem, o nome em texto)
+    const logo = await new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = 'img/fatec-jales.png'; });
+    if (logo) {
+      const lh = 110, lw = lh * logo.width / logo.height, lp = 14;
+      rr(W - 80 - lw - lp * 2, 70, lw + lp * 2, lh + lp * 2, 18);
+      g.fillStyle = '#ffffff'; g.fill();
+      g.drawImage(logo, W - 80 - lw - lp, 70 + lp, lw, lh);
+    } else {
+      g.font = `500 30px ${MONO}`; g.fillStyle = COL.dim; g.textAlign = 'right';
+      g.fillText('Fatec Jales', W - 80, 166);
+      g.textAlign = 'left';
+    }
     g.font = `500 34px ${MONO}`; g.fillStyle = COL.green;
     g.fillText('// crachá do futuro tecnólogo', 80, 290);
 

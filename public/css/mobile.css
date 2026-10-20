@@ -15,7 +15,7 @@ body {
 .logo-mark i { font-style: normal; color: var(--orange); text-shadow: var(--orange-glow); }
 .logo-word { font: 700 19px var(--display); letter-spacing: -.5px; }
 .logo-word b { font-weight: 300; color: var(--blue); }
-.m-head-sub { margin-left: auto; --fatec-h: 38px; }
+.m-head-sub { margin-left: auto; --fatec-h: 46px; }
 
 #app { max-width: 480px; margin: 0 auto; padding: 28px 20px 48px; }
 .view { animation: in .6s var(--ease-out) both; }
@@ -123,7 +123,7 @@ input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px #2
 .m-role { margin-top: 8px; font: 600 17px var(--display); color: var(--green); text-shadow: var(--green-glow); }
 .m-badge ul { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .m-badge li { font-size: 12px; padding: 6px 10px; border-radius: 20px; border: 1px solid #22b8ff66; color: var(--blue); }
-.m-badge footer { display: grid; gap: 2px; margin-top: 22px; padding-top: 16px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--dim); }
+.m-badge footer { display: grid; justify-items: start; gap: 8px; margin-top: 22px; padding-top: 16px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--dim); }
 .m-badge footer b { color: var(--white); }
 #vDone .btn-main { margin-top: 26px; }
 #vDone .btn-ghost { margin-top: 14px; }

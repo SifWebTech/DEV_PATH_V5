@@ -43,10 +43,8 @@
     { type: 'finale', dur: 30, label: 'Seu crachá de dev' },
   ];
 
-  // Circuito do fundo: começa na opacidade do tv.css e fica mais transparente a cada cena,
-  // chegando a 15% na última. A velocidade dos pulsos não muda por causa disso.
-  const CIRCUIT_FADE = { first: 0.6, last: 0.15 };
-  const circuitOpacity = (i) => CIRCUIT_FADE.first - (CIRCUIT_FADE.first - CIRCUIT_FADE.last) * (i / (STEPS.length - 1));
+  // Circuito do fundo: a transparência de cada tela fica no tv.css (body[data-cena="1"] … "14");
+  // aqui só se informa em que tela a apresentação está. A velocidade dos pulsos não muda por causa disso.
 
   const S = {
     online: false,
@@ -142,7 +140,7 @@
   function renderIdle() {
     stage.dataset.scene = 'idle';
     circuit.setEnergy(0.12);
-    circuit.setOpacity(CIRCUIT_FADE.first);
+    delete document.body.dataset.cena; // tela do código QR: circuito com a opacidade normal do tv.css
     const next = S.queueNext.length ? `<p class="idle-next">Em seguida na tela: <b>${S.queueNext.map(esc).join(', ')}</b></p>` : '';
     swapScene(`
       <section class="scene scene-idle">
@@ -497,6 +495,7 @@
     shop: '<path d="M6 10h8l6 30h30l6-22H18"/><circle cx="24" cy="50" r="4"/><circle cx="46" cy="50" r="4"/>',
     dash: '<path d="M8 54h48M14 54V34M26 54V20M38 54V28M50 54V12"/>',
     api: '<path d="M22 12c-8 0-8 6-8 12s-4 8-6 8c2 0 6 2 6 8s0 12 8 12M42 12c8 0 8 6 8 12s4 8 6 8c-2 0-6 2-6 8s0 12-8 12"/><circle cx="32" cy="32" r="4"/>',
+    ai: '<rect x="16" y="16" width="32" height="32" rx="6"/><path d="M24 8v8M32 8v8M40 8v8M24 48v8M32 48v8M40 48v8M8 24h8M8 32h8M8 40h8M48 24h8M48 32h8M48 40h8"/><path d="M32 22l2.8 6.2L41 31l-6.2 2.8L32 40l-2.8-6.2L23 31l6.2-2.8z"/>',
     proto: '<rect x="6" y="8" width="24" height="18" rx="2"/><rect x="34" y="8" width="24" height="18" rx="2"/><rect x="20" y="38" width="24" height="18" rx="2"/><path d="M18 26v6h14v6M46 26v6H32"/>',
     system: '<rect x="8" y="8" width="48" height="12" rx="3"/><rect x="8" y="26" width="48" height="12" rx="3"/><rect x="8" y="44" width="48" height="12" rx="3"/><path d="M16 14h4M16 32h4M16 50h4"/>',
     rocket: '<path d="M32 4c10 8 14 20 10 36H22C18 24 22 12 32 4z"/><circle cx="32" cy="22" r="5"/><path d="M22 40l-8 10 10-2M42 40l8 10-10-2M28 48l4 10 4-10"/>',
@@ -608,7 +607,7 @@
             <p class="badge-role">${esc(profile().role)}</p>
             <ul class="badge-stack">${profile().stack.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
             <footer>
-              <div><b>Sistemas para Internet</b><span>Fatec Jales</span></div>
+              <div><img class="fatec-logo" src="img/fatec-jales.png" alt="Fatec Jales Prof. José Camargo" style="--fatec-h: 60px"><b>Sistemas para Internet</b></div>
               <div class="barcode">${bars}</div>
             </footer>
           </article>
@@ -638,7 +637,7 @@
     const step = STEPS[i];
     S.i = i;
     stage.dataset.scene = step.type;
-    circuit.setOpacity(circuitOpacity(i));
+    document.body.dataset.cena = i + 1; // o tv.css escolhe a transparência do circuito desta tela
     if (step.type === 'journey') {
       if (prev?.type === 'journey' && $('#journey')) updateJourney(step.sem);
       else renderJourney(step.sem);

@@ -170,7 +170,7 @@ window.DEVPATH_NARRACAO = {
         { id: 'transicao-2-3', voice: 'male', audio: 'audio/narration/05a-transicao-2-3.mp3',
           text: 'A interface está pronta. Agora o sistema precisa guardar, processar e responder!' },
         { id: 'semestre-3', audio: 'audio/narration/05-semestre-3.mp3',
-          text: 'No terceiro semestre, o sistema ganha inteligência! Entram banco de dados, programação para a internet, servidores e engenharia de programas. E o inglês vira ferramenta de trabalho, com o vocabulário técnico do dia a dia! A página passa a receber, processar, armazenar e devolver informações!',
+          text: 'No terceiro semestre, o sistema ganha inteligência! Entram banco de dados, programação para a internet, servidores e engenharia de programas. E o inglês vira ferramenta de trabalho, com o vocabulário técnico do dia a dia! E a inteligência artificial entra como parceira, para programar e analisar dados! A página passa a receber, processar, armazenar e devolver informações!',
           markers: [
             { word: 'banco de dados', action: 'highlight', target: 'banco de dados' },
             { word: 'programação para a internet', action: 'highlight', target: 'Programação de Sítios' },
@@ -204,7 +204,7 @@ window.DEVPATH_NARRACAO = {
         { id: 'transicao-4-5', voice: 'male', audio: 'audio/narration/07a-transicao-4-5.mp3',
           text: 'A tecnologia já funciona. Agora ela vai resolver problemas reais, de pessoas reais!' },
         { id: 'semestre-5', audio: 'audio/narration/07-semestre-5.mp3',
-          text: 'No quinto semestre, a tecnologia vira produto! Aplicativos para celular, servidores, protótipos, usabilidade e comunicação com o mercado se encontram. E o inglês prepara você para a carreira! Você não pensa só em código: você pensa em pessoas, experiência e oportunidades!',
+          text: 'No quinto semestre, a tecnologia vira produto! Aplicativos para celular, servidores, protótipos, usabilidade e comunicação com o mercado se encontram. E o inglês prepara você para a carreira! Com a inteligência artificial, os produtos ficam ainda mais inteligentes! Você não pensa só em código: você pensa em pessoas, experiência e oportunidades!',
           markers: [
             { word: 'celular', action: 'highlight', target: 'Dispositivos Móveis' },
             { word: 'servidores', action: 'highlight', target: 'Servidores II' },
@@ -221,7 +221,7 @@ window.DEVPATH_NARRACAO = {
         { id: 'transicao-5-6', voice: 'female', audio: 'audio/narration/08a-transicao-5-6.mp3',
           text: 'Você já sabe construir cada parte. Agora é hora de integrar tudo!' },
         { id: 'semestre-6', audio: 'audio/narration/08-semestre-6.mp3',
-          text: 'E no sexto semestre, tudo se conecta! Serviços, dispositivos móveis, projeto, empresa e tecnologia trabalhando juntos. E o inglês fecha a jornada: você está pronto para o mercado do mundo inteiro! É hora de transformar tudo o que aprendeu em uma solução completa!',
+          text: 'E no sexto semestre, tudo se conecta! Serviços, dispositivos móveis, projeto, empresa e inteligência artificial trabalhando juntos. E o inglês fecha a jornada: você está pronto para o mercado do mundo inteiro! É hora de transformar tudo o que aprendeu em uma solução completa!',
           markers: [
             { word: 'serviços', action: 'highlight', target: 'Orientada a Serviços' },
             { word: 'dispositivos móveis', action: 'highlight', target: 'Dispositivos Móveis II' },
@@ -238,12 +238,13 @@ window.DEVPATH_NARRACAO = {
       voice: 'female',
       segments: [
         { id: 'criar', audio: 'audio/narration/09-criar.mp3',
-          text: 'E o resultado dessa jornada? Páginas na internet, aplicativos, sistemas, serviços digitais, painéis de dados e produtos capazes de resolver problemas reais. Tudo criado por você!',
+          text: 'E o resultado dessa jornada? Páginas na internet, aplicativos, sistemas, serviços digitais, soluções com inteligência artificial, painéis de dados e produtos capazes de resolver problemas reais. Tudo criado por você!',
           markers: [
             { word: 'Páginas', action: 'highlight', target: 'Sites' },
             { word: 'aplicativos', action: 'highlight', target: 'Aplicativos' },
             { word: 'sistemas', action: 'highlight', target: 'Sistemas para empresas' },
             { word: 'serviços digitais', action: 'highlight', target: 'APIs' },
+            { word: 'inteligência artificial', action: 'highlight', target: 'Inteligência artificial' },
             { word: 'painéis de dados', action: 'highlight', target: 'Dashboards' },
             { word: 'produtos', action: 'highlight', target: 'próprio produto' },
           ] },
@@ -255,7 +256,7 @@ window.DEVPATH_NARRACAO = {
       voice: 'male',
       segments: [
         { id: 'carreiras', audio: 'audio/narration/10-carreiras.mp3',
-          text: 'E esse conhecimento abre muitos caminhos: telas e páginas para a internet, aplicativos, servidores, dados, experiência do usuário, computação em nuvem, análise de sistemas, produtos digitais e empreendedorismo! Qual vai ser o seu?',
+          text: 'E esse conhecimento abre muitos caminhos: telas e páginas para a internet, aplicativos, servidores, dados, experiência do usuário, computação em nuvem, análise de sistemas, inteligência artificial, produtos digitais e empreendedorismo! Qual vai ser o seu?',
           markers: [
             { word: 'telas e páginas', action: 'highlight', target: 'Front-end' },
             { word: 'aplicativos', action: 'highlight', target: 'Mobile' },
@@ -264,6 +265,7 @@ window.DEVPATH_NARRACAO = {
             { word: 'experiência do usuário', action: 'highlight', target: 'UX/UI' },
             { word: 'nuvem', action: 'highlight', target: 'cloud' },
             { word: 'análise de sistemas', action: 'highlight', target: 'Analista de sistemas' },
+            { word: 'inteligência artificial', action: 'highlight', target: 'Inteligência artificial' },
             { word: 'produtos digitais', action: 'highlight', target: 'Projetos digitais' },
             { word: 'empreendedorismo', action: 'highlight', target: 'Empreendedor' },
           ] },

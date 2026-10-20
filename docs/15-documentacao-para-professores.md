@@ -70,7 +70,7 @@ flowchart LR
 | 5 | Durante a apresentação, o celular vira um **controle de reações** (🔥💚🤯🚀) que aparecem na TV. | <img src="img/07-celular-ao-vivo.png" width="150" alt=""> |
 | 6 | Cada semestre mostra **todas as disciplinas oficiais**, com uma tradução em linguagem simples. A narração acende cada disciplina no momento em que fala dela, e o semestre termina com "COMPETÊNCIA DESBLOQUEADA ✓". | <img src="img/08-tv-semestre-1.png" width="320" alt=""> |
 | 7 | No final, o crachá aparece na TV com o convite para o vestibular, e a narração avisa que o crachá e os caminhos para conhecer o curso e se inscrever estão no celular. | <img src="img/09-tv-cracha-final.png" width="320" alt=""> |
-| 8 | No celular: o crachá pronto para os stories e os botões "Conhecer o curso" e "Ver processo seletivo". | <img src="img/10-celular-cracha.png" width="150" alt=""> |
+| 8 | No celular: o crachá pronto para os stories e os botões "Conhecer o curso" e "Ver processo seletivo". | <img src="img/10-celular-cracha.png" width="150" alt=""> <img src="img/10b-cracha-stories.png" width="150" alt=""> |
 
 A apresentação tem **14 cenas**: boas-vindas, o interesse escolhido, o mapa dos 6 semestres, os 6 semestres, o que dá para criar, as carreiras, a tecnologia em todos os setores, a formação Fatec e o fechamento com o crachá.
 
@@ -108,7 +108,11 @@ Cada contato guarda o **interesse declarado**. O painel exporta a planilha filtr
 
 Os links do vestibular levam `utm_source=devpath`, `utm_medium=celular` ou `tv` e `utm_campaign=<nome do evento>`. Quem administra o site do vestibular consegue ver quantas visitas vieram do estande.
 
-### 6.7 O inglês como diferencial
+### 6.7 Inteligência artificial
+
+Um curso de tecnologia hoje não pode deixar a IA de fora. A narração mostra a inteligência artificial como **parceira de trabalho**: para programar e analisar dados (3º semestre), para criar produtos mais inteligentes (5º), integrada ao projeto final (6º), entre as coisas que o aluno vai poder criar e entre as carreiras possíveis. Na tela, "Inteligência artificial" aparece em **O que você vai poder criar** e nas **carreiras**, e acende quando é falada. O texto não afirma que existe uma disciplina específica de IA, porque o currículo oficial não tem uma.
+
+### 6.8 O inglês como diferencial
 
 A narração mostra a evolução do inglês **em todos os seis semestres**, do primeiro contato com "a língua da tecnologia" até "o mercado do mundo inteiro", e a disciplina acende na tela. É um argumento forte para o público: o curso prepara para documentação, reuniões e vagas internacionais.
 
@@ -161,7 +165,7 @@ Também aparecem: **o que mais chama a atenção** (interesses), **cadastros por
 | Narração | vozes neurais do Microsoft Edge (Francisca e Antonio) | voz natural em português do Brasil, de graça |
 | Nome falado | o servidor gera o áudio "Olá, {nome}!" na hora | o navegador da TV bloqueia a voz dele quando abre sozinho |
 | Música | 9 trilhas originais geradas por código (Python + NumPy) | sem direitos autorais de terceiros |
-| Fundo animado | Canvas 2D | o circuito fica mais transparente a cada cena (de 60% a 15%) |
+| Fundo animado | Canvas 2D + CSS | o circuito fica mais transparente a cada cena e some nas últimas telas (de 60% a 10%; tabela em `tv.css`) |
 | Versões do código | Git e GitHub | histórico de tudo o que mudou |
 
 ### 8.1 Áudio da apresentação

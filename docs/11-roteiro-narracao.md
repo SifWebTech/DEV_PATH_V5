@@ -51,7 +51,7 @@
 | Quem fala | Texto | Arquivo | Duração |
 |---|---|---|---|
 | narrador (Antonio) | A interface está pronta. Agora o sistema precisa guardar, processar e responder! | `05a-transicao-2-3.mp3` | 4.7 s |
-| narradora (Francisca) | No terceiro semestre, o sistema ganha inteligência! Entram banco de dados, programação para a internet, servidores e engenharia de programas. E o inglês vira ferramenta de trabalho, com o vocabulário técnico do dia a dia! A página passa a receber, processar, armazenar e devolver informações! | `05-semestre-3.mp3` | 16.0 s |
+| narradora (Francisca) | No terceiro semestre, o sistema ganha inteligência! Entram banco de dados, programação para a internet, servidores e engenharia de programas. E o inglês vira ferramenta de trabalho, com o vocabulário técnico do dia a dia! E a inteligência artificial entra como parceira, para programar e analisar dados! A página passa a receber, processar, armazenar e devolver informações! | `05-semestre-3.mp3` | 20.2 s |
 
 ## 7. Quarto semestre
 
@@ -65,26 +65,26 @@
 | Quem fala | Texto | Arquivo | Duração |
 |---|---|---|---|
 | narrador (Antonio) | A tecnologia já funciona. Agora ela vai resolver problemas reais, de pessoas reais! | `07a-transicao-4-5.mp3` | 5.3 s |
-| narradora (Francisca) | No quinto semestre, a tecnologia vira produto! Aplicativos para celular, servidores, protótipos, usabilidade e comunicação com o mercado se encontram. E o inglês prepara você para a carreira! Você não pensa só em código: você pensa em pessoas, experiência e oportunidades! | `07-semestre-5.mp3` | 15.2 s |
+| narradora (Francisca) | No quinto semestre, a tecnologia vira produto! Aplicativos para celular, servidores, protótipos, usabilidade e comunicação com o mercado se encontram. E o inglês prepara você para a carreira! Com a inteligência artificial, os produtos ficam ainda mais inteligentes! Você não pensa só em código: você pensa em pessoas, experiência e oportunidades! | `07-semestre-5.mp3` | 19.0 s |
 
 ## 9. Sexto semestre
 
 | Quem fala | Texto | Arquivo | Duração |
 |---|---|---|---|
 | narradora (Francisca) | Você já sabe construir cada parte. Agora é hora de integrar tudo! | `08a-transicao-5-6.mp3` | 3.9 s |
-| narrador (Antonio) | E no sexto semestre, tudo se conecta! Serviços, dispositivos móveis, projeto, empresa e tecnologia trabalhando juntos. E o inglês fecha a jornada: você está pronto para o mercado do mundo inteiro! É hora de transformar tudo o que aprendeu em uma solução completa! | `08-semestre-6.mp3` | 15.6 s |
+| narrador (Antonio) | E no sexto semestre, tudo se conecta! Serviços, dispositivos móveis, projeto, empresa e inteligência artificial trabalhando juntos. E o inglês fecha a jornada: você está pronto para o mercado do mundo inteiro! É hora de transformar tudo o que aprendeu em uma solução completa! | `08-semestre-6.mp3` | 16.0 s |
 
 ## 10. O que você vai poder criar
 
 | Quem fala | Texto | Arquivo | Duração |
 |---|---|---|---|
-| narradora (Francisca) | E o resultado dessa jornada? Páginas na internet, aplicativos, sistemas, serviços digitais, painéis de dados e produtos capazes de resolver problemas reais. Tudo criado por você! | `09-criar.mp3` | 10.6 s |
+| narradora (Francisca) | E o resultado dessa jornada? Páginas na internet, aplicativos, sistemas, serviços digitais, soluções com inteligência artificial, painéis de dados e produtos capazes de resolver problemas reais. Tudo criado por você! | `09-criar.mp3` | 12.7 s |
 
 ## 11. Carreiras
 
 | Quem fala | Texto | Arquivo | Duração |
 |---|---|---|---|
-| narrador (Antonio) | E esse conhecimento abre muitos caminhos: telas e páginas para a internet, aplicativos, servidores, dados, experiência do usuário, computação em nuvem, análise de sistemas, produtos digitais e empreendedorismo! Qual vai ser o seu? | `10-carreiras.mp3` | 13.7 s |
+| narrador (Antonio) | E esse conhecimento abre muitos caminhos: telas e páginas para a internet, aplicativos, servidores, dados, experiência do usuário, computação em nuvem, análise de sistemas, inteligência artificial, produtos digitais e empreendedorismo! Qual vai ser o seu? | `10-carreiras.mp3` | 15.1 s |
 
 ## 12. Tecnologia em todo setor
 
@@ -108,4 +108,4 @@
 
 ---
 
-Fala total de uma apresentação (perfil mobile, sem a espera): **209 s** de narração, mais as pausas entre as cenas.
+Fala total de uma apresentação (perfil mobile, sem a espera): **221 s** de narração, mais as pausas entre as cenas.

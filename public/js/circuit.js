@@ -5,7 +5,7 @@
  *
  *   circuit.setEnergy(0..1)  → mais pulsos, mais rápidos (sobe a cada semestre)
  *   circuit.burst()          → onda de pulsos (usado no lançamento)
- *   circuit.setOpacity(0..1) → transparência do circuito inteiro (a TV vai baixando a cada cena)
+ *   A transparência do circuito fica no tv.css (#circuit e body[data-cena]).
  */
 (function () {
   const canvas = document.getElementById('circuit');
@@ -129,7 +129,6 @@
   window.circuit = {
     setEnergy(v) { energy = Math.max(0, Math.min(1, v)); },
     burst(n = 40) { for (let i = 0; i < n; i++) spawn(); },
-    setOpacity(v) { canvas.style.opacity = String(Math.max(0, Math.min(1, v))); },
   };
 
   addEventListener('resize', resize);

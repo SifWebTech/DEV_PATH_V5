@@ -176,13 +176,14 @@ window.DEVPATH = {
     ['dash', 'Dashboards'],
     ['api', 'APIs e integrações'],
     ['proto', 'Protótipos'],
+    ['ai', 'Inteligência artificial'],
     ['system', 'Sistemas para empresas'],
     ['rocket', 'Seu próprio produto'],
   ],
 
   // Possibilidades de atuação — não são promessas de cargo.
   careers: [
-    'Front-end', 'Back-end', 'Full Stack', 'Mobile', 'UX/UI', 'Banco de dados',
+    'Front-end', 'Back-end', 'Full Stack', 'Mobile', 'UX/UI', 'Banco de dados', 'Inteligência artificial',
     'Analista de sistemas', 'Qualidade e testes', 'Servidores e cloud', 'Projetos digitais',
     'Consultoria', 'Empreendedor de tecnologia',
   ],

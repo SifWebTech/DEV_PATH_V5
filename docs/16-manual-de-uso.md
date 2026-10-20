@@ -120,6 +120,10 @@ E o celular mostra o crachá com os botões **Salvar crachá para os stories**, 
 
 <img src="img/10-celular-cracha.png" width="260" alt="Crachá no celular">
 
+Ao tocar em **Salvar crachá para os stories**, o celular gera esta imagem (1080×1920), com o logo da Fatec Jales:
+
+<img src="img/10b-cracha-stories.png" width="240" alt="Imagem do crachá para os stories">
+
 **Diga:** "Salva o crachá e posta! E aí no celular já tem o link para se inscrever no vestibular."
 
 Depois disso, a TV volta sozinha para o código e chama o próximo da fila.

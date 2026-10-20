@@ -12,7 +12,24 @@ body:hover { cursor: default; }
 
 /* opacity: transparência do circuito inteiro (1 = original, 0 = invisível) */
 #circuit { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; opacity: .6; transition: opacity 1.5s ease; }
-/* durante a apresentação, tv.js baixa a opacidade a cada cena até CIRCUIT_FADE.last (15%) na última */
+/* Durante a apresentação, o circuito fica mais transparente a cada tela e, nas últimas, vai sumindo até
+ * 10% no crachá. O tv.js marca a tela atual em <body data-cena="1"> … "14" (ordem de STEPS em tv.js:
+ * 1 terminal, 2 gancho, 3 mapa, 4–9 semestres, 10 criar, 11 carreiras, 12 mercado, 13 Fatec, 14 crachá).
+ * Na tela do código QR não há data-cena e vale o opacity .6 acima. A velocidade dos pulsos não muda. */
+body[data-cena="1"]  #circuit { opacity: .60; }
+body[data-cena="2"]  #circuit { opacity: .57; }
+body[data-cena="3"]  #circuit { opacity: .54; }
+body[data-cena="4"]  #circuit { opacity: .50; }
+body[data-cena="5"]  #circuit { opacity: .47; }
+body[data-cena="6"]  #circuit { opacity: .44; }
+body[data-cena="7"]  #circuit { opacity: .41; }
+body[data-cena="8"]  #circuit { opacity: .38; }
+body[data-cena="9"]  #circuit { opacity: .35; }
+body[data-cena="10"] #circuit { opacity: .29; }
+body[data-cena="11"] #circuit { opacity: .22; }
+body[data-cena="12"] #circuit { opacity: .16; }
+body[data-cena="13"] #circuit { opacity: .12; }
+body[data-cena="14"] #circuit { opacity: .10; }
 .scanlines {
   position: fixed; inset: 0; z-index: 1; pointer-events: none;
   background: repeating-linear-gradient(0deg, #ffffff05 0 1px, transparent 1px 3px);
@@ -39,7 +56,7 @@ body:hover { cursor: default; }
 .logo-mark i { font-style: normal; color: var(--orange); text-shadow: var(--orange-glow); }
 .logo-word { font: 700 30px var(--display); letter-spacing: -1px; }
 .logo-word b { font-weight: 300; color: var(--blue); }
-.logo-sub { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; white-space: nowrap; font-size: 13px; line-height: 1.35; color: var(--dim); padding-left: 16px; border-left: 1px solid var(--line); --fatec-h: 66px; }
+.logo-sub { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; white-space: nowrap; font-size: 13px; line-height: 1.35; color: var(--dim); padding-left: 16px; border-left: 1px solid var(--line); --fatec-h: 79px; }
 
 .hud-progress { display: flex; gap: 8px; list-style: none; margin: 0; padding: 0; justify-content: center; }
 .hud-progress li { width: 48px; height: 4px; border-radius: 2px; background: #ffffff1a; overflow: hidden; }
@@ -371,6 +388,8 @@ body:hover { cursor: default; }
   background: linear-gradient(140deg, color-mix(in srgb, var(--c) 10%, #081028), #04081600);
   animation: pop .6s calc(.4s + var(--k) * .16s) var(--ease-spring) both, glowcycle 4s calc(2s + var(--k) * .5s) infinite;
 }
+/* item que sobra sozinho na última linha (hoje: Inteligência artificial) ocupa a linha inteira, centralizado */
+.create-grid li:last-child:nth-child(4n + 1) { grid-column: 1 / -1; justify-content: center; }
 .create-grid svg { flex: none; width: 70px; height: 70px; fill: none; stroke: var(--c); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 8px var(--c)); stroke-dasharray: 400; stroke-dashoffset: 400; animation: draw 1.8s calc(.6s + var(--k) * .16s) var(--ease-out) forwards; }
 .create-grid span { font: 600 26px/1.2 var(--display); letter-spacing: -.5px; }
 @keyframes glowcycle { 0%, 20%, 100% { box-shadow: none; } 8% { box-shadow: 0 0 40px color-mix(in srgb, var(--c) 50%, transparent); border-color: var(--c); } }
@@ -467,7 +486,7 @@ body:hover { cursor: default; }
 .badge-stack { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
 .badge-stack li { font-size: 16px; padding: 8px 14px; border-radius: 30px; border: 1px solid #22b8ff66; color: var(--blue); }
 .badge footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 36px; padding-top: 24px; border-top: 1px dashed var(--line); }
-.badge footer div:first-child { display: grid; gap: 4px; font-size: 16px; color: var(--dim); }
+.badge footer div:first-child { display: grid; justify-items: start; gap: 10px; font-size: 16px; color: var(--dim); }
 .badge footer b { color: var(--white); font-size: 18px; }
 .barcode { display: flex; gap: 2px; height: 44px; }
 .barcode i { background: var(--white); opacity: .85; }
