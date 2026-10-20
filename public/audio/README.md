@@ -34,7 +34,7 @@ Para trocar um arquivo, copie o novo com **o nome exato** e recarregue a TV (F5)
 Opções 4–6: compassos 1–4 guitarra e bateria, 5–16 banda inteira, 17–24 solo de guitarra, 25–28 solo de baixo e 29–32 todo mundo junto.
 Opções 7–9: compassos 1–4 guitarra e bateria, 5–12 banda inteira, 13–20 solo de bateria, 21–28 solo de contrabaixo e 29–32 todo mundo junto.
 
-A trilha em uso é `config.music` em `js/narration.js`. Hoje é uma **lista com as nove**: cada música toca inteira e passa para a seguinte com 2 s de transição, e depois da última volta à primeira (ordem: bateria, guitarra e eletrônica se alternando: 7, 4, 1, 8, 5, 2, 9, 6, 3). Para tocar uma só, troque a lista por um nome de arquivo. Todas são composições originais geradas por código: não há licença de terceiros.
+A trilha em uso é `config.music` em `js/narration.js`. Hoje é uma **lista com quatro**: cada música toca inteira e passa para a seguinte com 2 s de transição, e depois da última volta à primeira (ordem: 9, 8, 7 e 6). Para tocar uma só, troque a lista por um nome de arquivo. Todas são composições originais geradas por código: não há licença de terceiros.
 Para usar uma música de fora, ela precisa ter licença (feita por vocês, domínio público ou banco com licença de uso); música de streaming não pode. Exporte em volume normal: o código controla o volume (`config.volume.music`) e abaixa durante a narração.
 
 ## Efeitos: `sfx/`

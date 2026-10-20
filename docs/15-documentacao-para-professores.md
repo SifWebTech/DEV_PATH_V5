@@ -173,7 +173,7 @@ Também aparecem: **o que mais chama a atenção** (interesses), **cadastros por
 - **Duas vozes** se alternam como num diálogo: a narradora (Francisca) e o narrador (Antonio). Todo o texto está **100% em português do Brasil**.
 - **Entonação por frase:** exclamações saem mais rápidas, agudas e fortes, e perguntas sobem no fim. Isso deixa a fala dinâmica.
 - **Ducking:** a música abaixa sozinha enquanto alguém fala e volta depois.
-- **9 músicas em sequência**: eletrônicas e de rock, três delas com solo de guitarra e baixo e três com solo de bateria e contrabaixo. Cada uma toca inteira e emenda na seguinte.
+- **Músicas em sequência**: foram compostas 9 opções (eletrônicas e de rock, três com solo de guitarra e baixo e três com solo de bateria e contrabaixo). A apresentação usa quatro, na ordem 9, 8, 7 e 6. Cada uma toca inteira e emenda na seguinte.
 - **Legenda** com o mesmo texto da fala (acessibilidade e ambiente barulhento).
 
 ### 8.2 Dois modos de funcionamento
@@ -216,7 +216,7 @@ O diário completo, com datas e o que mudou em cada etapa, está em [`PROGRESSO.
 | Servidor com arquivos e com PostgreSQL | aprovado |
 | Apresentação completa no Edge, de ponta a ponta (14 cenas, nome falado, destaques, sem erros) | aprovada |
 | Funil com casos difíceis (exclusão, interrupção, cadastros antigos) | números coerentes, nenhum acima de 100% |
-| Sequência das 9 músicas | troca no fim de cada música, sem erros |
+| Sequência das músicas | troca no fim de cada música, sem erros |
 | Publicação no Render + Neon (`/healthz` → banco PostgreSQL) | no ar |
 | **Celular real no 4G/5G com a TV no Wi-Fi da Fatec** | **a fazer no ensaio** |
 
