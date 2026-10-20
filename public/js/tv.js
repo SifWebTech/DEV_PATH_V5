@@ -435,7 +435,7 @@
   async function launch(token) {
     await wait(1600);
     if (token !== S.token) return;
-    circuit.burst(70);
+    // circuit.burst(70); // onda de pulsos no lançamento: desligada para a quantidade ser igual em todas as telas
     const box = $('#confetti');
     const colors = Object.values(COLOR);
     box.innerHTML = Array.from({ length: 90 }, (_, k) => {
