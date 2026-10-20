@@ -8,7 +8,9 @@
 - **Projeto:** apresentação interativa de estande (TV + celular) para captar alunos para o curso de **Sistemas para Internet — Fatec Jales**.
 - **Matéria:** 5º semestre, Negócio e Marketing (prof.ª Andresa). A V4 já foi apresentada; a V5 é a evolução.
 - **Pasta:** `..V4 - APRESENTADO BOER - DEV_PATH_V4\DEV_PATH_V5` (cópia da V4 usada como base da V5).
-- **GitHub:** https://github.com/SifWebTech/DEV_PATH_V5, branch `main`.
+- **GitHub:** https://github.com/SifWebTech/DEV_PATH_V5, branch `main` (inclui narração + nuvem). As branches `feat/narracao-audio-devpath` e `feat/cloud-multinetwork` também estão no GitHub, como histórico.
+- **Publicação:** Render (servidor, `render.yaml`) + Neon (PostgreSQL), plano grátis. Passo a passo: `docs/14-deploy-render.md`. Cada `git push` na `main` publica sozinho no Render (depois que o Blueprint for criado).
+- **Dois jeitos de rodar:** no notebook (`INICIAR.bat`, dados em `data/`, celular no mesmo Wi-Fi) ou na nuvem (`INICIAR-NUVEM.bat`, celular em qualquer rede).
 - **Fonte das disciplinas:** `..\Horário-SI-2° Sem - 2026SalaseLabs- v2.pdf` (na pasta de cima).
 - Como rodar e o que cada parte faz: veja o `README.md`.
 
@@ -23,8 +25,9 @@
 | 03/10/2026 | `a62e081` | Circuito do fundo mais discreto: opacidade .6 e pulsos mais lentos. |
 | 03/10/2026 | `9e2c0fc` | **Documentação técnica** em `docs/`: um arquivo por assunto (HTML, CSS, fontes WOFF2, JS do navegador, servidor, JSON/CSV, BAT/PS1, Git), explicando cada comando e o porquê de cada sequência. |
 | 13/10/2026 | (fora do Git) | Vídeo da apresentação gravado com narração (`DEV_PATH_VIDEO_COM_NARRACAO_FINAL.mp4`, `.srt`, roteiro). Os `.mp4` ficam fora do Git (`*.mp4` no `.gitignore`: são grandes demais). |
-| 19–20/10/2026 | branch `feat/narracao-audio-devpath` | **Narração, música e efeitos na TV** (docs 09, 10, 11): narradora Thalita + narrador Antonio (vozes neurais, MP3 gerados por `ferramentas/gerar_narracao.py`), "Olá, {nome}" pela voz neural do Edge, cena avança no fim da fala, ducking, destaques sincronizados palavra a palavra, "competência desbloqueada", legenda, botão "Ativar áudio", mudo/legenda/narração pelo painel, 3 trilhas animadas originais (`ferramentas/gerar_musica.py`), celular com "DEV PATH CONCLUÍDO ✓" e próximos passos. Testado no Edge e no Chrome (31 verificações). |
-| 20/10/2026 | branch `feat/cloud-multinetwork` | **Arquitetura na nuvem** (docs 12, 13): QR público `PUBLIC_BASE_URL/join/<código opaco>`, TV em `/presentation/EVENTO/TELÃO`, vários telões com filas independentes, estados OFFLINE/WAITING/READY/RUNNING/FINISHING, PostgreSQL (com arquivos como alternativa), login assinado, cabeçalhos de segurança, limite de pedidos, reconexão. SSE mantido no lugar de Socket.IO (decisão do usuário). Testes: 41 verificações em arquivos + 41 em PostgreSQL + 10 ponta a ponta no Edge + painel. |
+| 19–20/10/2026 | `4cbf80e` | **Narração, música e efeitos na TV** (docs 09, 10, 11): narradora Thalita + narrador Antonio (vozes neurais, MP3 gerados por `ferramentas/gerar_narracao.py`), "Olá, {nome}" pela voz neural do Edge, cena avança no fim da fala, ducking, destaques sincronizados palavra a palavra, "competência desbloqueada", legenda, botão "Ativar áudio", mudo/legenda/narração pelo painel, 3 trilhas animadas originais (`ferramentas/gerar_musica.py`), celular com "DEV PATH CONCLUÍDO ✓" e próximos passos. Testado no Edge e no Chrome (31 verificações). |
+| 20/10/2026 | `a3e0087` | **Arquitetura na nuvem** (docs 12, 13, 14): QR público `PUBLIC_BASE_URL/join/<código opaco>`, TV em `/presentation/EVENTO/TELÃO`, vários telões com filas independentes, estados OFFLINE/WAITING/READY/RUNNING/FINISHING, PostgreSQL (com arquivos como alternativa), login assinado, cabeçalhos de segurança, limite de pedidos, reconexão. SSE mantido no lugar de Socket.IO (decisão do usuário). Testes: 41 verificações em arquivos + 41 em PostgreSQL + 10 ponta a ponta no Edge + painel. Preparado para o **Render + Neon** (grátis): `render.yaml`, Node 24, fuso de São Paulo, endereço público automático; ambiente do Render simulado e aprovado. |
+| 20/10/2026 | `main` = `a3e0087` | As duas branches juntadas na `main` e enviadas ao GitHub. |
 
 ## Fases da V5 (todas concluídas)
 
@@ -35,15 +38,21 @@
 
 **Testes feitos:** roteiro automático da API (28/28 ok), recuperação após queda, capturas de tela da TV, do celular, do painel e do crachá PNG.
 **Não testado:** celular de verdade na rede do estande e TV pelo HDMI.
+**Testes da narração e da nuvem:** ver as linhas de 19–20/10 na linha do tempo. Continua sem teste: celular de verdade no 4G/5G com o servidor publicado.
 
 ## Pendências (estado atual)
 
 - [ ] **Escolher a música**: ouvir `public/audio/music/opcao-1/2/3` e pôr a escolhida em `public/js/narration.js → config.music` (hoje: opção 3, electro-pop).
 - [ ] Preencher os links do celular em `public/js/content.js → links` (`curso`, `instagram`, `contato`: estão como TODO, sem URL inventada).
-- [x] Migração para a nuvem (multi-rede) implementada e testada na branch `feat/cloud-multinetwork` (docs 12 e 13).
-- [x] Provedor escolhido: **Render (servidor) + Neon (PostgreSQL)**, grátis. Projeto pronto (`render.yaml`, docs 14).
-- [ ] Publicar: push da branch no GitHub, criar o banco no Neon e o Blueprint no Render (docs/14-deploy-render.md).
-- [ ] Testar com celular **só no 4G/5G** e o notebook no Wi-Fi da Fatec.
+- [x] Migração para a nuvem (multi-rede) implementada, testada e na `main` (docs 12 e 13).
+- [x] Provedor escolhido: **Render (servidor) + Neon (PostgreSQL)**, grátis. Projeto pronto (`render.yaml`, docs 14) e no GitHub.
+- [ ] **Publicar** (com você, seguindo `docs/14-deploy-render.md`):
+  1. Neon: criar o projeto `devpath` na região **AWS US East (N. Virginia)** e copiar a connection string.
+  2. Render: New → Blueprint → `DEV_PATH_V5`; preencher `ADMIN_KEY` (10+ caracteres) e `DATABASE_URL`.
+  3. Conferir `https://devpath-xxxx.onrender.com/healthz` → `"banco":"postgres"`.
+  4. Colar a linha "TV:" dos logs do Render no `INICIAR-NUVEM.bat`.
+- [ ] Testar com celular **só no 4G/5G** e o notebook no Wi-Fi da Fatec (QR → cadastro → Começar → TV → crachá → QR; e um 2º celular na fila).
+- [ ] No dia: abrir a TV uns 5 min antes do público (o plano grátis do Render "dorme" após 15 min sem acesso).
 
 - [x] **Ajuste do circuito salvo** no commit `a62e081` (03/10/2026):
   - `public/css/tv.css`: `#circuit` com `opacity: .6` (circuito do fundo mais transparente).
