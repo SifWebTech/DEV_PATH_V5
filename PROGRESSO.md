@@ -47,11 +47,11 @@
 - [ ] Preencher os links do celular em `public/js/content.js → links` (`curso`, `instagram`, `contato`: estão como TODO, sem URL inventada).
 - [x] Migração para a nuvem (multi-rede) implementada, testada e na `main` (docs 12 e 13).
 - [x] Provedor escolhido: **Render (servidor) + Neon (PostgreSQL)**, grátis. Projeto pronto (`render.yaml`, docs 14) e no GitHub.
-- [ ] **Publicar** (com você, seguindo `docs/14-deploy-render.md`):
+- [x] **Publicar** (com você, seguindo `docs/14-deploy-render.md`):
   1. [x] Neon: projeto criado, conectado e com as tabelas (20/10/2026).
-  2. Render: New → Blueprint → `DEV_PATH_V5`; preencher `ADMIN_KEY` (10+ caracteres), `DATABASE_URL` (com pooler) e `DATABASE_URL_UNPOOLED` (direta) — as duas estão no `.env.local`.
-  3. Conferir `https://devpath-xxxx.onrender.com/healthz` → `"banco":"postgres"`.
-  4. Colar a linha "TV:" dos logs do Render no `INICIAR-NUVEM.bat`.
+  2. [x] Render: Blueprint criado, deploy **Live** em **https://devpath-uhhd.onrender.com** (20/10/2026).
+  3. [x] `/healthz` → `{"ok":true,"banco":"postgres"}`; TV (`/presentation/FATEC2026/TELAO-01`) e painel (`/operador`) respondem.
+  4. [x] Endereço da TV no `INICIAR-NUVEM.bat`.
 - [ ] Testar com celular **só no 4G/5G** e o notebook no Wi-Fi da Fatec (QR → cadastro → Começar → TV → crachá → QR; e um 2º celular na fila).
 - [ ] No dia: abrir a TV uns 5 min antes do público (o plano grátis do Render "dorme" após 15 min sem acesso).
 
