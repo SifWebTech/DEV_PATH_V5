@@ -15,7 +15,7 @@ body {
 .logo-mark i { font-style: normal; color: var(--orange); text-shadow: var(--orange-glow); }
 .logo-word { font: 700 19px var(--display); letter-spacing: -.5px; }
 .logo-word b { font-weight: 300; color: var(--blue); }
-.m-head-sub { margin-left: auto; font-size: 12px; color: var(--dim); }
+.m-head-sub { margin-left: auto; --fatec-h: 38px; }
 
 #app { max-width: 480px; margin: 0 auto; padding: 28px 20px 48px; }
 .view { animation: in .6s var(--ease-out) both; }

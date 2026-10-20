@@ -39,7 +39,7 @@ body:hover { cursor: default; }
 .logo-mark i { font-style: normal; color: var(--orange); text-shadow: var(--orange-glow); }
 .logo-word { font: 700 30px var(--display); letter-spacing: -1px; }
 .logo-word b { font-weight: 300; color: var(--blue); }
-.logo-sub { white-space: nowrap; font-size: 13px; line-height: 1.35; color: var(--dim); padding-left: 16px; border-left: 1px solid var(--line); }
+.logo-sub { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; white-space: nowrap; font-size: 13px; line-height: 1.35; color: var(--dim); padding-left: 16px; border-left: 1px solid var(--line); --fatec-h: 66px; }
 
 .hud-progress { display: flex; gap: 8px; list-style: none; margin: 0; padding: 0; justify-content: center; }
 .hud-progress li { width: 48px; height: 4px; border-radius: 2px; background: #ffffff1a; overflow: hidden; }

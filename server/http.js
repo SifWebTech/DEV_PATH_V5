@@ -343,8 +343,8 @@ function resolvePage(p) {
   if (m) return m[1].toUpperCase() === sessao.EVENT && sessao.getDisplay(m[2]) ? '/index.html' : null;
   m = p.match(/^\/join\/([A-Za-z0-9]{4,16})\/?$/);
   if (m) return sessao.byJoin(m[1]) ? '/m.html' : null;
-  // as páginas usam caminhos relativos (css/…, js/…, audio/…): valem também dentro de /presentation/… e /join/…
-  m = p.match(/^\/(?:presentation\/[^/]+|join)\/((?:css|js|fonts|vendor|audio)\/.+)$/);
+  // as páginas usam caminhos relativos (css/…, js/…, audio/…, img/…): valem também dentro de /presentation/… e /join/…
+  m = p.match(/^\/(?:presentation\/[^/]+|join)\/((?:css|js|fonts|vendor|audio|img)\/.+)$/);
   if (m) return '/' + m[1];
   if (/\.html$/.test(p)) return null; // páginas só pelos endereços acima
   return p;

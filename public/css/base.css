@@ -65,3 +65,12 @@ button { cursor: pointer; }
     transition-duration: .01ms !important;
   }
 }
+
+/* Logo oficial da Fatec Jales (img/fatec-jales.png) no cabeçalho das três telas.
+ * O logo tem letras escuras sobre branco: fica numa plaquinha branca para manter as cores oficiais
+ * e aparecer bem no fundo escuro. A altura vem de --fatec-h em cada tela. */
+.fatec-logo {
+  display: block; height: var(--fatec-h, 40px); width: auto; flex: none;
+  padding: 4px 8px; border-radius: 8px; background: #fff;
+  box-shadow: 0 0 0 1px #ffffff26, 0 6px 20px #00000080;
+}
