@@ -1,5 +1,6 @@
 /*
- * Cadastro de leads: validação, gravação na planilha e exclusão (LGPD).
+ * Cadastro de leads: validação, gravação (planilha ou banco) e exclusão (LGPD).
+ * O cadastro pertence ao telão do QR escaneado (código opaco do /join/<código>).
  * Contato aceito: e-mail, @ do Instagram ou WhatsApp com DDD.
  */
 'use strict';
@@ -53,14 +54,19 @@ function contactCell(lead) {
 }
 
 function create(body) {
+  // sem código (página da V5 em cache): telão padrão
+  const display = body.joinCode ? sessao.byJoin(String(body.joinCode)) : sessao.defaultDisplay();
+  if (!display) return { errors: { form: 'Este QR Code não é mais válido. Escaneie o QR Code da TV de novo.' } };
   const { errors, lead } = validateLead(body);
   if (Object.keys(errors).length) return { errors };
   lead.id = crypto.randomUUID();
   lead.when = stamp();
   lead.evento = sessao.evento();
+  lead.eventCode = display.eventCode;
+  lead.display = display.code;
   lead.visitante = VISITOR_RE.test(body.visitante || '') ? body.visitante : '';
   store.appendLead(lead, contactCell(lead));
-  funil.track('lead', lead.evento, { lead: lead.id, visitante: lead.visitante, interesse: lead.interest, contato: lead.contactType });
+  funil.track('lead', lead.evento, { lead: lead.id, visitante: lead.visitante, interesse: lead.interest, contato: lead.contactType, telao: display.code });
   sessao.addLead(lead);
   return { lead };
 }

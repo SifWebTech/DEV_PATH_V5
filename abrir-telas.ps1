@@ -3,11 +3,22 @@
 #  - Notebook (tela principal): painel do operador
 # Sem segunda tela, abre a apresentacao normalmente no notebook.
 
-# O servidor grava em data\.porta a porta que conseguiu abrir (8787 ou a proxima livre).
+# Na nuvem (INICIAR-NUVEM.bat): -Url https://devpath.../presentation/FATEC2026/TELAO-01
+# Sem -Url: servidor local (INICIAR.bat).
+param([string]$Url = "")
+
+$base = $null
+$tvPath = "/"
+if ($Url) {
+  $u = [Uri]$Url
+  $base = $u.GetLeftPart([UriPartial]::Authority)
+  $tvPath = $u.PathAndQuery
+}
+
+# O servidor local grava em data\.porta a porta que conseguiu abrir (8787 ou a proxima livre).
 # Usamos 127.0.0.1 e confirmamos que quem responde e o DEV PATH, nao outro programa
 # (ex.: o AdGuard Home ocupa a porta 3000).
 $portFile = Join-Path $PSScriptRoot "data\.porta"
-$base = $null
 for ($i = 0; $i -lt 60 -and -not $base; $i++) {
   Start-Sleep -Milliseconds 300
   if (Test-Path $portFile) {
@@ -46,11 +57,11 @@ if ($browser -and $tv) {
     "--user-data-dir=`"$profile`"", "--new-window", "--window-position=$x,$y", "--kiosk",
     "--autoplay-policy=no-user-gesture-required",
     "--no-first-run", "--no-default-browser-check", "--disable-session-crashed-bubble", "--noerrdialogs",
-    "$base/"
+    "$base$tvPath"
   )
   Write-Host "  Apresentacao aberta na TV (tela $($tv.DeviceName)). Para fechar: clique nela e Alt+F4."
 } else {
-  Start-Process "$base/"
+  Start-Process "$base$tvPath"
   if (-not $tv) { Write-Host "  Segunda tela nao encontrada. Ligue o HDMI, aperte Windows+P e escolha 'Estender'." }
 }
 

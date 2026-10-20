@@ -23,6 +23,8 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   const NARR = window.DEVPATH_NARRACAO?.config || {};
+  // Qual telão é esta TV: /presentation/<EVENTO>/<TELÃO> (aberto em outro endereço, o servidor usa o padrão)
+  const ROUTE = location.pathname.match(/^\/presentation\/([A-Za-z0-9-]+)\/([A-Za-z0-9-]+)/);
 
   const stage = $('#stage');
   const root = $('#sceneRoot');
@@ -43,6 +45,9 @@
 
   const S = {
     online: false,
+    everOnline: false, // já conectou alguma vez? (então a queda é "reconectando…", não "modo demonstração")
+    display: ROUTE ? ROUTE[2].toUpperCase() : '',
+    event: ROUTE ? ROUTE[1].toUpperCase() : '',
     mobileUrl: '',
     vestibular: '',  // link do vestibular com UTM do evento (vem do servidor)
     todayCount: 0,
@@ -746,7 +751,8 @@
     const live = $('#hudLiveText');
     $('#hudLive').classList.toggle('off', !S.online);
     if (S.i >= 0) live.textContent = S.paused ? 'pausado' : S.lead?.id ? 'experiência conectada' : 'demonstração';
-    else live.textContent = S.online ? 'pronto para conectar' : 'modo demonstração';
+    else live.textContent = S.online ? 'conectado' : S.everOnline ? 'reconectando…' : 'modo demonstração';
+    if (!S.online && S.everOnline) live.textContent = 'reconectando…'; // vale também no meio da apresentação
     // quem está assistindo e o objetivo escolhido no celular (some quando volta ao QR Code)
     const name = S.i >= 0 ? firstName() : '';
     $('#hudWho').hidden = !name;
@@ -778,15 +784,27 @@
   /* ---------- conexão com o servidor ---------- */
   function post(url, body) {
     if (!S.online) return;
-    fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).catch(() => {});
+    fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, display: S.display }) }).catch(() => {});
   }
 
   function connect() {
     if (location.protocol === 'file:' || !window.EventSource) return renderIdle();
-    const es = new EventSource('/api/stream?role=tv');
+    const q = new URLSearchParams({ role: 'tv' });
+    if (S.display) { q.set('display', S.display); q.set('event', S.event); }
+    // O EventSource reconecta sozinho (retry de 2 s). A cada reconexão o servidor manda "hello"
+    // com o estado do telão e, se havia alguém na TV, "start" de novo: a TV retoma sem ajuda.
+    const es = new EventSource('/api/stream?' + q);
+    es.addEventListener('erro', (e) => {
+      es.close();
+      S.online = false;
+      renderIdle();
+      $('#qrUrl').textContent = JSON.parse(e.data).error;
+    });
     es.addEventListener('hello', (e) => {
       const d = JSON.parse(e.data);
       S.online = true;
+      S.everOnline = true;
+      S.display = d.display;
       S.mobileUrl = d.mobileUrl;
       S.vestibular = d.vestibular;
       S.todayCount = d.todayCount;
@@ -834,6 +852,8 @@
       if (S.online) { S.online = false; updateHud(); }
     };
     es.onopen = () => { S.online = true; updateHud(); };
+    // sinal de vida: o painel mostra o último sinal de cada telão
+    setInterval(() => post('/api/tv/heartbeat', {}), 20000);
     // mostra o modo demonstração se o servidor não responder
     setTimeout(() => { if (S.i < 0 && !$('.scene-idle')) renderIdle(); }, 1500);
   }

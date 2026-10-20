@@ -7,3 +7,6 @@ ferramentas/amostras-vozes/
 
 # vídeos gravados da apresentação (grandes demais para o GitHub)
 *.mp4
+
+# segredos (senha do banco, SESSION_SECRET, ADMIN_KEY)
+.env

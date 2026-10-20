@@ -24,6 +24,7 @@
 | 03/10/2026 | `9e2c0fc` | **Documentação técnica** em `docs/`: um arquivo por assunto (HTML, CSS, fontes WOFF2, JS do navegador, servidor, JSON/CSV, BAT/PS1, Git), explicando cada comando e o porquê de cada sequência. |
 | 13/10/2026 | (fora do Git) | Vídeo da apresentação gravado com narração (`DEV_PATH_VIDEO_COM_NARRACAO_FINAL.mp4`, `.srt`, roteiro). Os `.mp4` ficam fora do Git (`*.mp4` no `.gitignore`: são grandes demais). |
 | 19–20/10/2026 | branch `feat/narracao-audio-devpath` | **Narração, música e efeitos na TV** (docs 09, 10, 11): narradora Thalita + narrador Antonio (vozes neurais, MP3 gerados por `ferramentas/gerar_narracao.py`), "Olá, {nome}" pela voz neural do Edge, cena avança no fim da fala, ducking, destaques sincronizados palavra a palavra, "competência desbloqueada", legenda, botão "Ativar áudio", mudo/legenda/narração pelo painel, 3 trilhas animadas originais (`ferramentas/gerar_musica.py`), celular com "DEV PATH CONCLUÍDO ✓" e próximos passos. Testado no Edge e no Chrome (31 verificações). |
+| 20/10/2026 | branch `feat/cloud-multinetwork` | **Arquitetura na nuvem** (docs 12, 13): QR público `PUBLIC_BASE_URL/join/<código opaco>`, TV em `/presentation/EVENTO/TELÃO`, vários telões com filas independentes, estados OFFLINE/WAITING/READY/RUNNING/FINISHING, PostgreSQL (com arquivos como alternativa), login assinado, cabeçalhos de segurança, limite de pedidos, reconexão. SSE mantido no lugar de Socket.IO (decisão do usuário). Testes: 41 verificações em arquivos + 41 em PostgreSQL + 10 ponta a ponta no Edge + painel. |
 
 ## Fases da V5 (todas concluídas)
 
@@ -39,7 +40,10 @@
 
 - [ ] **Escolher a música**: ouvir `public/audio/music/opcao-1/2/3` e pôr a escolhida em `public/js/narration.js → config.music` (hoje: opção 3, electro-pop).
 - [ ] Preencher os links do celular em `public/js/content.js → links` (`curso`, `instagram`, `contato`: estão como TODO, sem URL inventada).
-- [ ] Próxima etapa pedida: **migração para a nuvem (multi-rede)**, na branch `feat/cloud-multinetwork`.
+- [x] Migração para a nuvem (multi-rede) implementada e testada na branch `feat/cloud-multinetwork` (docs 12 e 13).
+- [x] Provedor escolhido: **Render (servidor) + Neon (PostgreSQL)**, grátis. Projeto pronto (`render.yaml`, docs 14).
+- [ ] Publicar: push da branch no GitHub, criar o banco no Neon e o Blueprint no Render (docs/14-deploy-render.md).
+- [ ] Testar com celular **só no 4G/5G** e o notebook no Wi-Fi da Fatec.
 
 - [x] **Ajuste do circuito salvo** no commit `a62e081` (03/10/2026):
   - `public/css/tv.css`: `#circuit` com `opacity: .6` (circuito do fundo mais transparente).

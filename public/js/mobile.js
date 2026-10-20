@@ -29,6 +29,8 @@
     return id;
   })();
 
+  // código do QR (/join/<código>): diz ao servidor em qual telão este visitante vai assistir
+  const joinCode = (location.pathname.match(/^\/join\/([A-Za-z0-9]+)/) || [])[1] || '';
   let lead = store.get();
   let es = null;
   let ctype = 'email';
@@ -96,6 +98,7 @@
       interest,
       consent: $('#fConsent').checked,
       visitante,
+      joinCode,
     };
     const btn = $('#saveBtn');
     btn.disabled = true;
@@ -103,8 +106,9 @@
     try {
       const res = await postJSON('/api/lead', body);
       const data = await res.json();
-      if (res.status === 422) {
-        Object.entries(data.errors).forEach(([f, m]) => setErr(f, m));
+      if (res.status === 422 || res.status === 429) {
+        Object.entries(data.errors || {}).forEach(([f, m]) => setErr(f, m));
+        if (data.errors?.form) $('#formError').textContent = data.errors.form;
         document.querySelector('.err:not(:empty)')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else if (res.ok) {
         lead = data;
@@ -160,7 +164,9 @@
       box.className = 'live-status wait';
       box.innerHTML = st.tvOnline === false
         ? 'Aguardando a TV ligar…'
-        : st.position === 1 ? 'Você é o próximo! Fique de olho na TV.' : `Você está na fila: posição <b>${st.position}</b>`;
+        : st.busy
+          ? `Há uma experiência em andamento na TV.<br>${st.position === 1 ? '<b>Você é o próximo.</b>' : `Você está na fila: posição <b>${st.position}</b>`}`
+          : st.position === 1 ? 'Você é o próximo! Fique de olho na TV.' : `Você está na fila: posição <b>${st.position}</b>`;
       $('#sceneLabel').textContent = 'Em instantes';
     } else if (st.state === 'playing') {
       show('vLive');

@@ -31,7 +31,11 @@
     @media (max-width: 860px) { .grid, .grid-2 { grid-template-columns: 1fr; } .evento { margin-left: 0; flex-wrap: wrap; } .evento input { width: 100%; } }
     .card { padding: 22px; border-radius: 16px; border: 1px solid var(--line); background: #081028cc; min-width: 0; }
 
-    .tv-state { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--dim); }
+    .tv-state { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 14px; color: var(--dim); }
+    #displaySel { height: 32px; margin-left: auto; }
+    #displaySel[hidden] { display: none; }
+    .teloes { margin-top: 8px; font: 12px var(--mono); color: var(--dim); line-height: 1.6; }
+    .teloes b { color: var(--white); }
     .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--orange); box-shadow: var(--orange-glow); }
     .on .dot { background: var(--green); box-shadow: var(--green-glow); }
     .now { margin-top: 16px; font: 800 30px/1.15 var(--display); letter-spacing: -1px; }
@@ -128,7 +132,9 @@
       <div class="grid">
         <section class="card" aria-labelledby="tvTitle">
           <h2 id="tvTitle" class="sr-only">Na TV agora</h2>
-          <p class="tv-state" id="tvState"><span class="dot"></span><span id="tvText">TV desconectada</span></p>
+          <p class="tv-state" id="tvState"><span class="dot"></span><span id="tvText">TV desconectada</span>
+            <select id="displaySel" aria-label="Telão" hidden></select></p>
+          <p class="teloes" id="teloes"></p>
           <p class="now" id="now">QR Code na tela</p>
           <p class="scene" id="scene">Aguardando alguém escanear.</p>
           <div class="bar"><i id="bar"></i></div>
@@ -226,11 +232,23 @@
     const postJSON = (url, body) => api(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 
     /* ---------- TV e fila ---------- */
+    // telão escolhido (com mais de um, o seletor aparece ao lado do estado da TV)
+    let display = '';
+    $('#displaySel').addEventListener('change', (e) => { display = e.target.value; loadState(); });
+
     async function loadState() {
-      state = await (await api('/api/op/state')).json();
+      state = await (await api('/api/op/state' + (display ? '?display=' + encodeURIComponent(display) : ''))).json();
+      display = state.display;
+      const sel = $('#displaySel');
+      if (sel.options.length !== state.displays.length) sel.innerHTML = state.displays.map((d) => `<option>${esc(d.code)}</option>`).join('');
+      sel.value = display;
+      sel.hidden = state.displays.length < 2;
+      const hora = (iso) => (iso ? new Date(iso).toLocaleTimeString('pt-BR') : '—');
+      $('#teloes').innerHTML = state.displays.map((d) => `<b>${esc(d.code)}</b> ${esc(d.status)} · último sinal ${hora(d.lastSeen)}`).join('<br>')
+        + `<br>evento ${esc(state.event)} · dados: ${esc(state.banco)}`;
       const playing = !!state.scene;
       $('#tvState').classList.toggle('on', state.tvOnline);
-      $('#tvText').textContent = state.tvOnline ? 'TV conectada' : 'TV desconectada: abra ' + location.origin + ' na TV';
+      $('#tvText').textContent = state.tvOnline ? `TV ${state.display} conectada` : `TV ${state.display} desconectada: abra ${state.presentationUrl} na TV`;
       $('#now').textContent = playing ? (state.current?.name || 'Demonstração') : 'QR Code na tela';
       $('#scene').innerHTML = playing
         ? `Cena ${state.scene.index} de ${state.scene.total}: <b>${esc(state.scene.label)}</b>${state.scene.paused ? ' (pausado)' : ''}`
@@ -349,8 +367,8 @@
     }
 
     async function cmd(name) {
-      const res = await postJSON('/api/op/cmd', { cmd: name });
-      if (res.status === 409) $('#msg').textContent = 'A TV não está conectada.';
+      const res = await postJSON('/api/op/cmd', { cmd: name, display });
+      if (res.status === 409) $('#msg').textContent = (await res.json()).error;
       setTimeout(loadState, 250);
     }
 

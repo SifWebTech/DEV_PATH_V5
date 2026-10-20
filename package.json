@@ -1,11 +1,16 @@
 {
   "name": "devpath-v5",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "private": true,
-  "description": "DEV PATH V5 — apresentação interativa celular + TV do curso de Sistemas para Internet (Fatec Jales)",
+  "description": "DEV PATH V5 — apresentação interativa celular + TV do curso de Sistemas para Internet (Fatec Jales), no estande ou na nuvem",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "check": "node --check server.js && node -e \"for (const f of require('fs').readdirSync('server').filter(f => f.endsWith('.js'))) require('child_process').execFileSync(process.execPath, ['--check', 'server/' + f])\"",
+    "importar": "node server/importar.js"
   },
-  "engines": { "node": ">=18" }
+  "dependencies": {
+    "pg": "^8.13.0"
+  },
+  "engines": { "node": ">=20.12" }
 }

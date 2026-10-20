@@ -17,6 +17,17 @@ A V5 mede o estande como uma ação de marketing: cada passo do visitante (abriu
                                      celular vira controle de reações 🔥💚🤯🚀
 ```
 
+## Na nuvem (celular em qualquer rede)
+
+O mesmo código roda num servidor público: o celular do visitante usa o próprio 4G/5G, o notebook da TV usa o Wi-Fi da Fatec, e os dois falam só com o servidor, por HTTPS. O QR vira `https://<seu-endereço>/join/<código>` e a TV abre `https://<seu-endereço>/presentation/FATEC2026/TELAO-01`. Cada telão tem QR, fila e TV próprios; dados no PostgreSQL.
+
+- Configuração: copie `.env.example` (variáveis obrigatórias em produção: `NODE_ENV`, `PUBLIC_BASE_URL`, `SESSION_SECRET`, `ADMIN_KEY`; banco: `DATABASE_URL`).
+- No notebook da TV: `INICIAR-NUVEM.bat` (edite o endereço dentro dele).
+- Dados de um estande offline para o banco: `DATABASE_URL=… npm run importar`.
+- Como funciona: [docs/13-arquitetura-cloud-multirede.md](docs/13-arquitetura-cloud-multirede.md). **Publicar grátis no Render + Neon:** [docs/14-deploy-render.md](docs/14-deploy-render.md) (o `render.yaml` já está pronto).
+
+Sem nenhuma dessas variáveis, tudo funciona como antes no notebook do estande (a seção abaixo).
+
 ## Narração, música e efeitos
 
 A TV fala: uma **narradora (Thalita)** e um **narrador (Antonio)** se intercalam, com vozes neurais gravadas em MP3; a voz chama o visitante pelo nome ("Olá, Felipe."), conduz os seis semestres e cada cena avança quando a fala termina. Enquanto a voz fala, a música de fundo abaixa sozinha (ducking) e os itens citados acendem na tela no instante em que são ditos ("COMPETÊNCIA DESBLOQUEADA ✓" no fim de cada semestre). A legenda mostra o mesmo texto.
@@ -121,11 +132,16 @@ Como cada arquivo funciona por dentro, comando por comando: veja a pasta [`docs/
 ```
 DEV_PATH_V5/
 ├── INICIAR.bat          duplo clique: servidor + TV em tela cheia + painel
+├── INICIAR-NUVEM.bat    duplo clique: TV e painel apontando para o servidor na nuvem
+├── .env.example         variáveis para a nuvem (copie para .env; o .env não vai para o Git)
+├── render.yaml          publicação no Render (Blueprint); .node-version = Node 24
 ├── abrir-telas.ps1      detecta a TV (HDMI) e abre cada tela no lugar certo
 ├── server.js            liga o servidor (Node puro, sem npm install)
 ├── ferramentas/         gerar_narracao.py (vozes neurais) e gerar_musica.py (trilhas)
 ├── server/
-│   ├── config.js        opções (porta, senha, evento, pastas)
+│   ├── migrations/      tabelas do PostgreSQL (001_cloud.sql)
+│   ├── importar.js      leva os arquivos de data/ para o banco
+│   ├── config.js        opções (porta, senha, evento, telões, pastas, nuvem)
 │   ├── http.js          rotas da API e arquivos estáticos
 │   ├── sessao.js        fila, TV e tempo real (SSE); salva em estado.json
 │   ├── leads.js         cadastro, validação e exclusão (LGPD)

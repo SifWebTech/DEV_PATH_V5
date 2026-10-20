@@ -1,0 +1,29 @@
+# DEV PATH V5 no Render (Blueprint): Dashboard → New → Blueprint → escolher este repositório.
+# Passo a passo completo: docs/14-deploy-render.md
+services:
+  - type: web
+    name: devpath
+    runtime: node
+    plan: free                 # grátis: dorme após 15 min sem acesso (a TV aberta o mantém acordado)
+    region: virginia           # mais perto do Brasil entre as regiões do Render; crie o banco Neon em AWS us-east-1
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TZ                # o Render roda em UTC: sem isto, os horários dos cadastros saem 3 h adiantados
+        value: America/Sao_Paulo
+      - key: EVENT_CODE
+        value: FATEC2026
+      - key: DISPLAYS
+        value: TELAO-01
+      # PUBLIC_BASE_URL fica de fora: o servidor usa o endereço que o Render informa (RENDER_EXTERNAL_URL).
+      # Com domínio próprio, acrescente PUBLIC_BASE_URL=https://devpath.seudominio.com no painel.
+      - key: SESSION_SECRET
+        generateValue: true    # o Render gera um valor aleatório e forte; não troque depois (mudaria os QR Codes)
+      - key: ADMIN_KEY
+        sync: false            # o Render pergunta na criação: senha do painel (10+ caracteres)
+      - key: DATABASE_URL
+        sync: false            # o Render pergunta na criação: connection string do Neon

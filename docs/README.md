@@ -19,6 +19,9 @@ O `README.md` da raiz ensina a *usar* o projeto no estande; aqui o assunto é *c
 | 9 | [09-auditoria-narracao-audio.md](09-auditoria-narracao-audio.md) | como a V5 estava antes da narração, riscos e plano |
 | 10 | [10-sistema-narracao.md](10-sistema-narracao.md) | narração, vozes, música, ducking, marcadores, autoplay, fallbacks |
 | 11 | [11-roteiro-narracao.md](11-roteiro-narracao.md) | o texto integral falado na TV, quem fala e a duração |
+| 12 | [12-auditoria-cloud-multirede.md](12-auditoria-cloud-multirede.md) | o que prendia o celular à mesma rede, riscos e plano |
+| 13 | [13-arquitetura-cloud-multirede.md](13-arquitetura-cloud-multirede.md) | nuvem: evento/telão/sessão, rotas, SSE, PostgreSQL, segurança, deploy |
+| 14 | [14-deploy-render.md](14-deploy-render.md) | passo a passo para publicar grátis no Render + Neon |
 
 ## Mapa do projeto
 
