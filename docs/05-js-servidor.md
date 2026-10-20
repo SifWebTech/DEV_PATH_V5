@@ -222,16 +222,16 @@ Se alguém se cadastrar com o nome `=HYPERLINK("http://site-malicioso")`, o Exce
 ### As etapas
 ```js
 const ETAPAS = [
-  { tipo: 'qr_aberto', nome: 'Abriu pelo QR Code', chave: 'visitante' },
-  { tipo: 'form_inicio', nome: 'Começou o cadastro', chave: 'visitante' },
-  { tipo: 'lead', nome: 'Cadastrou', chave: 'lead' },
-  { tipo: 'inicio', nome: 'Tocou em Começar', chave: 'lead' },
-  { tipo: 'concluido', nome: 'Assistiu até o crachá', chave: 'lead' },
-  { tipo: 'compartilhou', nome: 'Salvou o crachá', chave: 'lead' },
-  { tipo: 'vestibular_clique', nome: 'Abriu o vestibular', chave: 'lead' },
+  { tipo: 'qr_aberto', nome: 'Abriu pelo QR Code' },
+  { tipo: 'form_inicio', nome: 'Começou o cadastro' },
+  { tipo: 'lead', nome: 'Cadastrou' },
+  { tipo: 'inicio', nome: 'Tocou em Começar' },
+  { tipo: 'concluido', nome: 'Assistiu até o crachá' },
+  { tipo: 'compartilhou', nome: 'Salvou o crachá', base: 'inicio' },
+  { tipo: 'vestibular_clique', nome: 'Abriu o vestibular', base: 'inicio' },
 ];
 ```
-A **ordem do array é a ordem do funil**, e é assim que o painel desenha. `chave` diz como contar **pessoas** e não cliques: antes do cadastro, a pessoa é identificada pelo id do aparelho (`visitante`); depois, pelo id do lead.
+A **ordem do array é a ordem do funil**, e é assim que o painel desenha. As cinco primeiras etapas são uma **sequência**; as duas últimas são **ramos** da tela final do celular (`base: 'inicio'`): dá para abrir o vestibular sem salvar o crachá, e a tela final aparece também para quem teve a apresentação interrompida.
 
 `DO_CELULAR = ['qr_aberto', 'form_inicio', 'compartilhou']` — os **únicos** eventos que o celular pode mandar. Os outros (`lead`, `inicio`, `concluido`...) só o servidor registra, então ninguém consegue inflar os números de "cadastros" mandando requisições falsas.
 
@@ -243,11 +243,15 @@ Cria `{ quando, tipo, evento, ...dados }`, guarda na memória e no arquivo. Para
 
 ### `resumo(evento)`
 Calcula tudo o que o painel mostra, filtrando pelo evento escolhido:
-- **funil**: para cada etapa, quantas **pessoas diferentes** (um `Set` de ids) têm aquele tipo de evento;
+- **funil**: quantas **pessoas diferentes** chegaram a cada etapa. Duas regras deixam os números coerentes (antes da revisão de 20/10/2026, "Cadastrou" podia passar de 100% de "Abriu pelo QR Code"):
+  1. **todas as etapas contam a mesma coisa**: o aparelho (`visitante`). As etapas registradas pelo cadastro (`inicio`, `concluido`…) são traduzidas para o aparelho que cadastrou; sem aparelho (cadastros da V4), a pessoa é o próprio cadastro;
+  2. **quem chegou a uma etapa passou pelas anteriores**: não dá para cadastrar sem abrir a página, então quem cadastrou conta também em "Abriu pelo QR Code" e "Começou o cadastro" (mesmo que o celular não tenha avisado essas etapas). Assim cada etapa é menor ou igual à anterior.
+  Cada etapa diz qual é a sua `base` (a etapa sobre a qual a % é calculada);
+- **cadastros**: formulários enviados, quantos foram excluídos depois a pedido (LGPD) e quantos continuam (`ativos`, o mesmo número da tabela de leads);
 - **interesses**: contagem por perfil;
-- **porHora**: `quando.slice(11, 13)` pega a hora de `"2026-10-03 14:05:09"` → `"14"`;
+- **porHora**: `quando.slice(11, 13)` pega a hora de `"2026-10-03 14:05:09"` → `"14"`; as horas sem cadastro entre a primeira e a última entram com zero, para o gráfico não pular horas;
 - **cenas**: reações agrupadas por cena, ordenadas pela ordem da apresentação;
-- **interrompidos**: apresentações encerradas antes do fim;
+- **assistiram / interrompidos**: cadastros que viram até o crachá e cadastros cuja apresentação foi encerrada antes (quem foi interrompido e depois assistiu inteiro conta só em "assistiram");
 - **eventos**: a lista de todos os eventos já registrados, com o número de cadastros de cada um (para o seletor do painel).
 
 Os eventos guardam só ids aleatórios, **nunca nome ou contato**. Por isso as métricas continuam válidas mesmo depois de um lead pedir exclusão (LGPD).

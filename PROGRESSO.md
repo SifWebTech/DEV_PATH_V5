@@ -30,7 +30,8 @@
 | 20/10/2026 | `main` = `a3e0087` | As duas branches juntadas na `main` e enviadas ao GitHub. |
 | 20/10/2026 | `c846843` | **Banco Neon criado e conectado**: `DATABASE_URL` (com pooler) no dia a dia e `DATABASE_URL_UNPOOLED` (direta) nas migrations; `.env.local` (do `neon env pull`) lido pelo servidor e pelo `npm run importar`, fora do Git. `INICIAR.bat` liga `DEVPATH_OFFLINE=1` (estande nunca depende da internet); sem banco fora da produção, cai para `data/`. Render roda `npm run build` (checagem). Testado: servidor em modo postgres no Neon (7 cadastros), importação e modo offline. |
 | 20/10/2026 | `d6bac05` | **Publicado no Render**: https://devpath-uhhd.onrender.com (`/healthz` → postgres). Endereço da TV no `INICIAR-NUVEM.bat`. |
-| 20/10/2026 | (este commit) | **Narração animada em todas as telas**: roteiro reescrito com mais empolgação (vozes +12% e +6 Hz), falas novas no mapa e no mercado, fechamento com convite para o vestibular de Sistemas para Internet na Fatec Jales e aviso do crachá e dos links no celular. **"Olá, {nome}!" gerado pelo servidor** (`server/voz.js`, voz Thalita) porque a voz do navegador fica bloqueada na TV aberta sem clique. Música: opção 2. Circuito do fundo vai de 60% a 15% de opacidade ao longo das cenas (velocidade igual). Apresentação parada há mais de 10 min com a TV fechada não recomeça sozinha (o caso "Maria"). Testado no Edge: 14 cenas com fala, MP3 com o nome, opacidade e sem erros. |
+| 20/10/2026 | `a7d5958` | **Narração animada em todas as telas**: roteiro reescrito com mais empolgação (vozes +12% e +6 Hz), falas novas no mapa e no mercado, fechamento com convite para o vestibular de Sistemas para Internet na Fatec Jales e aviso do crachá e dos links no celular. **"Olá, {nome}!" gerado pelo servidor** (`server/voz.js`, voz Thalita) porque a voz do navegador fica bloqueada na TV aberta sem clique. Música: opção 2. Circuito do fundo vai de 60% a 15% de opacidade ao longo das cenas (velocidade igual). Apresentação parada há mais de 10 min com a TV fechada não recomeça sozinha (o caso "Maria"). Testado no Edge: 14 cenas com fala, MP3 com o nome, opacidade e sem erros. |
+| 20/10/2026 | (este commit) | **Painel do operador revisado**: o funil conta a mesma coisa em todas as etapas (o celular) e quem chegou a uma etapa conta nas anteriores, então nenhuma % passa de 100%; "Salvou o crachá" e "Abriu o vestibular" são % de quem tocou em Começar; "cadastros" desconta os excluídos (bate com a tabela); "assistiram até o crachá" conta cadastros, não eventos repetidos; interesses somam 100%; gráfico por hora sem pular horas; "hoje" segue o filtro da tabela. **3 trilhas novas de rock** com solo de guitarra e de baixo (opções 4, 5 e 6). |
 
 ## Fases da V5 (todas concluídas)
 
@@ -45,7 +46,7 @@
 
 ## Pendências (estado atual)
 
-- [x] **Música escolhida**: opção 2, future house (`public/js/narration.js → config.music`).
+- [ ] **Escolher a música**: hoje toca a opção 2 (future house). Ouvir as novas opções 4, 5 e 6 (rock com solo de guitarra e de baixo) em `public/audio/music/` e trocar em `public/js/narration.js → config.music`.
 - [ ] Preencher os links do celular em `public/js/content.js → links` (`curso`, `instagram`, `contato`: estão como TODO, sem URL inventada).
 - [x] Migração para a nuvem (multi-rede) implementada, testada e na `main` (docs 12 e 13).
 - [x] Provedor escolhido: **Render (servidor) + Neon (PostgreSQL)**, grátis. Projeto pronto (`render.yaml`, docs 14) e no GitHub.

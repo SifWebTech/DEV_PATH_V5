@@ -202,7 +202,11 @@ async function api(req, res, url) {
     if (req.method === 'GET') {
       if (p === '/api/op/state') return send(res, 200, opState(url));
       if (p === '/api/op/metricas') return send(res, 200, funil.resumo(url.searchParams.get('evento') || ''));
-      if (p === '/api/op/leads') return send(res, 200, { leads: filteredLeads(url).reverse(), todayCount: sessao.todayCount });
+      if (p === '/api/op/leads') {
+        const lista = filteredLeads(url);
+        // "hoje" segue o mesmo filtro da tabela (antes era o total do dia, com ou sem filtro)
+        return send(res, 200, { leads: lista.reverse(), todayCount: lista.filter((l) => (l.when || '').startsWith(today())).length });
+      }
       if (p === '/api/op/leads.csv') {
         const parts = ['leads-devpath', url.searchParams.get('evento') && slug(url.searchParams.get('evento')), url.searchParams.get('interesse'), today()];
         return send(res, 200, store.csvText(filteredLeads(url)), {

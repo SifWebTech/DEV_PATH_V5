@@ -176,7 +176,7 @@
         <section class="card">
           <h2>Do QR Code ao vestibular</h2>
           <ul class="bars" id="funil"></ul>
-          <p class="note">Cada pessoa conta uma vez por etapa. A % é em relação à etapa anterior. Quem tira print do crachá em vez de tocar em "Salvar" não aparece em "Salvou o crachá".</p>
+          <p class="note">Cada pessoa (celular) conta uma vez por etapa, e quem chegou a uma etapa conta também nas anteriores. A % é sobre a etapa anterior; em "Salvou o crachá" e "Abriu o vestibular", sobre quem tocou em Começar. Quem tira print do crachá em vez de tocar em "Salvar" não aparece em "Salvou o crachá".</p>
         </section>
         <section class="card">
           <h2>O que mais chama atenção</h2>
@@ -305,21 +305,28 @@
       const m = await (await api('/api/op/metricas?evento=' + encodeURIComponent(sel))).json();
       fillEventSelects(m.eventos, state?.evento || '');
       const f = Object.fromEntries(m.funil.map((e) => [e.tipo, e.total]));
-      const vistos = f.concluido + m.interrompidos;
+      const terminadas = m.assistiram + m.interrompidos; // apresentações que chegaram ao fim ou foram encerradas
+      const c = m.cadastros;
       $('#kpis').innerHTML = [
-        [f.lead, 'cadastros'],
+        [c.ativos, c.excluidos ? `cadastros (${c.excluidos} excluído${c.excluidos > 1 ? 's' : ''} a pedido)` : 'cadastros'],
         [pct(f.lead, f.qr_aberto), 'de quem abriu o QR Code se cadastrou'],
-        [pct(f.concluido, vistos), `assistiram até o crachá (${m.interrompidos} interrompidas)`],
+        [pct(m.assistiram, terminadas), `assistiram até o crachá (${m.interrompidos} interrompida${m.interrompidos === 1 ? '' : 's'})`],
         [f.vestibular_clique, 'abriram o site do vestibular pelo celular'],
       ].map(([v, t]) => `<div class="kpi"><b>${v}</b><span>${t}</span></div>`).join('');
 
-      bars($('#funil'), m.funil.map((e, k) => ({
-        nome: e.nome, total: e.total,
-        extra: k ? pct(e.total, m.funil[k - 1].total) : '',
-        tip: k ? `${e.nome}: ${e.total} (${pct(e.total, m.funil[k - 1].total)} da etapa anterior)` : `${e.nome}: ${e.total}`,
-      })), 'Sem dados ainda.');
+      // a % de cada etapa é sobre a etapa "base" que o servidor informa (a anterior, ou "Tocou em Começar" nos ramos finais)
+      const etapa = Object.fromEntries(m.funil.map((e) => [e.tipo, e]));
+      bars($('#funil'), m.funil.map((e) => {
+        const b = etapa[e.base];
+        return {
+          nome: e.nome, total: e.total,
+          extra: b ? pct(e.total, b.total) : '',
+          tip: b ? `${e.nome}: ${e.total} (${pct(e.total, b.total)} de "${b.nome}")` : `${e.nome}: ${e.total}`,
+        };
+      }), 'Sem dados ainda.');
 
-      const totalInt = Object.values(m.interesses).reduce((a, b) => a + b, 0);
+      // % só entre os interesses que existem hoje (assim as barras somam 100%)
+      const totalInt = Object.keys(INTEREST).reduce((a, k) => a + (m.interesses[k] || 0), 0);
       bars($('#interesses'), Object.keys(INTEREST).map((k) => ({ nome: INTEREST[k], total: m.interesses[k] || 0, extra: pct(m.interesses[k] || 0, totalInt) })),
         'Nenhum cadastro ainda.');
 

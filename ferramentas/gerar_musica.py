@@ -1,14 +1,19 @@
 """
 DEV PATH V5 — compõe e renderiza as trilhas de fundo (public/audio/music/).
 
-Músicas originais, feitas por código (sem samples, sem licença de terceiros), três estilos animados:
+Músicas originais, feitas por código (sem samples, sem licença de terceiros), seis estilos animados:
   opcao-1-synthwave.mp3     118 BPM, Dó maior   — anos 80 moderno: baixo pulsante, caixa com eco, lead com vibrato
   opcao-2-future-house.mp3  124 BPM, Sol maior  — balanço de festa: baixo no contratempo, acordes "stab", palmas
   opcao-3-electro-pop.mp3   128 BPM, Ré maior   — pop eletrônico: acordes sincopados, sinos, energia de abertura
+  opcao-4-rock-guitarra.mp3 140 BPM, Mi menor   — rock: guitarra distorcida em galope, solo de guitarra e de baixo
+  opcao-5-funk-rock.mp3     116 BPM, Lá (blues) — funk rock: guitarra "chique-chique", baixo com slap, solos
+  opcao-6-pop-punk.mp3      160 BPM, Ré maior   — pop punk: power chords em colcheias, solo rápido e solo de baixo
+Nas três de rock: compassos 1–4 guitarra e bateria, 5–16 banda inteira, 17–24 solo de guitarra,
+25–28 solo de baixo, 29–32 todo mundo junto com a frase final da guitarra.
 Cada uma tem 32 compassos e fecha em loop perfeito (o final emenda no começo).
 A TV toca a que estiver em public/js/narration.js → config.music.
 
-Uso:  python ferramentas/gerar_musica.py            (as três)
+Uso:  python ferramentas/gerar_musica.py            (todas)
       python ferramentas/gerar_musica.py 2          (só a opção 2)
 Precisa de numpy e do ffmpeg no PATH. Mude BPM, acordes ou melodia em ESTILOS e rode de novo.
 """
@@ -60,7 +65,33 @@ ESTILOS = {
         melodia=[(0, 'F#5', 2), (2, 'A5', 2), (4, 'B5', 2), (6, 'A5', 2), (8, 'F#5', 4), (12, 'E5', 4),
                  (16, 'D5', 2), (18, 'E5', 2), (20, 'F#5', 2), (22, 'A5', 2), (24, 'B5', 4), (28, 'A5', 3)],
     ),
+    # ---- banda de rock: guitarra distorcida, baixo elétrico e bateria, com solo de guitarra e solo de baixo ----
+    # acordes = nota grave do power chord de cada compasso (a guitarra toca tônica + quinta + oitava)
+    4: dict(
+        arquivo='opcao-4-rock-guitarra.mp3', bpm=140, semente=41, rock=True,
+        acordes=['E2', 'C3', 'G2', 'D3'], ritmo='galope', bateria='rock', baixo_estilo='oitos',
+        escala=('E', 'menor_pent'), distorcao=8,
+    ),
+    5: dict(
+        arquivo='opcao-5-funk-rock.mp3', bpm=116, semente=53, rock=True,
+        acordes=['A2', 'A2', 'D3', 'E2'], ritmo='funk', bateria='funk', baixo_estilo='funk',
+        escala=('A', 'blues'), distorcao=3,
+    ),
+    6: dict(
+        arquivo='opcao-6-pop-punk.mp3', bpm=160, semente=67, rock=True,
+        acordes=['D3', 'A2', 'B2', 'G2'], ritmo='punk', bateria='punk', baixo_estilo='oitos',
+        escala=('D', 'maior_pent'), distorcao=9,
+    ),
 }
+
+INTERVALOS = {'menor_pent': [0, 3, 5, 7, 10], 'maior_pent': [0, 2, 4, 7, 9], 'blues': [0, 3, 5, 6, 7, 10]}
+
+
+def escala(tonica, tipo, oitava, oitavas=2):
+    """Notas da escala (Hz) a partir da tônica na oitava dada, terminando na tônica de cima."""
+    f0 = nota(f'{tonica}{oitava}')
+    notas = [f0 * 2 ** ((12 * o + i) / 12) for o in range(oitavas) for i in INTERVALOS[tipo]]
+    return notas + [f0 * 2 ** oitavas]
 
 
 # ---------------- utilidades de sinal ----------------
@@ -165,6 +196,153 @@ class Faixa:
         s = (2 * (ph % 1) - 1) + (2 * ((ph * 1.004) % 1) - 1)
         env = np.minimum(1, tt / 0.01) * np.where(tt < dur, 1, np.exp(-(tt - dur) / 0.05))
         return s * env * 0.5
+
+    # -------- banda de rock --------
+    def guitarra(self, freqs, dur, abafada=False, bend=0.0, vibrato=False, dist=8.0):
+        """Guitarra elétrica: cordas (duas serras levemente desafinadas) + palhetada, saturadas juntas.
+        abafada = palm mute (nota curta e grave); bend = começa N semitons abaixo e sobe até a nota."""
+        cauda = 0.03 if abafada else 0.12
+        n = int((dur + cauda * 4) * SR)
+        tt = t_(n)
+        s = np.zeros(n)
+        for f in freqs:
+            curva = f * 2 ** (-bend * np.maximum(0, 1 - tt / 0.12) / 12)
+            if vibrato:
+                curva = curva * (1 + 0.012 * np.sin(2 * np.pi * 5.8 * tt) * np.clip((tt - 0.15) / 0.25, 0, 1))
+            ph = np.cumsum(curva) / SR + self.rng.random()
+            s += (2 * (ph % 1) - 1) + 0.6 * (2 * ((ph * 1.0035) % 1) - 1)
+        s /= len(freqs) * 1.6
+        decai = 22 if abafada else 1.1
+        env = np.minimum(1, tt / 0.002) * np.exp(-tt * decai) * np.where(tt < dur, 1, np.exp(-(tt - dur) / cauda))
+        palheta = self.rng.standard_normal(n) * np.exp(-tt * 400) * 0.25
+        x = s * env + palheta
+        if abafada:
+            x = filtro(x, 1400)
+        return np.tanh(x * dist) / np.tanh(dist)
+
+    def baixo_eletrico(self, f, dur, slap=False):
+        """Baixo de quatro cordas: fundamental + harmônicos que escurecem logo depois do ataque."""
+        n = int((dur + 0.08) * SR)
+        tt = t_(n)
+        brilho = (0.75 if slap else 0.45) * np.exp(-tt * (14 if slap else 7)) + 0.12
+        s = np.sin(2 * np.pi * f * tt) + brilho * self.saw(f, n, 0)
+        if slap:
+            s += np.sin(2 * np.pi * f * 2 * tt) * 0.4 * np.exp(-tt * 10) + self.rng.standard_normal(n) * np.exp(-tt * 250) * 0.5
+        env = np.minimum(1, tt / 0.003) * np.exp(-tt * 2.2) * np.where(tt < dur, 1, np.exp(-(tt - dur) / 0.03))
+        return np.tanh(s * env * 1.6) * 0.8
+
+    def frase(self, notas, compassos, rapida=False):
+        """Solo improvisado na escala: andamento por graus vizinhos, pausas para respirar e,
+        no fim, uma nota longa com bend e vibrato na tônica. Devolve [(passo, Hz, duração em 1/16, bend)]."""
+        ritmos = [[2, 2, 2, 2], [1, 1, 1, 1, 2, 2], [1, 1, 2, 1, 1, 2], [3, 1, 2, 2], [4, 2, 2], [2, 1, 1, 4]]
+        if rapida:
+            ritmos += [[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 2, 1, 1]] * 2
+        total = 16 * compassos
+        i, pos, out = len(notas) // 2, 0, []
+        while pos < total - 6:
+            for d in ritmos[self.rng.integers(len(ritmos))]:
+                if pos >= total - 6:
+                    break
+                i = int(np.clip(i + self.rng.choice([-2, -1, -1, 1, 1, 2, 0]), 0, len(notas) - 1))
+                if self.rng.random() > 0.1:                       # de vez em quando, uma pausa
+                    curva = 1.0 if d >= 3 and self.rng.random() < 0.5 else 0.0
+                    out.append((pos, notas[i], d, curva))
+                pos += d
+        passo = len(INTERVALOS[self.e['escala'][1]])
+        raiz = min(range(0, len(notas), passo), key=lambda k: abs(k - i))
+        out.append((pos, notas[raiz], total - pos, 2.0))       # fecha na tônica com bend de um tom
+        return out
+
+    def render_rock(self):
+        e, B, P = self.e, self.bar, self.passo
+        bat, rit, grv, solo, fx = (self.stereo() for _ in range(5))
+        tonica, tipo = e['escala']
+        notas_guitarra = escala(tonica, tipo, 4)
+        notas_baixo = escala(tonica, tipo, 2)
+        D = e['distorcao']
+        for bar in range(BARS):
+            b0 = bar * B
+            raiz = nota(e['acordes'][bar % 4])
+            power = [raiz, raiz * 1.5, raiz * 2]
+            rb = raiz / 2 if raiz / 2 > 38 else raiz
+            intro = bar < 4                    # 0–3 guitarra e bateria · 4–15 banda · 16–23 solo de guitarra
+            solo_baixo = 24 <= bar < 28        # 24–27 solo de baixo · 28–31 todo mundo junto
+            if bar in (0, 4, 8, 16, 24, 28):
+                self.por(fx, b0, self.prato(), pan=0.25, ganho=0.3)
+
+            # bateria
+            if e['bateria'] == 'punk':
+                bumbos = [0, 4, 8, 12, 14]
+            elif e['bateria'] == 'funk':
+                bumbos = [0, 7, 10]
+            else:
+                bumbos = [0, 6, 8, 10]
+            for k in range(16):
+                t = b0 + k * P
+                if k in bumbos:
+                    self.por(bat, t, self.bumbo(), ganho=0.7)
+                if k in (4, 12) and not (intro and bar < 2):
+                    self.por(bat, t, self.caixa(), ganho=0.6)
+                if e['bateria'] == 'funk' or k % 2 == 0:
+                    self.por(bat, t, self.chimbal(aberto=(k == 14 and not intro)), pan=-0.3, ganho=(0.3 if k % 4 == 0 else 0.17))
+            if bar % 4 == 3:                   # virada no último tempo
+                for k in range(12, 16):
+                    self.por(bat, b0 + k * P, self.caixa(), pan=0.1 * (k - 13), ganho=0.3 + 0.08 * (k - 12))
+
+            # guitarra base
+            g = 0.55 if bar >= 16 and bar < 28 else 0.8
+            if solo_baixo:
+                self.por(rit, b0, self.guitarra(power, self.beat * 1.5, dist=D), pan=-0.35, ganho=g)
+            elif e['ritmo'] == 'galope':
+                for k in (0, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15):
+                    aberta = k in (0, 8) and not intro
+                    s = self.guitarra(power, P * (3.5 if aberta else 0.9), abafada=not aberta, dist=D)
+                    self.por(rit, b0 + k * P, s, pan=-0.35 if k % 2 else 0.35, ganho=g * (1 if aberta else 0.8))
+            elif e['ritmo'] == 'punk':
+                for k in range(0, 16, 2):
+                    s = self.guitarra(power, P * 1.9, abafada=intro, dist=D)
+                    self.por(rit, b0 + k * P, s, pan=-0.35 if k % 4 else 0.35, ganho=g * (1 if k % 4 == 0 else 0.85))
+            else:  # funk: acordes cheios nos contratempos e "chiques" abafados no resto
+                voz = [raiz * 2, raiz * 2 * 1.26, raiz * 3, raiz * 2 * 1.78]   # acorde com sétima, região média
+                for k in range(16):
+                    if k in (0, 3, 6, 10, 12):
+                        self.por(rit, b0 + k * P, self.guitarra(voz, P * 1.4, dist=D), pan=0.3, ganho=g * 0.9)
+                    elif not intro:
+                        self.por(rit, b0 + k * P, self.guitarra(voz, P * 0.3, abafada=True, dist=D), pan=0.3, ganho=g * 0.35)
+
+            # baixo
+            if solo_baixo:
+                if bar == 24:
+                    for passo, f, d, _ in self.frase(notas_baixo, 4, rapida=True):
+                        self.por(grv, b0 + passo * P, self.baixo_eletrico(f, d * P * 0.95, slap=d <= 1), ganho=0.85)
+            elif not intro:
+                if e['baixo_estilo'] == 'funk':
+                    for k, mult in ((0, 1), (3, 2), (6, 1), (8, 1), (10, 2), (11, 1), (14, 1.5)):
+                        self.por(grv, b0 + k * P, self.baixo_eletrico(rb * mult, P * 1.6, slap=mult == 2), ganho=0.7)
+                else:
+                    for k in range(0, 16, 2):
+                        f = rb * (1.5 if k == 14 and bar % 2 else 1)     # nota de passagem no fim do compasso
+                        self.por(grv, b0 + k * P, self.baixo_eletrico(f, P * 1.8), ganho=0.7)
+
+            # solo de guitarra (16–23) e frase final mais rápida (28–31)
+            if bar in (16, 20, 28):
+                for passo, f, d, curva in self.frase(notas_guitarra, 4, rapida=bar == 28):
+                    s = self.guitarra([f], d * P * 0.95, bend=curva, vibrato=d >= 3, dist=D * 1.6)
+                    self.por(solo, b0 + passo * P, s, pan=0.1, ganho=0.5)
+
+        rit = filtro(filtro(rit, 90, 'hp'), 5200)
+        solo = self.eco(filtro(filtro(solo, 180, 'hp'), 6500), self.beat * 0.75, fb=0.25)
+        grv = filtro(filtro(grv, 35, 'hp'), 3200)
+        bat = filtro(bat, 30, 'hp')
+        mix = (bat * 1.0 + grv * 1.0 + self.reverb(rit, seg=1.2, umido=0.1) * 0.75
+               + self.reverb(solo, umido=0.22) * 0.9 + self.reverb(fx, umido=0.3))
+        loop = mix[: self.L].copy()
+        cauda = mix[self.L:]
+        loop[: len(cauda)] += cauda
+        loop = filtro(loop, 28, 'hp')
+        loop *= 0.17 / np.sqrt((loop ** 2).mean())
+        loop = np.tanh(loop * 1.15) / np.tanh(1.15)
+        return loop * (0.97 / np.abs(loop).max())
 
     # -------- mixagem --------
     def stereo(self):
@@ -311,4 +489,5 @@ if __name__ == '__main__':
     escolha = [int(a) for a in sys.argv[1:]] or list(ESTILOS)
     for k in escolha:
         est = ESTILOS[k]
-        salvar(Faixa(est).render(), est['arquivo'], est['bpm'])
+        faixa = Faixa(est)
+        salvar(faixa.render_rock() if est.get('rock') else faixa.render(), est['arquivo'], est['bpm'])
