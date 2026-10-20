@@ -1,6 +1,6 @@
 /*
  * Saudação com o nome do visitante ("Olá, Ana! Que bom ter você aqui!") na mesma voz neural dos MP3
- * da narração (Thalita, pt-BR), gerada aqui no servidor pelo serviço de voz do Microsoft Edge (msedge-tts).
+ * da narração (Francisca, pt-BR), gerada aqui no servidor pelo serviço de voz do Microsoft Edge (msedge-tts).
  *
  * Por que no servidor: a voz do navegador (speechSynthesis) fica bloqueada na TV aberta sozinha em
  * tela cheia, sem ninguém clicar, e aí o nome só aparecia na legenda.
@@ -13,8 +13,8 @@
  */
 'use strict';
 
-const VOZ = 'pt-BR-ThalitaMultilingualNeural';
-const PROSODIA = { rate: '+12%', pitch: '+6Hz' }; // igual a ferramentas/gerar_narracao.py: voz animada
+const VOZ = 'pt-BR-FranciscaNeural';               // a narradora (só português do Brasil)
+const PROSODIA = { rate: '+16%', pitch: '+12Hz', volume: '+10%' }; // a entonação de exclamação de ferramentas/gerar_narracao.py
 const TEXTO = (nome) => `Olá, ${nome}! Que bom ter você aqui!`; // o mesmo texto do manifesto (narration.js → boot)
 const LIMITE = 200;                                 // saudações guardadas na memória
 const cache = new Map();                            // id do cadastro → Promise<Buffer | null>

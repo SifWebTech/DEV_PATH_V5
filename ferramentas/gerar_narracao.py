@@ -6,10 +6,10 @@ fala cada trecho com a voz neural do tipo certo e grava:
   public/audio/narration/<arquivo>.mp3   a narração
   public/js/narration-timing.js          o instante exato de cada palavra (sincroniza legenda e destaques)
 
-Só regera o que mudou (texto, voz, velocidade ou tom). Para regerar tudo: --tudo
+Só regera o que mudou (texto, voz ou entonação). Para regerar tudo: --tudo
 
 Uso (precisa de internet só na hora de gerar; na apresentação os MP3 tocam offline):
-  python -m pip install edge-tts
+  python -m pip install edge-tts numpy      (e o ffmpeg no PATH)
   python ferramentas/gerar_narracao.py
   python ferramentas/gerar_narracao.py --amostras   (mesma frase em todas as vozes pt-BR, para comparar)
 
@@ -19,26 +19,36 @@ import asyncio
 import hashlib
 import json
 import pathlib
+import re
 import subprocess
 import sys
 import unicodedata
 
 import edge_tts
+import numpy as np
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PUBLIC = ROOT / 'public'
 TIMING = PUBLIC / 'js' / 'narration-timing.js'
 
-# Vozes neurais pt-BR disponíveis de graça: Thalita (multilíngue, a mais nova), Francisca e Antonio.
+# Vozes neurais do Brasil disponíveis de graça: Francisca e Thalita (narradoras) e Antonio (narrador).
+# A narradora é a Francisca: a Thalita é "multilíngue" e pode puxar sotaque de outra língua.
+# Para comparar as três: python ferramentas/gerar_narracao.py --amostras
 VOZES = {
-    'female': 'pt-BR-ThalitaMultilingualNeural',
+    'female': 'pt-BR-FranciscaNeural',
     'male': 'pt-BR-AntonioNeural',
 }
-# Narração animada: mais ágil e com o tom um pouco mais alto que o padrão (as vozes grátis não têm
-# "estilo empolgado"; a empolgação vem daqui e das exclamações do texto). Igual a server/voz.js.
-VELOCIDADE = '+12%'
-TOM = '+6Hz'
-AMOSTRA = 'Olá! No terceiro semestre, o sistema começa a ganhar inteligência: banco de dados, programação web e servidores.'
+# Entonação por frase (as vozes grátis não têm "estilo empolgado"): cada frase é gerada com a sua
+# própria velocidade, tom e volume, e os pedaços são emendados. Assim a fala sobe e desce, com ênfase
+# nas exclamações, em vez de ficar num tom só. Igual a server/voz.js.
+ENTONACAO = {
+    '!': dict(rate='+16%', pitch='+12Hz', volume='+10%'),   # exclamação: mais rápida, mais aguda e mais forte
+    '?': dict(rate='+8%', pitch='+16Hz', volume='+5%'),     # pergunta: sobe
+    '.': dict(rate='+10%', pitch='+5Hz', volume='+0%'),     # afirmação: firme, um pouco mais ágil
+}
+PAUSA = {'!': 0.22, '?': 0.32, '.': 0.26}   # segundos de pausa depois de cada tipo de frase
+TAXA = 24000                                 # amostras por segundo das vozes do edge-tts
+AMOSTRA = 'Olá! Que bom ter você aqui! No terceiro semestre, o sistema ganha inteligência. E o inglês vira ferramenta de trabalho! Qual vai ser o seu caminho?'
 
 
 def manifesto():
@@ -68,18 +78,59 @@ def norm(s):
     return ''.join(c for c in unicodedata.normalize('NFD', s.lower()) if unicodedata.category(c) != 'Mn')
 
 
+def frases(texto):
+    """'Olá! Tudo bem? Vamos.' → ['Olá!', 'Tudo bem?', 'Vamos.'] (o sinal do fim decide a entonação)"""
+    return [f.strip() for f in re.findall(r'[^.!?]+[.!?]*', texto) if f.strip()]
+
+
+def decodificar(mp3):
+    """MP3 → amostras (float, mono, TAXA Hz) pelo ffmpeg."""
+    out = subprocess.run(['ffmpeg', '-hide_banner', '-loglevel', 'error', '-i', 'pipe:0', '-f', 's16le', '-ac', '1', '-ar', str(TAXA), 'pipe:1'],
+                         input=bytes(mp3), capture_output=True, check=True)
+    return np.frombuffer(out.stdout, dtype='<i2').astype(np.float32) / 32768
+
+
+def fim_da_voz(x):
+    """Último instante (s) com voz: o resto do pedaço é silêncio que o serviço acrescenta."""
+    janela = int(0.01 * TAXA)
+    n = len(x) // janela
+    if not n:
+        return len(x) / TAXA
+    rms = np.sqrt((x[: n * janela].reshape(n, janela) ** 2).mean(axis=1))
+    com_voz = np.nonzero(rms > 0.01)[0]
+    return ((com_voz[-1] + 1) * janela / TAXA) if len(com_voz) else len(x) / TAXA
+
+
 async def falar(texto, voz, destino):
-    """Grava o MP3 e devolve [[segundos, posição no texto], …] de cada palavra falada."""
-    com = edge_tts.Communicate(texto, voz, rate=VELOCIDADE, pitch=TOM, boundary='WordBoundary')
-    audio = bytearray()
-    palavras = []
-    async for parte in com.stream():
-        if parte['type'] == 'audio':
-            audio += parte['data']
-        elif parte['type'] == 'WordBoundary':
-            palavras.append((parte['offset'] / 10_000_000, parte['text']))  # offset vem em 100 ns
+    """Grava o MP3 (uma entonação por frase) e devolve [[segundos, posição no texto], …] de cada palavra.
+    Cada frase vem do serviço com silêncio no começo e no fim: ele é cortado e as frases são emendadas
+    com uma pausa curta (PAUSA), senão a fala fica arrastada."""
+    pedacos, palavras, t = [], [], 0.0
+    for frase in frases(texto):
+        mp3, marcas_frase = bytearray(), []
+        com = edge_tts.Communicate(frase, voz, boundary='WordBoundary', **ENTONACAO.get(frase[-1], ENTONACAO['.']))
+        async for parte in com.stream():
+            if parte['type'] == 'audio':
+                mp3 += parte['data']
+            elif parte['type'] == 'WordBoundary':
+                marcas_frase.append((parte['offset'] / 10_000_000, parte['text']))  # offset vem em 100 ns
+        if not mp3:
+            raise edge_tts.exceptions.NoAudioReceived('sem áudio')
+        x = decodificar(mp3)
+        ini = max(0.0, (marcas_frase[0][0] if marcas_frase else 0) - 0.04)   # um respiro antes da 1ª palavra
+        fim = min(len(x) / TAXA, fim_da_voz(x) + 0.06)
+        if pedacos:
+            pausa = PAUSA.get(pedacos[-1][1], PAUSA['.'])
+            pedacos.append((np.zeros(int(pausa * TAXA), dtype=np.float32), ''))
+            t += pausa
+        pedacos.append((x[int(ini * TAXA): int(fim * TAXA)], frase[-1]))
+        palavras += [(t + s - ini, w) for s, w in marcas_frase]
+        t += fim - ini
+    pcm = np.concatenate([p for p, _ in pedacos])
     destino.parent.mkdir(parents=True, exist_ok=True)
-    destino.write_bytes(audio)
+    subprocess.run(['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y', '-f', 's16le', '-ac', '1', '-ar', str(TAXA), '-i', 'pipe:0',
+                    '-codec:a', 'libmp3lame', '-b:a', '64k', str(destino)],
+                   input=(np.clip(pcm, -1, 1) * 32767).astype('<i2').tobytes(), check=True)
     # cada palavra falada → onde ela começa no texto (procura em ordem)
     hay, pos, marcas = norm(texto), 0, []
     for t, w in palavras:
@@ -120,7 +171,7 @@ async def main():
     novos = {}
     for audio, texto, tipo in trechos(manifesto()):
         voz = VOZES[tipo]
-        assinatura = hashlib.sha1(f'{voz}|{VELOCIDADE}|{TOM}|{texto}'.encode()).hexdigest()[:12]
+        assinatura = hashlib.sha1(f'{voz}|{json.dumps([ENTONACAO, PAUSA], sort_keys=True)}|{texto}'.encode()).hexdigest()[:12]
         destino = PUBLIC / audio
         antigo = tempos.get(audio)
         if not tudo and antigo and antigo.get('hash') == assinatura and destino.exists():
