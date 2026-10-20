@@ -43,6 +43,12 @@
   const emit = (kind, value) => N.on[kind].forEach((fn) => { try { fn(value); } catch (err) { console.error(err); } });
   const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
   const fill = (text, o) => String(text || '').replace(/\{nome\}/g, o.nome || '');
+  // Endereço do MP3 com a "versão" (o hash gravado em narration-timing.js): quando um áudio é regravado,
+  // o endereço muda e a TV baixa o novo, em vez de tocar o antigo guardado no cache do navegador.
+  const versao = (url) => {
+    const h = url && window.DEVPATH_NARRACAO_TEMPOS?.[url]?.hash;
+    return h ? `${url}?v=${h}` : url;
+  };
   const other = (g) => (g === 'male' ? 'female' : 'male');
   // sem voz do tipo pedido, a outra fala no lugar (nunca fica mudo por falta de uma voz)
   const voiceFor = (g) => N.voices[g] || N.voices[other(g)] || null;
@@ -143,7 +149,7 @@
     text = fill(text, o);
     let mode = 'silent';
     if (N.enabled && AudioEngine.ready) {
-      if (audio && (await AudioEngine.exists(audio)) !== false) mode = 'mp3';
+      if (audio && (await AudioEngine.exists(versao(audio))) !== false) mode = 'mp3';
       else if (ttsReady(gender)) mode = 'tts';
     }
     return item(seg, text, audio, mode, gender);
@@ -239,7 +245,7 @@
 
   function playMp3(run, seg) {
     return new Promise((resolve) => {
-      const h = AudioEngine.playNarration(seg.audio);
+      const h = AudioEngine.playNarration(versao(seg.audio));
       const est = estimate(seg.text);
       // instante de cada palavra, gravado junto com o MP3 (ferramentas/gerar_narracao.py);
       // sem ele (MP3 gravado por uma pessoa), a posição é proporcional à duração
@@ -410,7 +416,7 @@
     // baixa antes os MP3 de uma cena (a TV chama para a cena seguinte)
     preload(key, perfil = 'apps') {
       const segs = M.scenes[key]?.segments || [];
-      AudioEngine.preload(segs.filter((s) => !s.profile || s.profile === perfil).flatMap((s) => [s.audio, s.fallback?.audio]));
+      AudioEngine.preload(segs.filter((s) => !s.profile || s.profile === perfil).flatMap((s) => [s.audio, s.fallback?.audio]).map(versao));
     },
     // Só a saudação com o nome ("Olá, Ana."), com o mesmo fallback do manifesto
     speakDynamicWelcome: (nome) => playScene('welcome', {
