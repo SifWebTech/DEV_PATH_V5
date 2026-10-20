@@ -13,7 +13,7 @@
  *   Narrator.onMarker(fn)    marcador    → destaque, competência desbloqueada…
  *   Narrator.onBlocked(fn)                → o navegador bloqueou a voz (falta o clique)
  *
- *   const h = await Narrator.play('journey3', { nome: 'Ana', perfil: 'apps', fallbackSec: 15 })
+ *   const h = await Narrator.play('journey3', { nome: 'Ana', id: '<id do cadastro>', perfil: 'apps', fallbackSec: 15 })
  *   h.voiced   há voz? (se não, a TV usa a duração de STEPS)
  *   h.done     Promise: 'ended' (terminou) ou 'stopped' (outra cena começou)
  *   h.pause() / h.resume()        Narrator.stop()
@@ -132,6 +132,9 @@
     let text = seg.text, audio = seg.audio;
     const gender = seg.voice || sceneVoice || 'female';
     if (seg.dynamic) {
+      // 1º o MP3 que o servidor gera com o nome (mesma voz neural); 2º a voz do navegador; 3º o fallback gravado
+      const own = seg.server && o.id ? seg.server.replace('{id}', o.id) : '';
+      if (N.enabled && o.nome && AudioEngine.ready && own && (await AudioEngine.exists(own))) return item(seg, fill(text, o), own, 'mp3', gender);
       if (N.enabled && o.nome && AudioEngine.ready && ttsReady(gender)) return item(seg, fill(text, o), null, 'tts', gender);
       text = seg.fallback?.text;
       audio = seg.fallback?.audio;

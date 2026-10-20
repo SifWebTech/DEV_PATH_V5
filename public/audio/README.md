@@ -21,8 +21,8 @@ Para trocar um arquivo, copie o novo com **o nome exato** e recarregue a TV (F5)
 | Arquivo | Estilo |
 |---|---|
 | `opcao-1-synthwave.mp3` | 118 BPM, Dó maior: synthwave moderno, baixo pulsante, melodia com vibrato |
-| `opcao-2-future-house.mp3` | 124 BPM, Sol maior: future house, baixo no contratempo, acordes "stab", palmas |
-| `opcao-3-electro-pop.mp3` | 128 BPM, Ré maior: electro-pop, acordes sincopados, sinos (**a que toca hoje**) |
+| `opcao-2-future-house.mp3` | 124 BPM, Sol maior: future house, baixo no contratempo, acordes "stab", palmas (**a que toca hoje**) |
+| `opcao-3-electro-pop.mp3` | 128 BPM, Ré maior: electro-pop, acordes sincopados, sinos |
 
 A trilha em uso é `config.music` em `js/narration.js`. As três são composições originais geradas por código: não há licença de terceiros.
 Para usar uma música de fora, ela precisa ter licença (feita por vocês, domínio público ou banco com licença de uso); música de streaming não pode. Exporte em volume normal: o código controla o volume (`config.volume.music`) e abaixa durante a narração.

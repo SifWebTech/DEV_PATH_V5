@@ -34,14 +34,19 @@
   const STEPS = [
     { type: 'boot', dur: 8, label: 'Inicializando seu futuro' },
     { type: 'hook', dur: 8, label: 'Você e a tecnologia' },
-    { type: 'map', dur: 8, label: 'O caminho em 6 semestres' },
+    { type: 'map', dur: 11, label: 'O caminho em 6 semestres' },
     ...C.semesters.map((s) => ({ type: 'journey', sem: s.n, dur: 15, label: `${s.n}º semestre: ${s.stage}` })),
     { type: 'create', dur: 10, label: 'O que você vai poder criar' },
     { type: 'careers', dur: 10, label: 'Onde você pode chegar' },
-    { type: 'market', dur: 8, label: 'Tecnologia em todo lugar' },
+    { type: 'market', dur: 11, label: 'Tecnologia em todo lugar' },
     { type: 'fatec', dur: 10, label: 'Por que a Fatec' },
-    { type: 'finale', dur: 18, label: 'Seu crachá de dev' },
+    { type: 'finale', dur: 30, label: 'Seu crachá de dev' },
   ];
+
+  // Circuito do fundo: começa na opacidade do tv.css e fica mais transparente a cada cena,
+  // chegando a 15% na última. A velocidade dos pulsos não muda por causa disso.
+  const CIRCUIT_FADE = { first: 0.6, last: 0.15 };
+  const circuitOpacity = (i) => CIRCUIT_FADE.first - (CIRCUIT_FADE.first - CIRCUIT_FADE.last) * (i / (STEPS.length - 1));
 
   const S = {
     online: false,
@@ -137,6 +142,7 @@
   function renderIdle() {
     stage.dataset.scene = 'idle';
     circuit.setEnergy(0.12);
+    circuit.setOpacity(CIRCUIT_FADE.first);
     const next = S.queueNext.length ? `<p class="idle-next">Em seguida na tela: <b>${S.queueNext.map(esc).join(', ')}</b></p>` : '';
     swapScene(`
       <section class="scene scene-idle">
@@ -632,6 +638,7 @@
     const step = STEPS[i];
     S.i = i;
     stage.dataset.scene = step.type;
+    circuit.setOpacity(circuitOpacity(i));
     if (step.type === 'journey') {
       if (prev?.type === 'journey' && $('#journey')) updateJourney(step.sem);
       else renderJourney(step.sem);
@@ -654,7 +661,7 @@
     const i = S.i;
     const following = STEPS[i + 1];
     if (following) Narrator.preload(sceneKey(following), S.lead?.interest); // a próxima fala já fica baixada
-    const h = await Narrator.play(sceneKey(step), { nome: firstName(), perfil: S.lead?.interest, fallbackSec: step.dur });
+    const h = await Narrator.play(sceneKey(step), { nome: firstName(), id: S.lead?.id, perfil: S.lead?.interest, fallbackSec: step.dur });
     if (S.i !== i || STEPS[S.i] !== step || !h) return;  // a cena já mudou, ou ela não tem fala
     if (!h.voiced) return;                                // só legenda: o relógio de STEPS continua valendo
     clearTimeout(S.timer);

@@ -11,6 +11,7 @@
     "importar": "node server/importar.js"
   },
   "dependencies": {
+    "msedge-tts": "^2.1.0",
     "pg": "^8.13.0"
   },
   "engines": {

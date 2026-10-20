@@ -28,7 +28,9 @@
 | 19–20/10/2026 | `4cbf80e` | **Narração, música e efeitos na TV** (docs 09, 10, 11): narradora Thalita + narrador Antonio (vozes neurais, MP3 gerados por `ferramentas/gerar_narracao.py`), "Olá, {nome}" pela voz neural do Edge, cena avança no fim da fala, ducking, destaques sincronizados palavra a palavra, "competência desbloqueada", legenda, botão "Ativar áudio", mudo/legenda/narração pelo painel, 3 trilhas animadas originais (`ferramentas/gerar_musica.py`), celular com "DEV PATH CONCLUÍDO ✓" e próximos passos. Testado no Edge e no Chrome (31 verificações). |
 | 20/10/2026 | `a3e0087` | **Arquitetura na nuvem** (docs 12, 13, 14): QR público `PUBLIC_BASE_URL/join/<código opaco>`, TV em `/presentation/EVENTO/TELÃO`, vários telões com filas independentes, estados OFFLINE/WAITING/READY/RUNNING/FINISHING, PostgreSQL (com arquivos como alternativa), login assinado, cabeçalhos de segurança, limite de pedidos, reconexão. SSE mantido no lugar de Socket.IO (decisão do usuário). Testes: 41 verificações em arquivos + 41 em PostgreSQL + 10 ponta a ponta no Edge + painel. Preparado para o **Render + Neon** (grátis): `render.yaml`, Node 24, fuso de São Paulo, endereço público automático; ambiente do Render simulado e aprovado. |
 | 20/10/2026 | `main` = `a3e0087` | As duas branches juntadas na `main` e enviadas ao GitHub. |
-| 20/10/2026 | (este commit) | **Banco Neon criado e conectado**: `DATABASE_URL` (com pooler) no dia a dia e `DATABASE_URL_UNPOOLED` (direta) nas migrations; `.env.local` (do `neon env pull`) lido pelo servidor e pelo `npm run importar`, fora do Git. `INICIAR.bat` liga `DEVPATH_OFFLINE=1` (estande nunca depende da internet); sem banco fora da produção, cai para `data/`. Render roda `npm run build` (checagem). Testado: servidor em modo postgres no Neon (7 cadastros), importação e modo offline. |
+| 20/10/2026 | `c846843` | **Banco Neon criado e conectado**: `DATABASE_URL` (com pooler) no dia a dia e `DATABASE_URL_UNPOOLED` (direta) nas migrations; `.env.local` (do `neon env pull`) lido pelo servidor e pelo `npm run importar`, fora do Git. `INICIAR.bat` liga `DEVPATH_OFFLINE=1` (estande nunca depende da internet); sem banco fora da produção, cai para `data/`. Render roda `npm run build` (checagem). Testado: servidor em modo postgres no Neon (7 cadastros), importação e modo offline. |
+| 20/10/2026 | `d6bac05` | **Publicado no Render**: https://devpath-uhhd.onrender.com (`/healthz` → postgres). Endereço da TV no `INICIAR-NUVEM.bat`. |
+| 20/10/2026 | (este commit) | **Narração animada em todas as telas**: roteiro reescrito com mais empolgação (vozes +12% e +6 Hz), falas novas no mapa e no mercado, fechamento com convite para o vestibular de Sistemas para Internet na Fatec Jales e aviso do crachá e dos links no celular. **"Olá, {nome}!" gerado pelo servidor** (`server/voz.js`, voz Thalita) porque a voz do navegador fica bloqueada na TV aberta sem clique. Música: opção 2. Circuito do fundo vai de 60% a 15% de opacidade ao longo das cenas (velocidade igual). Apresentação parada há mais de 10 min com a TV fechada não recomeça sozinha (o caso "Maria"). Testado no Edge: 14 cenas com fala, MP3 com o nome, opacidade e sem erros. |
 
 ## Fases da V5 (todas concluídas)
 
@@ -43,7 +45,7 @@
 
 ## Pendências (estado atual)
 
-- [ ] **Escolher a música**: ouvir `public/audio/music/opcao-1/2/3` e pôr a escolhida em `public/js/narration.js → config.music` (hoje: opção 3, electro-pop).
+- [x] **Música escolhida**: opção 2, future house (`public/js/narration.js → config.music`).
 - [ ] Preencher os links do celular em `public/js/content.js → links` (`curso`, `instagram`, `contato`: estão como TODO, sem URL inventada).
 - [x] Migração para a nuvem (multi-rede) implementada, testada e na `main` (docs 12 e 13).
 - [x] Provedor escolhido: **Render (servidor) + Neon (PostgreSQL)**, grátis. Projeto pronto (`render.yaml`, docs 14) e no GitHub.

@@ -11,7 +11,9 @@
  *   id        nome curto (aparece nos testes e na documentação)
  *   text      o que é dito e mostrado na legenda. {nome} = primeiro nome do visitante
  *   audio     MP3 gravado (opcional). Se existir, tem prioridade sobre a voz do navegador
- *   dynamic   true = fala personalizada (com o nome): sempre pela voz do navegador
+ *   dynamic   true = fala personalizada (com o nome): não dá para gravar antes
+ *   server    (só em dynamic) MP3 que o servidor gera com o nome na mesma voz neural ({id} = id do cadastro);
+ *             sem ele, a voz do navegador; sem os dois, o fallback
  *   fallback  { text, audio } usado quando a fala dinâmica não é possível (sem nome ou sem voz)
  *   profile   só toca para quem escolheu esse interesse no celular (design, logic, apps, business)
  *   voice     'female' ou 'male': quem fala este trecho (sem isso, vale o `voice` da cena)
@@ -24,7 +26,7 @@
  *   voice     'female' (narradora) ou 'male' (narrador). As cenas se alternam, e cada transição
  *             entre semestres é dita por quem narrou o semestre anterior, como um diálogo.
  *   hold      segundos parados na tela depois que a narração termina (padrão: config.hold)
- * Cenas sem entrada aqui (map, market) não têm narração e usam a duração de STEPS.
+ * Todas as cenas têm narração. Uma cena sem entrada aqui usaria só a duração de STEPS.
  * A duração de STEPS também é o "durationFallback": vale quando não há voz nenhuma.
  */
 window.DEVPATH_NARRACAO = {
@@ -46,7 +48,7 @@ window.DEVPATH_NARRACAO = {
 
     // trilha (ferramentas/gerar_musica.py compõe as três opções):
     //   opcao-1-synthwave.mp3 · opcao-2-future-house.mp3 · opcao-3-electro-pop.mp3
-    music: 'audio/music/opcao-3-electro-pop.mp3',
+    music: 'audio/music/opcao-2-future-house.mp3',
     synthMusic: true,         // sem o MP3 acima, o navegador sintetiza uma trilha discreta (false = silêncio)
     sfx: {
       transition: 'audio/sfx/transition.mp3',
@@ -57,8 +59,8 @@ window.DEVPATH_NARRACAO = {
     synthSfx: true,           // sem os MP3 acima, efeitos sintetizados bem curtos (false = sem efeitos)
 
     // A narração principal são os MP3 gerados com vozes neurais (ferramentas/gerar_narracao.py):
-    // Thalita (narradora) e Antonio (narrador). A voz do navegador só entra no "Olá, {nome}."
-    // (não dá para gravar todos os nomes) e se faltar algum MP3. Para combinar com os MP3, a TV abre
+    // Thalita (narradora) e Antonio (narrador), em ritmo animado. O "Olá, {nome}!" vem do servidor
+    // (server/voz.js, mesma voz); a voz do navegador só entra se ele ou algum MP3 faltar. Para combinar com os MP3, a TV abre
     // no Edge, que tem as mesmas vozes "Online (Natural)"; sem internet, Maria e Daniel do Windows.
     voice: {
       female: { prefer: ['Thalita', 'Francisca', 'Maria'] },
@@ -76,7 +78,7 @@ window.DEVPATH_NARRACAO = {
       voice: 'male',
       segments: [
         { id: 'espera', audio: 'audio/narration/00-espera.mp3',
-          text: 'Quer descobrir como uma ideia se transforma em tecnologia? Escaneie o QR Code e comece seu DEV PATH.' },
+          text: 'Ei, você! Quer descobrir como uma ideia vira tecnologia de verdade? Escaneie o QR Code e comece agora o seu DEV PATH!' },
       ],
     },
 
@@ -84,10 +86,10 @@ window.DEVPATH_NARRACAO = {
     boot: {
       voice: 'female',
       segments: [
-        { id: 'ola', dynamic: true, text: 'Olá, {nome}.',
-          fallback: { text: 'Olá. Seu DEV PATH começa agora.', audio: 'audio/narration/01a-ola-sem-nome.mp3' } },
+        { id: 'ola', dynamic: true, text: 'Olá, {nome}! Que bom ter você aqui!', server: '/api/voz/ola/{id}.mp3', // mesmo texto de server/voz.js
+          fallback: { text: 'Olá! Que bom ter você aqui! Seu DEV PATH começa agora!', audio: 'audio/narration/01a-ola-sem-nome.mp3' } },
         { id: 'boas-vindas', audio: 'audio/narration/01-boas-vindas.mp3',
-          text: 'A partir de agora, você vai percorrer uma jornada de seis semestres e descobrir como uma ideia pode se transformar em uma solução digital de verdade.' },
+          text: 'Prepare-se! Você vai percorrer uma jornada de seis semestres e descobrir como uma ideia se transforma em uma solução digital de verdade!' },
       ],
     },
 
@@ -96,13 +98,22 @@ window.DEVPATH_NARRACAO = {
       voice: 'male',
       segments: [
         { id: 'interesse-mobile', profile: 'apps', audio: 'audio/narration/02-interesse-mobile.mp3',
-          text: 'Você escolheu desenvolvimento mobile. Durante a jornada, observe como programação, dados, servidores e experiência do usuário vão se conectando até chegar ao desenvolvimento para dispositivos móveis.' },
+          text: 'Você escolheu desenvolvimento mobile! Que demais! Durante a jornada, repare como programação, dados, servidores e experiência do usuário vão se conectando até chegar aos aplicativos de celular.' },
         { id: 'interesse-web', profile: 'design', audio: 'audio/narration/02-interesse-web.mp3',
-          text: 'Você escolheu desenvolvimento web. Observe como lógica, interfaces, servidores e dados vão se conectando até formar aplicações completas.' },
+          text: 'Você escolheu desenvolvimento web! Ótima escolha! Repare como lógica, interfaces, servidores e dados vão se conectando até formar aplicações completas.' },
         { id: 'interesse-dados', profile: 'logic', audio: 'audio/narration/02-interesse-dados.mp3',
-          text: 'Você escolheu dados. Repare como lógica, estruturas, banco de dados e servidores passam a trabalhar juntos.' },
+          text: 'Você escolheu dados! Excelente! Repare como lógica, estruturas, banco de dados e servidores passam a trabalhar juntos.' },
         { id: 'interesse-produto', profile: 'business', audio: 'audio/narration/02-interesse-produto.mp3',
-          text: 'Você escolheu produtos digitais. Observe como tecnologia, experiência, prototipagem e negócio passam a se conectar.' },
+          text: 'Você escolheu produtos digitais! Muito bom! Repare como tecnologia, experiência, prototipagem e negócio passam a se conectar.' },
+      ],
+    },
+
+    /* 3. mapa dos 6 semestres */
+    map: {
+      voice: 'female',
+      segments: [
+        { id: 'mapa', audio: 'audio/narration/02b-mapa.mp3',
+          text: 'Olha só o mapa: seis semestres, da ideia ao lançamento! Cada semestre soma uma camada nova ao que você já sabe. E fica de olho: um produto vai nascer bem aqui, na tela!' },
       ],
     },
 
@@ -111,7 +122,7 @@ window.DEVPATH_NARRACAO = {
       voice: 'female',
       segments: [
         { id: 'semestre-1', audio: 'audio/narration/03-semestre-1.mp3',
-          text: 'Tudo começa aprendendo a pensar como quem cria. No primeiro semestre, você desenvolve raciocínio lógico, conhece os fundamentos da internet, começa a trabalhar com conteúdo, design e descobre como transformar uma ideia em uma primeira estrutura digital.',
+          text: 'Tudo começa aprendendo a pensar como quem cria! No primeiro semestre, você desenvolve raciocínio lógico, conhece os fundamentos da internet, trabalha com conteúdo e design, e transforma uma ideia na sua primeira estrutura digital!',
           markers: [
             { word: 'raciocínio lógico', action: 'highlight', target: 'Algoritmos' },
             { word: 'fundamentos da internet', action: 'highlight', target: 'Bases da Internet' },
@@ -125,9 +136,9 @@ window.DEVPATH_NARRACAO = {
       voice: 'male',
       segments: [
         { id: 'transicao-1-2', voice: 'female', audio: 'audio/narration/04a-transicao-1-2.mp3',
-          text: 'Agora que você aprendeu a estruturar uma ideia, chegou a hora de dar forma a ela.' },
+          text: 'Você já sabe estruturar uma ideia. Agora é hora de dar forma a ela!' },
         { id: 'semestre-2', audio: 'audio/narration/04-semestre-2.mp3',
-          text: 'Agora a ideia começa a ganhar forma. No segundo semestre, você evolui na criação de interfaces, aprende a organizar informações, compreende melhor as redes e passa a entender a estrutura que existe por trás de uma experiência digital.',
+          text: 'E a ideia ganha forma! No segundo semestre, você evolui na criação de interfaces, aprende a organizar informações, entende as redes e descobre a estrutura que existe por trás de toda experiência digital!',
           markers: [
             { word: 'criação de interfaces', action: 'highlight', target: 'Prática de Design' },
             { word: 'organizar informações', action: 'highlight', target: 'Estrutura de Dados' },
@@ -140,9 +151,9 @@ window.DEVPATH_NARRACAO = {
       voice: 'female',
       segments: [
         { id: 'transicao-2-3', voice: 'male', audio: 'audio/narration/05a-transicao-2-3.mp3',
-          text: 'A interface já existe. Agora o sistema precisa começar a guardar, processar e responder.' },
+          text: 'A interface está pronta. Agora o sistema precisa guardar, processar e responder!' },
         { id: 'semestre-3', audio: 'audio/narration/05-semestre-3.mp3',
-          text: 'No terceiro semestre, o sistema começa a ganhar inteligência. Entram banco de dados, programação web, servidores e engenharia de software. A página deixa de ser apenas visual e começa a receber, processar, armazenar e devolver informações.',
+          text: 'No terceiro semestre, o sistema ganha inteligência! Entram banco de dados, programação web, servidores e engenharia de software. A página deixa de ser só visual e passa a receber, processar, armazenar e devolver informações!',
           markers: [
             { word: 'banco de dados', action: 'highlight', target: 'banco de dados' },
             { word: 'programação web', action: 'highlight', target: 'Programação de Sítios' },
@@ -156,9 +167,9 @@ window.DEVPATH_NARRACAO = {
       voice: 'male',
       segments: [
         { id: 'transicao-3-4', voice: 'female', audio: 'audio/narration/06a-transicao-3-4.mp3',
-          text: 'Agora que o sistema funciona, chegou a hora de conectar suas partes e protegê-las.' },
+          text: 'O sistema funciona! Agora é hora de conectar as partes e proteger tudo!' },
         { id: 'semestre-4', audio: 'audio/narration/06-semestre-4.mp3',
-          text: 'Chegou a hora de conectar as partes. Interface, servidor e banco de dados passam a trabalhar juntos. Você também aprende sobre segurança, gestão de projetos e navegação. É aqui que começa a enxergar o sistema como uma arquitetura completa.',
+          text: 'Chegou a hora de conectar tudo! Interface, servidor e banco de dados trabalhando juntos. Você também aprende segurança, gestão de projetos e navegação. É aqui que você passa a enxergar o sistema como uma arquitetura completa!',
           markers: [
             { word: 'servidor', action: 'highlight', target: 'servidor' },
             { word: 'segurança', action: 'highlight', target: 'Segurança' },
@@ -172,9 +183,9 @@ window.DEVPATH_NARRACAO = {
       voice: 'female',
       segments: [
         { id: 'transicao-4-5', voice: 'male', audio: 'audio/narration/07a-transicao-4-5.mp3',
-          text: 'A tecnologia já funciona. Agora ela precisa resolver problemas reais para pessoas reais.' },
+          text: 'A tecnologia já funciona. Agora ela vai resolver problemas reais, de pessoas reais!' },
         { id: 'semestre-5', audio: 'audio/narration/07-semestre-5.mp3',
-          text: 'No quinto semestre, tecnologia começa a se transformar em produto. Desenvolvimento mobile, servidores, prototipagem, usabilidade e marketing se encontram. Você não pensa apenas em código. Você começa a pensar em pessoas, experiência e oportunidades.',
+          text: 'No quinto semestre, a tecnologia vira produto! Desenvolvimento mobile, servidores, prototipagem, usabilidade e marketing se encontram. Você não pensa só em código: você pensa em pessoas, experiência e oportunidades!',
           markers: [
             { word: 'mobile', action: 'highlight', target: 'Dispositivos Móveis' },
             { word: 'servidores', action: 'highlight', target: 'Servidores II' },
@@ -188,9 +199,9 @@ window.DEVPATH_NARRACAO = {
       voice: 'male',
       segments: [
         { id: 'transicao-5-6', voice: 'female', audio: 'audio/narration/08a-transicao-5-6.mp3',
-          text: 'Você já aprendeu a construir as partes. Agora é hora de integrar tudo.' },
+          text: 'Você já sabe construir cada parte. Agora é hora de integrar tudo!' },
         { id: 'semestre-6', audio: 'audio/narration/08-semestre-6.mp3',
-          text: 'E no sexto semestre, tudo se conecta. Serviços, dispositivos móveis, projeto, empresa e tecnologia trabalham juntos. É o momento de integrar o conhecimento e transformar o que você aprendeu em uma solução completa e apresentável.',
+          text: 'E no sexto semestre, tudo se conecta! Serviços, dispositivos móveis, projeto, empresa e tecnologia trabalhando juntos. É o momento de transformar tudo o que você aprendeu em uma solução completa, pronta para apresentar!',
           markers: [
             { word: 'serviços', action: 'highlight', target: 'Orientada a Serviços' },
             { word: 'dispositivos móveis', action: 'highlight', target: 'Dispositivos Móveis II' },
@@ -206,7 +217,7 @@ window.DEVPATH_NARRACAO = {
       voice: 'female',
       segments: [
         { id: 'criar', audio: 'audio/narration/09-criar.mp3',
-          text: 'E o resultado dessa jornada? Sites, aplicativos, sistemas, serviços digitais, soluções com banco de dados e produtos capazes de resolver problemas reais.',
+          text: 'E o resultado dessa jornada? Sites, aplicativos, sistemas, serviços digitais, soluções com banco de dados e produtos capazes de resolver problemas reais. Tudo criado por você!',
           markers: [
             { word: 'Sites', action: 'highlight', target: 'Sites' },
             { word: 'aplicativos', action: 'highlight', target: 'Aplicativos' },
@@ -223,7 +234,7 @@ window.DEVPATH_NARRACAO = {
       voice: 'male',
       segments: [
         { id: 'carreiras', audio: 'audio/narration/10-carreiras.mp3',
-          text: 'Esse conhecimento abre diferentes caminhos: desenvolvimento web, mobile, back-end, dados, UX e UI, cloud, análise de sistemas, produtos digitais e empreendedorismo.',
+          text: 'E esse conhecimento abre muitos caminhos: desenvolvimento web, mobile, back-end, dados, UX e UI, cloud, análise de sistemas, produtos digitais e empreendedorismo! Qual vai ser o seu?',
           markers: [
             { word: 'web', action: 'highlight', target: 'Front-end' },
             { word: 'mobile', action: 'highlight', target: 'Mobile' },
@@ -238,12 +249,21 @@ window.DEVPATH_NARRACAO = {
       ],
     },
 
+    /* 12. tecnologia em todo setor */
+    market: {
+      voice: 'male',
+      segments: [
+        { id: 'mercado', audio: 'audio/narration/10b-mercado.mp3',
+          text: 'E sabe onde está a tecnologia? Em praticamente todo setor! Na indústria, na loja, no hospital, na prefeitura e no negócio que você vai criar!' },
+      ],
+    },
+
     /* 13. formação Fatec */
     fatec: {
       voice: 'female',
       segments: [
         { id: 'formacao', audio: 'audio/narration/11-formacao.mp3',
-          text: 'Tudo isso em uma formação pública, tecnológica e conectada às necessidades do mercado. Um ambiente onde cada semestre acrescenta uma nova peça ao que você já aprendeu.',
+          text: 'E tudo isso numa formação pública, gratuita, tecnológica e conectada ao mercado! Um lugar onde cada semestre acrescenta uma peça nova ao que você já aprendeu.',
           markers: [
             { word: 'pública', action: 'highlight', target: 'Público e gratuito' },
             { word: 'cada semestre', action: 'highlight', target: '6 semestres' },
@@ -251,15 +271,17 @@ window.DEVPATH_NARRACAO = {
       ],
     },
 
-    /* 14. fechamento + crachá: os dois narradores fecham juntos; a chamada fica alguns segundos na tela */
+    /* 14. fechamento + crachá: convite para o vestibular e aviso do crachá e dos links no celular */
     finale: {
       voice: 'female',
       hold: 6,
       segments: [
         { id: 'fechamento-a', audio: 'audio/narration/12a-fechamento.mp3',
-          text: 'Talvez o próximo aplicativo, site ou sistema que alguém usa todos os dias seja criado por você.' },
+          text: 'Talvez o próximo aplicativo, site ou sistema que todo mundo usa seja criado por você!' },
         { id: 'fechamento-b', voice: 'male', audio: 'audio/narration/12b-fechamento.mp3',
-          text: 'Não apenas use tecnologia. Aprenda a criá-la. Seja Fatec com o curso de Sistemas para Internet.' },
+          text: 'Não apenas use tecnologia: aprenda a criá-la! Faça o vestibular da Fatec e venha estudar Sistemas para Internet na Fatec Jales!' },
+        { id: 'fechamento-c', audio: 'audio/narration/12c-cracha.mp3',
+          text: 'E olha o seu celular: o seu crachá de dev já está lá! Salve e compartilhe. No celular também estão os links para conhecer mais o curso e para fazer a sua inscrição no vestibular. Te esperamos!' },
       ],
     },
   },

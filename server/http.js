@@ -7,7 +7,7 @@
  *   Celular  GET  /api/join/<código>
  *            POST /api/lead, /api/lead/excluir, /api/start (ou /api/sessions/<id>/start), /api/react, /api/evento
  *            GET  /ir/vestibular?lead=…   → registra o clique e abre o vestibular com UTM
- *   TV       GET  /api/displays/<TELÃO>/state
+ *   TV       GET  /api/displays/<TELÃO>/state, /api/voz/ola/<id do cadastro>.mp3 (saudação com o nome)
  *            POST /api/tv/scene, /api/tv/done, /api/tv/audio, /api/tv/heartbeat   (body: { display })
  *   Todos    GET  /api/info, /healthz, /api/stream?role=tv&display=…|phone&id=…|op
  *   Operador (cookie de login)
@@ -27,6 +27,7 @@ const leads = require('./leads');
 const funil = require('./funil');
 const store = require('./store');
 const auth = require('./auth');
+const voz = require('./voz');
 const { send, readBody, MIME, slug, vestibularUrl, lanAddress, firstName, today } = require('./util');
 const config = require('./config');
 
@@ -127,6 +128,7 @@ function openStream(req, res, url) {
     const d = wanted ? sessao.getDisplay(wanted) : sessao.defaultDisplay();
     const ev = url.searchParams.get('event');
     if (!d || (ev && ev.toUpperCase() !== sessao.EVENT)) { sessao.sse(res, 'erro', { error: 'Telão desconhecido. Confira o endereço.' }); return res.end(); }
+    sessao.dropStale(d);
     d.tvClients.add(res);
     sessao.sse(res, 'hello', {
       event: sessao.EVENT, display: d.code, mobileUrl: mobileUrl(d), todayCount: sessao.todayCount, evento: sessao.evento(),
@@ -136,7 +138,7 @@ function openStream(req, res, url) {
     sessao.touch(d, true);
     req.on('close', () => {
       d.tvClients.delete(res);
-      if (!d.tvClients.size) { d.audio = null; sessao.clearScene(d); }
+      if (!d.tvClients.size) { d.audio = null; d.offlineSince = Date.now(); sessao.clearScene(d); }
     });
     sessao.advance(d); // havia gente esperando esta TV conectar
   } else if (role === 'op') {
@@ -172,6 +174,13 @@ async function api(req, res, url) {
   if (m) {
     const d = sessao.byJoin(m[1]);
     return d ? send(res, 200, { ok: true, evento: sessao.evento(), display: d.code }) : send(res, 404, { error: 'QR Code inválido.' });
+  }
+  m = p.match(/^\/api\/voz\/ola\/([0-9a-f-]{36})\.mp3$/);
+  if (m) {
+    const mp3 = await voz.ola(sessao.leads.get(m[1]));
+    if (!mp3) return send(res, 404, 'sem voz');
+    res.writeHead(200, { 'Content-Type': 'audio/mpeg', 'Content-Length': mp3.length, 'Cache-Control': 'private, max-age=3600' });
+    return res.end(req.method === 'HEAD' ? undefined : mp3);
   }
   m = p.match(/^\/api\/displays\/([A-Za-z0-9-]{1,32})\/state$/);
   if (m) {

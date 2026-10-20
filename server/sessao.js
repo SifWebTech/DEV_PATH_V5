@@ -18,6 +18,7 @@
 const crypto = require('crypto');
 const store = require('./store');
 const funil = require('./funil');
+const voz = require('./voz');
 const { today, stamp } = require('./util');
 const config = require('./config');
 
@@ -47,6 +48,7 @@ for (const code of config.DISPLAYS) {
     scene: null,            // { index, total, label, paused }
     audio: null,            // { pronto, mudo, legendas, narracao, voz }
     lastSeen: 0,            // último sinal da TV (ms)
+    offlineSince: 0,        // quando a última TV deste telão desconectou (ms)
     recorded: '',
   });
 }
@@ -99,12 +101,14 @@ function restore() {
   for (const l of st.leads || []) if (ativos.has(l.id)) leads.set(l.id, l);
   // estado.json da V5 (uma fila só) → primeiro telão
   const saved = st.displays || { [defaultDisplay().code]: { queue: st.queue || [], current: st.current } };
+  // salvoEm = hora local do último salvamento; serve de "TV desconectada desde" após um reinício
+  const salvo = Date.parse(String(st.salvoEm || '').replace(' ', 'T')) || Date.now();
   let fila = 0, tv = 0;
   for (const [code, s] of Object.entries(saved)) {
     const d = getDisplay(code);
     if (!d) continue;
     for (const id of s.queue || []) if (leads.has(id) && !d.queue.includes(id)) d.queue.push(id);
-    if (leads.has(s.current)) d.current = s.current;
+    if (leads.has(s.current)) { d.current = s.current; d.offlineSince = salvo; }
     fila += d.queue.length; tv += d.current ? 1 : 0;
   }
   if (fila || tv) console.log(`  Sessão recuperada: ${tv} telão(ões) em apresentação, ${fila} na fila.`);
@@ -166,6 +170,17 @@ function finishCurrent(d, completo) {
   advance(d);
 }
 
+// TV que volta depois de muito tempo fora (fechada no meio, ou o servidor dormiu): a apresentação
+// antiga não recomeça sozinha; conta como interrompida e a TV abre no QR. Quedas curtas continuam de onde pararam.
+const STALE_MS = 10 * 60 * 1000;
+function dropStale(d) {
+  if (d.current && !d.tvClients.size && d.offlineSince && Date.now() - d.offlineSince > STALE_MS) {
+    console.log(`  ${d.code}: apresentação parada há mais de 10 min encerrada; TV volta ao QR.`);
+    finishCurrent(d, false);
+  }
+  d.offlineSince = 0;
+}
+
 /* ---------------- ações ---------------- */
 function addLead(lead) {
   leads.set(lead.id, {
@@ -173,6 +188,7 @@ function addLead(lead) {
     when: lead.when, done: false, display: lead.display, session: null,
   });
   todayCount += 1;
+  voz.preparar(lead); // "Olá, {nome}!" já fica pronto para quando a TV chamar
   persist();
   toTV(displayOf(lead), 'lead', { name: String(lead.name).split(' ')[0], todayCount });
   toOp('funil', {});
@@ -200,6 +216,7 @@ function forget(id) {
   if (!lead) return;
   const d = displayOf(lead);
   leads.delete(id);
+  voz.esquecer(id);
   const pos = d.queue.indexOf(id);
   if (pos >= 0) d.queue.splice(pos, 1);
   if (lead.session) store.recordSession({ id: lead.session, leadId: id, eventCode: EVENT, display: d.code, status: 'canceled' });
@@ -237,7 +254,7 @@ module.exports = {
   EVENT, leads, displays, phoneClients, opClients,
   get todayCount() { return todayCount; },
   evento, restore, sse, toTV, toAllTVs, toPhone, toOp, publicLead, phoneStatus,
-  advance, finishCurrent, addLead, start, forget, setEvento, setScene, displayState,
+  advance, finishCurrent, dropStale, addLead, start, forget, setEvento, setScene, displayState,
   getDisplay, defaultDisplay, byJoin, displayOf, status, touch, persist,
   setTvAudio(d, audio) { d.audio = audio; touch(d, true); },
   clearScene(d) { d.scene = null; touch(d); },

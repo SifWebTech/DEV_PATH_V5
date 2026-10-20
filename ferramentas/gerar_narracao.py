@@ -6,7 +6,7 @@ fala cada trecho com a voz neural do tipo certo e grava:
   public/audio/narration/<arquivo>.mp3   a narração
   public/js/narration-timing.js          o instante exato de cada palavra (sincroniza legenda e destaques)
 
-Só regera o que mudou (texto, voz ou velocidade). Para regerar tudo: --tudo
+Só regera o que mudou (texto, voz, velocidade ou tom). Para regerar tudo: --tudo
 
 Uso (precisa de internet só na hora de gerar; na apresentação os MP3 tocam offline):
   python -m pip install edge-tts
@@ -34,7 +34,10 @@ VOZES = {
     'female': 'pt-BR-ThalitaMultilingualNeural',
     'male': 'pt-BR-AntonioNeural',
 }
-VELOCIDADE = '+4%'   # um pouco mais ágil que o padrão: soa mais atual
+# Narração animada: mais ágil e com o tom um pouco mais alto que o padrão (as vozes grátis não têm
+# "estilo empolgado"; a empolgação vem daqui e das exclamações do texto). Igual a server/voz.js.
+VELOCIDADE = '+12%'
+TOM = '+6Hz'
 AMOSTRA = 'Olá! No terceiro semestre, o sistema começa a ganhar inteligência: banco de dados, programação web e servidores.'
 
 
@@ -67,7 +70,7 @@ def norm(s):
 
 async def falar(texto, voz, destino):
     """Grava o MP3 e devolve [[segundos, posição no texto], …] de cada palavra falada."""
-    com = edge_tts.Communicate(texto, voz, rate=VELOCIDADE, boundary='WordBoundary')
+    com = edge_tts.Communicate(texto, voz, rate=VELOCIDADE, pitch=TOM, boundary='WordBoundary')
     audio = bytearray()
     palavras = []
     async for parte in com.stream():
@@ -117,14 +120,22 @@ async def main():
     novos = {}
     for audio, texto, tipo in trechos(manifesto()):
         voz = VOZES[tipo]
-        assinatura = hashlib.sha1(f'{voz}|{VELOCIDADE}|{texto}'.encode()).hexdigest()[:12]
+        assinatura = hashlib.sha1(f'{voz}|{VELOCIDADE}|{TOM}|{texto}'.encode()).hexdigest()[:12]
         destino = PUBLIC / audio
         antigo = tempos.get(audio)
         if not tudo and antigo and antigo.get('hash') == assinatura and destino.exists():
             novos[audio] = antigo
             print('igual   ', audio)
             continue
-        marcas = await falar(texto, voz, destino)
+        for tentativa in range(3):  # o serviço de voz às vezes não devolve áudio: tenta de novo
+            try:
+                marcas = await falar(texto, voz, destino)
+                break
+            except edge_tts.exceptions.NoAudioReceived:
+                if tentativa == 2:
+                    raise
+                print('de novo ', audio)
+                await asyncio.sleep(2)
         novos[audio] = {'hash': assinatura, 'voz': voz, 'dur': duracao(destino), 'w': marcas}
         print('gerado  ', audio, f"({novos[audio]['dur']} s, {voz})")
 
