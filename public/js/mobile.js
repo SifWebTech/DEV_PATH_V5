@@ -165,7 +165,7 @@
     } else if (st.state === 'playing') {
       show('vLive');
       box.className = 'live-status on';
-      box.innerHTML = '<i></i>Ao vivo na TV com o seu nome';
+      box.innerHTML = '<i></i>Sua experiência está acontecendo na TV.';
     } else if (st.state === 'done') {
       showBadge();
     } else if (st.state === 'unknown') {
@@ -206,6 +206,18 @@
     show('vDone');
   }
   $('#fatecLink').href = C.links.fatec;
+
+  // Próximos passos: só aparecem os botões com link configurado em content.js (nada de URL inventada)
+  $('#courseLink').href = C.links.curso || C.links.fatec;
+  $('#fatecLink').hidden = !C.links.curso; // sem página do curso, "Conhecer o curso" já leva ao site da Fatec
+  if (C.links.instagram) { $('#followLink').href = C.links.instagram; $('#followLink').hidden = false; }
+  $('#infoBtn').addEventListener('click', () => {
+    if (C.links.contato) { window.open(C.links.contato, '_blank', 'noopener'); return; }
+    // o cadastro com consentimento já é o pedido de informações
+    const note = $('#infoNote');
+    note.textContent = 'Pronto! Você já está na lista: a Fatec Jales vai mandar as novidades do curso e do vestibular pelo contato que você cadastrou.';
+    note.hidden = false;
+  });
   $('#againBtn').addEventListener('click', () => { $('#startBtn').classList.remove('pressed'); goReady(); });
 
   // Imagem 1080×1920 (formato dos stories), desenhada no próprio celular — funciona sem internet

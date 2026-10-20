@@ -3,10 +3,11 @@
  *
  *   Celular  POST /api/lead, /api/lead/excluir, /api/start, /api/react, /api/evento
  *            GET  /ir/vestibular?lead=…   → registra o clique e abre o vestibular com UTM
- *   TV       POST /api/tv/scene, /api/tv/done
+ *   TV       POST /api/tv/scene, /api/tv/done, /api/tv/audio
  *   Todos    GET  /api/info, /api/stream?role=tv|phone|op
  *   Operador (cookie de login)
  *            POST /api/op/login, /api/op/logout, /api/op/cmd, /api/op/evento, /api/op/leads/excluir
+ *            (cmd: next, prev, pause, stop, demo + mute, legendas, narracao para o som da TV)
  *            GET  /api/op/state, /api/op/metricas, /api/op/leads, /api/op/leads.csv
  */
 'use strict';
@@ -31,6 +32,7 @@ function opState() {
     mobileUrl: mobileUrl(),
     current: sessao.publicLead(sessao.leads.get(sessao.current)),
     scene: sessao.tvScene,
+    audio: sessao.tvAudio,
     queue: sessao.queue.map((id) => sessao.leads.get(id)?.name),
     todayCount: sessao.todayCount,
     evento: sessao.evento(),
@@ -53,7 +55,10 @@ function openStream(req, res, url) {
     sessao.tvClients.add(res);
     sessao.sse(res, 'hello', { mobileUrl: mobileUrl(), todayCount: sessao.todayCount, evento: sessao.evento(), vestibular: vestibularUrl('tv', sessao.evento()) });
     if (sessao.current) sessao.sse(res, 'start', sessao.publicLead(sessao.leads.get(sessao.current)));
-    req.on('close', () => { sessao.tvClients.delete(res); if (!sessao.tvClients.size) sessao.clearScene(); });
+    req.on('close', () => {
+      sessao.tvClients.delete(res);
+      if (!sessao.tvClients.size) { sessao.clearScene(); sessao.setTvAudio(null); }
+    });
     sessao.advance(); // havia gente esperando a TV conectar
   } else if (role === 'op') {
     if (!auth.isAuthed(req)) { sessao.sse(res, 'auth', {}); return res.end(); }
@@ -108,7 +113,7 @@ async function api(req, res, url) {
     if (req.method === 'POST') {
       const body = await readBody(req);
       if (p === '/api/op/cmd') {
-        if (!['next', 'prev', 'pause', 'stop', 'demo'].includes(body.cmd)) return send(res, 400, { error: 'cmd' });
+        if (!['next', 'prev', 'pause', 'stop', 'demo', 'mute', 'legendas', 'narracao'].includes(body.cmd)) return send(res, 400, { error: 'cmd' });
         if (!sessao.tvClients.size) return send(res, 409, { error: 'A TV não está conectada.' });
         sessao.toTV('cmd', { cmd: body.cmd });
         return send(res, 204, '');
@@ -175,6 +180,15 @@ async function api(req, res, url) {
     return send(res, 204, '');
   }
 
+  // a TV conta ao painel como está o som (liberado, mudo, legenda, narração, voz em uso)
+  if (p === '/api/tv/audio') {
+    sessao.setTvAudio({
+      pronto: !!body.pronto, mudo: !!body.mudo, legendas: !!body.legendas, narracao: !!body.narracao,
+      voz: String(body.voz || '').slice(0, 80),
+    });
+    return send(res, 204, '');
+  }
+
   if (p === '/api/tv/done') {
     sessao.clearScene();
     // sem ninguém na TV (demonstração ou lead excluído no meio): só chama o próximo
@@ -200,19 +214,48 @@ function goVestibular(res, url) {
 
 /* ---------- arquivos estáticos ---------- */
 const ROUTES = { '/': '/index.html', '/tv': '/index.html', '/m': '/m.html', '/admin': '/admin.html', '/operador': '/admin.html' };
+const MEDIA = new Set(['.mp3', '.wav', '.ogg', '.m4a', '.webm']);
 
 function serveStatic(req, res, url) {
   const rel = ROUTES[url.pathname] || decodeURIComponent(url.pathname);
   const file = path.normalize(path.join(config.PUBLIC_DIR, rel));
   if (!file.startsWith(config.PUBLIC_DIR)) return send(res, 403, 'forbidden');
+  const ext = path.extname(file);
+  // áudio: o navegador pede pedaços do arquivo (cabeçalho Range) para tocar e continuar de onde parou
+  if (MEDIA.has(ext) && req.headers.range) return serveRange(req, res, file, ext);
   fs.readFile(file, (err, data) => {
     if (err) return send(res, 404, 'Página não encontrada');
-    const ext = path.extname(file);
     res.writeHead(200, {
       'Content-Type': MIME[ext] || 'application/octet-stream',
       'Cache-Control': ext === '.woff2' ? 'max-age=31536000' : 'no-cache',
+      ...(MEDIA.has(ext) && { 'Accept-Ranges': 'bytes' }),
     });
     res.end(data);
+  });
+}
+
+// "Range: bytes=100-200" → responde 206 só com esse pedaço
+function serveRange(req, res, file, ext) {
+  fs.stat(file, (err, st) => {
+    if (err || !st.isFile()) return send(res, 404, 'Página não encontrada');
+    const m = /^bytes=(\d*)-(\d*)$/.exec(String(req.headers.range).trim());
+    let start = m && m[1] ? Number(m[1]) : 0;
+    let end = m && m[2] ? Number(m[2]) : st.size - 1;
+    if (m && !m[1] && m[2]) { start = Math.max(0, st.size - Number(m[2])); end = st.size - 1; } // "bytes=-500" = últimos 500
+    end = Math.min(end, st.size - 1);
+    if (!m || start > end) {
+      res.writeHead(416, { 'Content-Range': `bytes */${st.size}` });
+      return res.end();
+    }
+    res.writeHead(206, {
+      'Content-Type': MIME[ext],
+      'Content-Length': end - start + 1,
+      'Content-Range': `bytes ${start}-${end}/${st.size}`,
+      'Accept-Ranges': 'bytes',
+      'Cache-Control': 'no-cache',
+    });
+    if (req.method === 'HEAD') return res.end();
+    fs.createReadStream(file, { start, end }).pipe(res);
   });
 }
 

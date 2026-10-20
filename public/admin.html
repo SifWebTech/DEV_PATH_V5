@@ -48,6 +48,13 @@
     #bPause.paused { border-color: var(--orange); color: var(--orange); }
     #bStop { border-color: #ff7a1a88; }
     #bDemo { grid-column: 1 / -1; height: 52px; border-color: var(--green); color: var(--green); }
+    /* som da TV: narração, legenda e mudo */
+    .audio-state { margin-top: 22px; font-size: 14px; color: var(--dim); line-height: 1.5; }
+    .audio-state b { color: var(--white); }
+    .audio-state b.warn { color: var(--orange); }
+    .controls.audio { grid-template-columns: repeat(3, 1fr); margin-top: 10px; }
+    .controls.audio button { height: 52px; }
+    .controls.audio button.on { border-color: var(--green); color: var(--green); }
 
     .queue li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
     .queue li b { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--blue); color: var(--blue); font-size: 12px; }
@@ -131,6 +138,12 @@
             <button id="bNext" data-cmd="next">Avançar<small>→</small></button>
             <button id="bStop" data-cmd="stop">Encerrar<small>esc</small></button>
             <button id="bDemo" data-cmd="demo">Iniciar demonstração sem celular <small>(enter)</small></button>
+          </div>
+          <p class="audio-state" id="audioState">Som da TV: <b>sem informação</b></p>
+          <div class="controls audio">
+            <button id="bMute" data-cmd="mute">Desligar som<small>m</small></button>
+            <button id="bCap" data-cmd="legendas">Legenda<small>l</small></button>
+            <button id="bNarr" data-cmd="narracao">Narração<small>n</small></button>
           </div>
           <p class="hint">Os atalhos funcionam com esta janela em foco. Encerrar volta a TV para o QR Code e chama o próximo da fila.</p>
         </section>
@@ -227,6 +240,15 @@
       $('#bPause').firstChild.textContent = state.scene?.paused ? 'Continuar' : 'Pausar';
       ['#bPrev', '#bPause', '#bNext', '#bStop'].forEach((b) => { $(b).disabled = !playing || !state.tvOnline; });
       $('#bDemo').disabled = playing || !state.tvOnline;
+      // som da TV (a TV informa pelo /api/tv/audio)
+      const a = state.tvOnline ? state.audio : null;
+      $('#audioState').innerHTML = !a ? 'Som da TV: <b>sem informação</b>'
+        : !a.pronto ? 'Som da TV: <b class="warn">bloqueado</b>. Clique uma vez na tela da TV ("Ativar áudio e iniciar evento").'
+        : `Som da TV: <b>${a.mudo ? 'desligado' : 'ligado'}</b> · narração <b>${a.narracao ? 'ligada' : 'desligada'}</b> · voz do navegador: <b>${esc(a.voz || 'nenhuma em português')}</b>`;
+      $('#bMute').firstChild.textContent = a?.mudo ? 'Ligar som' : 'Desligar som';
+      $('#bCap').classList.toggle('on', !!a?.legendas);
+      $('#bNarr').classList.toggle('on', !!a?.narracao);
+      ['#bMute', '#bCap', '#bNarr'].forEach((b) => { $(b).disabled = !a; });
       $('#queue').innerHTML = state.queue.length
         ? state.queue.map((n, k) => `<li><b>${k + 1}</b>${esc(n)}</li>`).join('')
         : '<li class="empty">Ninguém esperando.</li>';
@@ -357,10 +379,11 @@
     document.querySelectorAll('[data-cmd]').forEach((b) => b.addEventListener('click', () => cmd(b.dataset.cmd)));
     addEventListener('keydown', (e) => {
       if ($('#panel').hidden || ['INPUT', 'SELECT'].includes(e.target.tagName)) return;
-      const map = { ArrowRight: 'next', ArrowLeft: 'prev', ' ': 'pause', Escape: 'stop', Enter: 'demo' };
-      const name = map[e.key];
+      const map = { ArrowRight: 'next', ArrowLeft: 'prev', ' ': 'pause', Escape: 'stop', Enter: 'demo', m: 'mute', l: 'legendas', n: 'narracao' };
+      const name = map[e.key.length === 1 ? e.key.toLowerCase() : e.key];
       if (!name) return;
       e.preventDefault();
+      if (['mute', 'legendas', 'narracao'].includes(name)) return cmd(name); // som: vale com ou sem apresentação
       const playing = !!state?.scene;
       if (name === 'demo' ? !playing : playing) cmd(name);
     });

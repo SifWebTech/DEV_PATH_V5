@@ -13,6 +13,10 @@ window.DEVPATH = {
   links: {
     vestibular: 'https://www.vestibularfatec.com.br/',
     fatec: 'https://www.fatecjales.edu.br/',
+    // Botões do celular no fim da apresentação. Vazio = botão usa o padrão descrito ao lado.
+    curso: '',      // TODO: página oficial do curso de SI na Fatec Jales (vazio = site da Fatec acima)
+    instagram: '',  // TODO: perfil oficial da Fatec Jales (vazio = o botão "Seguir a Fatec" não aparece)
+    contato: '',    // TODO: link oficial para pedir informações, ex.: WhatsApp da secretaria (vazio = confirma o cadastro)
   },
 
   // Perfis escolhidos no celular. Definem o crachá final e o produto construído na tela.
@@ -20,6 +24,7 @@ window.DEVPATH = {
     design: {
       label: 'Criar visuais e interfaces',
       role: 'UX/UI & Front-end',
+      goal: 'Web e design',   // texto curto do HUD da TV ("objetivo")
       product: (n) => `Studio ${n}`,
       stack: ['Design Digital', 'Projeto de Navegação e Interação', 'Prototipagem e Usabilidade', 'Acessibilidade'],
       careers: ['UX/UI', 'Front-end', 'Projetos digitais'],
@@ -27,6 +32,7 @@ window.DEVPATH = {
     logic: {
       label: 'Resolver problemas com lógica',
       role: 'Back-end & Dados',
+      goal: 'Dados',
       product: (n) => `${n}.dev`,
       stack: ['Algoritmos e Lógica', 'Estrutura de Dados', 'Banco de Dados e Internet', 'Desenvolvimento para Servidores'],
       careers: ['Back-end', 'Banco de dados', 'Analista de sistemas'],
@@ -34,6 +40,7 @@ window.DEVPATH = {
     apps: {
       label: 'Criar aplicativos',
       role: 'Mobile & Full Stack',
+      goal: 'Mobile',
       product: (n) => `${n} App`,
       stack: ['Dispositivos Móveis I e II', 'Programação de Sítios Internet', 'Arquitetura Orientada a Serviços', 'Banco de Dados'],
       careers: ['Mobile', 'Full Stack', 'Back-end'],
@@ -41,6 +48,7 @@ window.DEVPATH = {
     business: {
       label: 'Ter meu próprio negócio',
       role: 'Produtos digitais & Startups',
+      goal: 'Produtos digitais',
       product: (n) => `Loja ${n}`,
       stack: ['Negócios e Marketing Eletrônicos', 'Criação de Empresas para Internet', 'Gestão de Projetos', 'Prototipagem e Usabilidade'],
       careers: ['Empreendedor de tecnologia', 'Projetos digitais', 'Consultoria'],

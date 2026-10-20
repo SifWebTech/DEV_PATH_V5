@@ -24,13 +24,14 @@ if (-not $base) {
   exit 1
 }
 
-# Chrome ou Edge
+# Edge primeiro: ele tem as vozes neurais "Online (Natural)" (Thalita, Antonio) usadas no
+# "Ola, {nome}", as mesmas dos MP3 da narracao. Sem Edge, Chrome.
 $browser = @(
+  "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe",
+  "$env:ProgramFiles\Microsoft\Edge\Application\msedge.exe",
   "$env:ProgramFiles\Google\Chrome\Application\chrome.exe",
   "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe",
-  "$env:LocalAppData\Google\Chrome\Application\chrome.exe",
-  "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe",
-  "$env:ProgramFiles\Microsoft\Edge\Application\msedge.exe"
+  "$env:LocalAppData\Google\Chrome\Application\chrome.exe"
 ) | Where-Object { Test-Path $_ } | Select-Object -First 1
 
 Add-Type -AssemblyName System.Windows.Forms
@@ -39,9 +40,11 @@ $tv = [System.Windows.Forms.Screen]::AllScreens | Where-Object { -not $_.Primary
 if ($browser -and $tv) {
   $x = $tv.Bounds.X + 50; $y = $tv.Bounds.Y + 50
   # perfil separado = janela independente, que abre direto em tela cheia na TV
+  # autoplay liberado = a narracao e a musica tocam sem precisar clicar na TV
   $profile = Join-Path $env:TEMP "devpath-tv"
   Start-Process $browser -ArgumentList @(
     "--user-data-dir=`"$profile`"", "--new-window", "--window-position=$x,$y", "--kiosk",
+    "--autoplay-policy=no-user-gesture-required",
     "--no-first-run", "--no-default-browser-check", "--disable-session-crashed-bubble", "--noerrdialogs",
     "$base/"
   )

@@ -8,6 +8,10 @@
  *
  * Para mudar textos e disciplinas, edite js/content.js.
  * Para mudar a duração das cenas, edite STEPS logo abaixo.
+ *
+ * Narração: cada cena com fala (js/narration.js) avança quando a narração termina
+ * (js/narrator.js); a duração de STEPS só vale para cenas sem fala ou quando não há voz.
+ * Música, ducking e efeitos ficam em js/audio-engine.js.
  */
 (() => {
   'use strict';
@@ -17,12 +21,14 @@
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const NARR = window.DEVPATH_NARRACAO?.config || {};
 
   const stage = $('#stage');
   const root = $('#sceneRoot');
   const COLOR = { orange: '#ff7a1a', green: '#2bff88', blue: '#22b8ff', white: '#f3f8ff' };
 
-  /* ---------- linha do tempo (duração em segundos) ---------- */
+  /* ---------- linha do tempo (duração em segundos; com narração, vale o fim da fala) ---------- */
   const STEPS = [
     { type: 'boot', dur: 8, label: 'Inicializando seu futuro' },
     { type: 'hook', dur: 8, label: 'Você e a tecnologia' },
@@ -48,11 +54,16 @@
     stepEnds: 0,
     remaining: 0,
     token: 0,        // invalida animações assíncronas da cena anterior
+    narr: null,      // narração da cena atual (enquanto fala, ela decide o fim da cena)
+    guard: 0,        // segurança: se a narração travar, a cena segue mesmo assim
+    attract: 0,      // chamada de voz periódica na tela do QR Code
+    captions: true,  // legenda da narração (tecla L ou painel)
   };
 
   const firstName = () => (S.lead?.name || '').split(' ')[0];
   const profile = () => C.profiles[S.lead?.interest] || C.profiles.apps;
   const productName = () => profile().product(firstName() || 'Dev');
+  const sceneKey = (step) => (step.type === 'journey' ? 'journey' + step.sem : step.type);
   const domain = () => productName().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '') + '.com.br';
 
   /* ---------- palco escalado ---------- */
@@ -294,15 +305,15 @@
 
         <div class="build" id="build">
           <p class="users" id="users"><i></i><b id="usersN">0</b> pessoas usando agora</p>
-          <div class="node node-db"><svg viewBox="0 0 48 56"><ellipse cx="24" cy="9" rx="20" ry="7"/><path d="M4 9v38c0 4 9 7 20 7s20-3 20-7V9M4 22c0 4 9 7 20 7s20-3 20-7M4 35c0 4 9 7 20 7s20-3 20-7"/></svg><span>banco de dados</span></div>
-          <div class="node node-server"><svg viewBox="0 0 52 52"><rect x="3" y="4" width="46" height="18" rx="4"/><rect x="3" y="30" width="46" height="18" rx="4"/><circle cx="12" cy="13" r="2.5"/><circle cx="12" cy="39" r="2.5"/><path d="M22 13h18M22 39h18"/></svg><span>servidor + API</span></div>
+          <div class="node node-db" data-mark="banco de dados"><svg viewBox="0 0 48 56"><ellipse cx="24" cy="9" rx="20" ry="7"/><path d="M4 9v38c0 4 9 7 20 7s20-3 20-7V9M4 22c0 4 9 7 20 7s20-3 20-7M4 35c0 4 9 7 20 7s20-3 20-7"/></svg><span>banco de dados</span></div>
+          <div class="node node-server" data-mark="servidor servidores api"><svg viewBox="0 0 52 52"><rect x="3" y="4" width="46" height="18" rx="4"/><rect x="3" y="30" width="46" height="18" rx="4"/><circle cx="12" cy="13" r="2.5"/><circle cx="12" cy="39" r="2.5"/><path d="M22 13h18M22 39h18"/></svg><span>servidor + API</span></div>
           <svg class="wires" viewBox="0 0 900 780" aria-hidden="true">
             <path class="wire wire-db" d="M790 200 C 740 200, 760 260, 712 260" />
             <path class="wire wire-srv" d="M790 420 C 740 420, 760 360, 712 360" />
             <path class="wire wire-link" d="M836 250 V 370" />
           </svg>
 
-          <div class="browser">
+          <div class="browser" data-mark="interface site web">
             <div class="b-bar">
               <i></i><i></i><i></i>
               <div class="b-url"><svg class="lock" viewBox="0 0 16 18"><rect x="2" y="8" width="12" height="9" rx="2"/><path d="M5 8V5a3 3 0 0 1 6 0v3"/></svg><span id="bUrl">rascunho.html</span></div>
@@ -319,7 +330,7 @@
             </div>
           </div>
 
-          <div class="phone">
+          <div class="phone" data-mark="mobile dispositivos moveis app">
             <div class="p-notch"></div>
             <div class="p-screen">
               <b class="p-logo" id="pLogo"></b>
@@ -347,6 +358,7 @@
     const c = COLOR[s.color];
     j.style.setProperty('--c', c);
     j.dataset.level = n;
+    $$('.is-said', j).forEach((el) => el.classList.remove('is-said')); // destaques do semestre anterior
     flash();
 
     // trilha superior
@@ -368,7 +380,7 @@
     // todas as disciplinas do semestre: nome oficial em evidência, tradução embaixo
     $('#jCount').textContent = `as ${s.disciplinas.length} disciplinas do ${n}º semestre`;
     $('#jUnlocks').innerHTML = s.disciplinas.map(([official, plain, star], k) => `
-      <li style="--k:${k}"${star ? ' class="star"' : ''}>
+      <li style="--k:${k}"${star ? ' class="star"' : ''} data-mark="${esc(official)}">
         <b>${esc(official).replace(/ ([IVX]+)$/, '\u00a0$1')}</b><small>${esc(plain)}</small>
       </li>`).join(''); // \u00a0 = espaço que não quebra: o "I" não fica sozinho na linha
 
@@ -487,7 +499,7 @@
         <h1 class="create-title"><span data-scramble="0">O que você vai</span> <span class="c-green" data-scramble="300">poder criar.</span></h1>
         <ul class="create-grid">
           ${C.creations.map(([icon, label], k) => `
-            <li style="--k:${k};--c:${COLOR[cs[k % 4]]}">
+            <li style="--k:${k};--c:${COLOR[cs[k % 4]]}" data-mark="${esc(label)}">
               <svg viewBox="0 0 64 64" aria-hidden="true">${ICONS[icon]}</svg>
               <span>${label}</span>
             </li>`).join('')}
@@ -504,7 +516,7 @@
     const ring = (list, r, cls) => `
       <div class="orbit ${cls}" style="--r:${r}px">
         ${list.map((name, k) => `
-          <span class="role${mine.includes(name) ? ' mine' : ''}" style="--a:${(360 / list.length) * k}deg"><em>${esc(name)}</em></span>`).join('')}
+          <span class="role${mine.includes(name) ? ' mine' : ''}" style="--a:${(360 / list.length) * k}deg" data-mark="${esc(name)}"><em>${esc(name)}</em></span>`).join('')}
       </div>`;
     swapScene(`
       <section class="scene scene-careers">
@@ -543,7 +555,7 @@
       <section class="scene scene-fatec">
         <h1 class="fatec-title"><span data-scramble="0">Formação pública, tecnológica</span><span class="c-blue" data-scramble="400">e conectada ao mercado.</span></h1>
         <ul class="fatec-grid">
-          ${C.fatec.map(([t, d], k) => `<li style="--k:${k};--c:${COLOR[cs[k]]}"><b>${t}</b><p>${d}</p></li>`).join('')}
+          ${C.fatec.map(([t, d], k) => `<li style="--k:${k};--c:${COLOR[cs[k]]}" data-mark="${esc(t)}"><b>${t}</b><p>${d}</p></li>`).join('')}
         </ul>
         <div class="axis">
           <span>Eixo tecnológico</span>
@@ -599,13 +611,16 @@
   const RENDER = { boot: renderBoot, hook: renderHook, map: renderMap, create: renderCreate, careers: renderCareers, market: renderMarket, fatec: renderFatec, finale: renderFinale };
 
   function begin(lead) {
+    clearTimeout(S.attract);
     S.lead = lead;
     S.paused = false;
+    AudioEngine.playSFX('start');
     go(0);
   }
 
   function go(i) {
     clearTimeout(S.timer);
+    stopNarration();
     if (i < 0) i = 0;
     if (i >= STEPS.length) return end(true);
     const prev = STEPS[S.i];
@@ -620,21 +635,70 @@
       if (step.type !== 'create' && step.type !== 'finale') circuit.setEnergy(0.4);
       RENDER[step.type]();
     }
+    if (i > 0) AudioEngine.playSFX(step.type === 'finale' ? 'final' : 'transition');
     updateHud();
     reportScene();
+    progress(step.dur * 1000);
     schedule(step.dur * 1000);
+    narrate(step);
   }
+
+  /* A narração conduz a cena: quando ela termina (+ uma pausa curta, "hold"), vem a próxima.
+   * Sem voz (sem MP3, sem voz no navegador ou narração desligada), vale a duração de STEPS. */
+  async function narrate(step) {
+    const i = S.i;
+    const following = STEPS[i + 1];
+    if (following) Narrator.preload(sceneKey(following), S.lead?.interest); // a próxima fala já fica baixada
+    const h = await Narrator.play(sceneKey(step), { nome: firstName(), perfil: S.lead?.interest, fallbackSec: step.dur });
+    if (S.i !== i || STEPS[S.i] !== step || !h) return;  // a cena já mudou, ou ela não tem fala
+    if (!h.voiced) return;                                // só legenda: o relógio de STEPS continua valendo
+    clearTimeout(S.timer);
+    S.narr = h;
+    if (S.paused) h.pause();
+    progress((h.estimate + h.hold) * 1000);
+    startGuard(h.estimate * 2 + 20);
+    const result = await h.done;
+    if (result !== 'ended' || S.narr !== h) return;
+    S.narr = null;
+    stopGuard();
+    schedule(h.hold * 1000);
+  }
+
+  // o selo "competência desbloqueada" não some aqui: ele aparece no fim da fala e
+  // termina seus 3 s já no semestre seguinte (end() é que limpa tudo)
+  function stopNarration() {
+    S.narr = null;
+    stopGuard();
+    Narrator.stop();
+  }
+
+  // Conta só o tempo sem pausa; se a narração travar, avança a cena
+  function startGuard(seconds) {
+    stopGuard();
+    let left = seconds;
+    S.guard = setInterval(() => {
+      if (S.paused) return;
+      left -= 1;
+      if (left <= 0) go(S.i + 1);
+    }, 1000);
+  }
+  function stopGuard() { clearInterval(S.guard); S.guard = 0; }
 
   function reportScene() {
     const step = STEPS[S.i];
     if (step) post('/api/tv/scene', { index: S.i + 1, total: STEPS.length, label: step.label, paused: S.paused });
   }
 
+  // relógio da cena: usado sem narração e na pausa curta depois dela
   function schedule(ms) {
     clearTimeout(S.timer);
     S.remaining = ms;
     S.stepEnds = performance.now() + ms;
     if (!S.paused) S.timer = setTimeout(() => go(S.i + 1), ms);
+  }
+
+  // barrinha da cena no HUD
+  function progress(ms) {
     const bar = $('#hudProgress li.on i');
     if (bar) { bar.style.animationDuration = ms + 'ms'; bar.style.animationPlayState = S.paused ? 'paused' : 'running'; }
   }
@@ -642,7 +706,9 @@
   function togglePause() {
     if (S.i < 0) return;
     S.paused = !S.paused;
-    if (S.paused) {
+    if (S.narr) {
+      if (S.paused) S.narr.pause(); else S.narr.resume();
+    } else if (S.paused) {
       clearTimeout(S.timer);
       S.remaining = S.stepEnds - performance.now();
     } else {
@@ -658,12 +724,16 @@
   // completo = chegou ao fim do crachá; false = encerrado antes (Esc ou painel). Vai para o funil.
   function end(completo = false) {
     clearTimeout(S.timer);
+    stopNarration();
+    hideUnlock();
     cancelAnimationFrame(ekg.raf);
     S.i = -1;
-    S.lead = null;
+    S.lead = null;   // nome e objetivo saem da tela junto com a cena
     S.paused = false;
+    AudioEngine.restore();
     renderIdle();
     post('/api/tv/done', { completo }); // libera o próximo da fila e limpa o painel do operador
+    scheduleAttract();
   }
 
   /* ---------- HUD ---------- */
@@ -675,8 +745,14 @@
     }
     const live = $('#hudLiveText');
     $('#hudLive').classList.toggle('off', !S.online);
-    if (S.i >= 0) live.textContent = S.paused ? 'pausado' : `ao vivo: ${firstName() || 'demonstração'}`;
+    if (S.i >= 0) live.textContent = S.paused ? 'pausado' : S.lead?.id ? 'experiência conectada' : 'demonstração';
     else live.textContent = S.online ? 'pronto para conectar' : 'modo demonstração';
+    // quem está assistindo e o objetivo escolhido no celular (some quando volta ao QR Code)
+    const name = S.i >= 0 ? firstName() : '';
+    $('#hudWho').hidden = !name;
+    $('#hudName').textContent = name;
+    $('#hudGoal').textContent = name ? profile().goal : '';
+    updateAudioUi();
   }
 
   /* ---------- reações e avisos vindos do celular ---------- */
@@ -719,6 +795,7 @@
         else renderIdle();
       }
       updateHud();
+      reportAudio(); // o servidor esquece o estado do som quando a TV desconecta
     });
     es.addEventListener('start', (e) => {
       const lead = JSON.parse(e.data);
@@ -749,6 +826,9 @@
       else if (cmd === 'prev' && S.i >= 0) go(S.i - 1);
       else if (cmd === 'pause') togglePause();
       else if (cmd === 'stop' && S.i >= 0) end();
+      else if (cmd === 'mute') toggleMute();
+      else if (cmd === 'legendas') toggleCaptions();
+      else if (cmd === 'narracao') toggleNarration();
     });
     es.onerror = () => {
       if (S.online) { S.online = false; updateHud(); }
@@ -760,6 +840,11 @@
 
   /* ---------- atalhos do operador ---------- */
   addEventListener('keydown', (e) => {
+    if (!$('#audioGate').hidden && !e.repeat) { e.preventDefault(); unlockAudio(); return; } // 1ª tecla só libera o som
+    const k = e.key.toLowerCase();
+    if (k === 'm') return toggleMute();
+    if (k === 'l') return toggleCaptions();
+    if (k === 'n') return toggleNarration();
     if (e.key === 'Enter' && S.i < 0) begin({ id: null, name: '', interest: 'apps' });
     else if (e.key === 'ArrowRight' && S.i >= 0) go(S.i + 1);
     else if (e.key === 'ArrowLeft' && S.i >= 0) go(S.i - 1);
@@ -769,10 +854,151 @@
     else if (e.key.toLowerCase() === 'h') $('#help').hidden = !$('#help').hidden;
   });
 
+  /* ============================================================
+   * ÁUDIO: liberar o som, legenda, marcadores, mudo, chamada na espera
+   * ============================================================ */
+  const pref = {
+    get(k) { try { return JSON.parse(localStorage.getItem('devpath-' + k)); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem('devpath-' + k, JSON.stringify(v)); } catch {} },
+  };
+
+  function setupAudio() {
+    S.captions = pref.get('legendas') ?? NARR.captions !== false;
+    AudioEngine.init(NARR);
+    AudioEngine.onChange(() => { updateAudioUi(); reportAudio(); });
+    Narrator.onBlocked(() => { updateAudioUi(); reportAudio(); });
+
+    // ducking: a música abaixa enquanto a voz fala. A volta espera a pausa entre cenas (hold)
+    // passar: se a próxima cena já começa falando, a música nem chega a subir ("bombear").
+    let restoreLater = 0;
+    const restoreDelay = ((Number(NARR.hold) || 1) + 0.8) * 1000;
+    Narrator.onSpeaking((on) => {
+      clearTimeout(restoreLater);
+      if (on) AudioEngine.duck();
+      else restoreLater = setTimeout(() => AudioEngine.restore(), S.i >= 0 ? restoreDelay : 0);
+    });
+
+    Narrator.onCaption((text) => {
+      const c = $('#caption');
+      if (text) c.textContent = text;
+      c.classList.toggle('show', !!text && S.captions);
+    });
+
+    Narrator.onMarker((m) => MARK[m.action]?.(m));
+
+    $('#audioGate').addEventListener('click', unlockAudio);
+    updateAudioUi();
+    if (AudioEngine.ready) scheduleAttract();
+  }
+
+  // Clique (ou tecla) na TV: o Chrome/Edge só tocam som depois de um gesto na página
+  async function unlockAudio() {
+    Narrator.prime();
+    await AudioEngine.unlock();
+    updateAudioUi();
+    reportAudio();
+    scheduleAttract();
+  }
+
+  const audioBlocked = () => !AudioEngine.ready || Narrator.state().blocked;
+
+  function updateAudioUi() {
+    const gate = $('#audioGate');
+    if (!gate) return;
+    gate.hidden = !audioBlocked() || S.i >= 0; // só na preparação: nunca cobre a apresentação
+    const ind = $('#hudAudio');
+    const txt = audioBlocked() ? 'som bloqueado' : AudioEngine.muted ? 'som desligado' : !Narrator.enabled ? 'sem narração' : '';
+    ind.hidden = !txt;
+    ind.textContent = txt;
+  }
+
+  function reportAudio() {
+    post('/api/tv/audio', {
+      pronto: !audioBlocked(), mudo: AudioEngine.muted, legendas: S.captions, narracao: Narrator.enabled, voz: Narrator.state().voice || '',
+    });
+  }
+
+  function toggleMute() {
+    AudioEngine.setMuted(!AudioEngine.muted);
+    Narrator.setMuted(AudioEngine.muted);
+    toast(AudioEngine.muted ? 'Som desligado' : 'Som ligado');
+  }
+
+  function toggleCaptions() {
+    S.captions = !S.captions;
+    pref.set('legendas', S.captions);
+    const c = $('#caption');
+    c.classList.toggle('show', S.captions && !!S.narr && !!c.textContent);
+    toast(S.captions ? 'Legenda ligada' : 'Legenda desligada');
+    reportAudio();
+  }
+
+  function toggleNarration() {
+    Narrator.setEnabled(!Narrator.enabled);
+    toast(Narrator.enabled ? 'Narração ligada (a partir da próxima cena)' : 'Narração desligada');
+    // desligou no meio de uma fala: a cena volta a contar pelo tempo de STEPS, sem voz
+    if (!Narrator.enabled && S.i >= 0) {
+      const step = STEPS[S.i];
+      stopNarration();
+      progress(step.dur * 1000);
+      schedule(step.dur * 1000);
+    }
+    if (!Narrator.enabled) Narrator.stop();
+    updateAudioUi();
+    reportAudio();
+  }
+
+  // Chamada de voz na tela do QR Code, para quem está passando pelo estande
+  function scheduleAttract() {
+    clearTimeout(S.attract);
+    const every = Number(NARR.idleCallEvery) || 0;
+    if (!every || S.i >= 0) return;
+    S.attract = setTimeout(async () => {
+      if (S.i >= 0) return;
+      if (AudioEngine.ready && !AudioEngine.muted && Narrator.enabled) {
+        const h = await Narrator.play('idle', {});
+        if (h && !h.voiced) Narrator.stop(); // sem voz não faz sentido legendar a espera
+        else if (h) await h.done;
+      }
+      if (S.i < 0) scheduleAttract();
+    }, every * 1000);
+  }
+
+  /* ---------- marcadores: a animação reage à voz ---------- */
+  const MARK = {
+    // acende tudo na cena atual cujo data-mark contém o alvo (disciplina, peça do produto, carreira…)
+    highlight(m) {
+      const want = norm(m.target);
+      const scene = $('.scene:not(.is-out)', root);
+      if (!scene || !want) return;
+      $$('[data-mark]', scene).forEach((el) => { if (norm(el.dataset.mark).includes(want)) el.classList.add('is-said'); });
+    },
+    // "COMPETÊNCIA DESBLOQUEADA ✓"
+    unlock(m) {
+      showUnlock(m.label);
+      AudioEngine.playSFX('unlock');
+    },
+  };
+
+  let unlockTimer = 0;
+  function showUnlock(label) {
+    const box = $('#unlock');
+    $('#unlockLabel').textContent = label || '';
+    box.classList.remove('show'); void box.offsetWidth;
+    box.classList.add('show');
+    clearTimeout(unlockTimer);
+    unlockTimer = setTimeout(hideUnlock, 3400);
+  }
+  function hideUnlock() {
+    clearTimeout(unlockTimer);
+    $('#unlock')?.classList.remove('show');
+  }
+
+  setupAudio();
   connect();
 
   /* ---------- ensaio: index.html?cena=4&nome=Ana&perfil=design&pausar ----------
-   * Abre direto numa cena (1 = terminal ... 15 = crachá) para ensaiar ou revisar. */
+   * Abre direto numa cena (1 = terminal ... 14 = crachá) para ensaiar ou revisar. */
   const q = new URLSearchParams(location.search);
   if (q.has('cena')) {
     setTimeout(() => {

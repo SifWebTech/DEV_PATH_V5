@@ -47,7 +47,14 @@ body:hover { cursor: default; }
 .hud-progress li.on i { animation: fillbar linear forwards; }
 @keyframes fillbar { to { width: 100%; } }
 
-.hud-live { justify-self: end; display: flex; align-items: center; gap: 12px; font-size: 16px; color: var(--dim); }
+.hud-live { justify-self: end; display: grid; justify-items: end; gap: 8px; color: var(--dim); }
+.hud-status { display: flex; align-items: center; gap: 12px; font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase; }
+.hud-audio { padding: 3px 10px; border-radius: 20px; border: 1px solid #ff7a1a88; color: var(--orange); font-size: 11px; }
+.hud-audio[hidden], .hud-who[hidden] { display: none; }
+/* quem está assistindo: NOME · OBJETIVO MOBILE */
+.hud-who { display: flex; align-items: baseline; gap: 10px; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; }
+.hud-who #hudName { font: 700 17px var(--display); letter-spacing: 1px; color: var(--white); }
+.hud-who #hudGoal { color: var(--green); font-weight: 700; }
 .live-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--green); box-shadow: var(--green-glow); animation: blink 1.6s infinite; }
 .hud-live.off .live-dot { background: var(--orange); box-shadow: var(--orange-glow); }
 @keyframes blink { 50% { opacity: .3; } }
@@ -483,3 +490,50 @@ body:hover { cursor: default; }
 #help dl { display: grid; grid-template-columns: auto 1fr; gap: 8px 18px; margin: 0; }
 #help dt { color: var(--green); }
 #help dd { margin: 0; color: var(--dim); }
+
+/* ---------------- narração (js/narrator.js) ---------------- */
+/* legenda: o mesmo texto do manifesto js/narration.js (tecla L liga/desliga) */
+.caption {
+  position: absolute; z-index: 16; left: 50%; bottom: 26px; transform: translate(-50%, 12px);
+  max-width: 1240px; width: max-content; padding: 12px 28px; border-radius: 14px;
+  background: #040816e8; border: 1px solid var(--line);
+  font: 500 26px/1.45 var(--mono); color: var(--white); text-align: center;
+  opacity: 0; transition: opacity .3s, transform .3s var(--ease-out); pointer-events: none;
+}
+.caption.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* "COMPETÊNCIA DESBLOQUEADA ✓" */
+.unlock-badge {
+  position: absolute; z-index: 17; right: 80px; top: 128px;
+  display: grid; gap: 6px; padding: 16px 30px 18px; border-radius: 16px;
+  border: 1.5px solid var(--green); background: #03140ced; box-shadow: 0 0 26px #2bff8866, 0 0 70px #2bff8822;
+  opacity: 0; transform: translateY(-16px) scale(.96); pointer-events: none;
+  transition: opacity .35s, transform .45s var(--ease-spring);
+}
+.unlock-badge.show { opacity: 1; transform: none; }
+.unlock-badge b { font: 700 18px var(--display); letter-spacing: 2px; text-transform: uppercase; color: var(--green); text-shadow: var(--green-glow); }
+.unlock-badge b i { font-style: normal; }
+.unlock-badge span { font-size: 20px; color: var(--white); }
+
+/* o que a voz acabou de citar fica aceso (data-mark + marcadores do manifesto) */
+.unlocks li.is-said { border-color: var(--c); border-left-color: var(--c); box-shadow: 0 0 0 1px var(--c), 0 0 28px color-mix(in srgb, var(--c) 45%, transparent); transition: border-color .5s, box-shadow .5s; }
+.unlocks li.is-said b { color: var(--c); transition: color .5s; }
+.build .node.is-said { filter: brightness(1.7) drop-shadow(0 0 16px currentColor); transition: filter .5s; }
+.build .browser.is-said, .build .phone.is-said { box-shadow: 0 0 0 2px var(--c), 0 0 70px color-mix(in srgb, var(--c) 45%, transparent); transition: box-shadow .5s; }
+.create-grid li.is-said { border-color: var(--c) !important; box-shadow: 0 0 44px color-mix(in srgb, var(--c) 55%, transparent) !important; }
+.role.is-said em { border-color: var(--green); color: var(--green); box-shadow: 0 0 26px #2bff8877; transition: border-color .5s, color .5s, box-shadow .5s; }
+.fatec-grid li.is-said { box-shadow: 0 -8px 44px -12px var(--c); transition: box-shadow .5s; }
+
+/* preparação: o navegador só libera o som depois de um clique */
+.audio-gate {
+  position: absolute; inset: 0; z-index: 40; display: grid; place-content: center; justify-items: center; gap: 28px;
+  background: #040816e0; backdrop-filter: blur(6px); text-align: center;
+}
+.audio-gate[hidden] { display: none; }
+.gate-btn {
+  padding: 34px 64px; border: 0; border-radius: 20px; cursor: pointer;
+  background: var(--green); color: var(--ink); font: 800 36px var(--display); letter-spacing: -1px; text-transform: uppercase;
+  box-shadow: 0 0 30px #2bff88aa, 0 0 90px #2bff8844;
+}
+.gate-btn:focus-visible { outline: 3px solid var(--white); outline-offset: 6px; }
+.audio-gate p { max-width: 900px; font-size: 22px; line-height: 1.5; color: var(--dim); }

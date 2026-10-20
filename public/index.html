@@ -25,7 +25,10 @@
           <span class="logo-sub">Sistemas para Internet<br>Fatec Jales</span>
         </div>
         <ol class="hud-progress" id="hudProgress" aria-label="Progresso da apresentação"></ol>
-        <div class="hud-live" id="hudLive"><span class="live-dot"></span><span id="hudLiveText">aguardando conexão</span></div>
+        <div class="hud-live" id="hudLive">
+          <p class="hud-status"><span class="live-dot"></span><span id="hudLiveText">aguardando conexão</span><span class="hud-audio" id="hudAudio" hidden></span></p>
+          <p class="hud-who" id="hudWho" hidden><b id="hudName"></b><span>objetivo</span><b id="hudGoal"></b></p>
+        </div>
       </header>
 
       <main id="sceneRoot" aria-live="polite"></main>
@@ -33,6 +36,16 @@
       <div id="reactions" aria-hidden="true"></div>
       <div id="toast" role="status"></div>
       <div id="flash" aria-hidden="true"></div>
+
+      <!-- Narração (js/narrator.js): competência desbloqueada e legenda -->
+      <div class="unlock-badge" id="unlock" aria-hidden="true"><b>Competência desbloqueada <i>✓</i></b><span id="unlockLabel"></span></div>
+      <p class="caption" id="caption" aria-hidden="true"></p>
+
+      <!-- Preparação do telão: o navegador só toca som depois de um clique (some sozinho quando o som é liberado) -->
+      <div class="audio-gate" id="audioGate" hidden>
+        <button type="button" class="gate-btn">Ativar áudio e iniciar evento</button>
+        <p>Clique aqui (ou aperte qualquer tecla) uma vez, antes de chamar o público. Depois disso a TV não precisa de mais nenhum clique.</p>
+      </div>
     </div>
   </div>
 
@@ -44,6 +57,9 @@
       <dt>→ / ←</dt><dd>avançar / voltar cena</dd>
       <dt>Espaço</dt><dd>pausar / continuar</dd>
       <dt>Esc</dt><dd>encerrar e voltar ao QR Code</dd>
+      <dt>M</dt><dd>som liga / desliga</dd>
+      <dt>L</dt><dd>legenda da narração</dd>
+      <dt>N</dt><dd>narração liga / desliga</dd>
       <dt>F</dt><dd>tela cheia</dd>
       <dt>H</dt><dd>mostrar / esconder esta ajuda</dd>
     </dl>
@@ -51,6 +67,10 @@
 
   <script src="vendor/qrcode.min.js"></script>
   <script src="js/content.js"></script>
+  <script src="js/narration.js"></script>
+  <script src="js/narration-timing.js"></script>
+  <script src="js/audio-engine.js"></script>
+  <script src="js/narrator.js"></script>
   <script src="js/circuit.js"></script>
   <script src="js/tv.js"></script>
 </body>

@@ -20,7 +20,7 @@
     <!-- 1. cadastro -->
     <section class="view" id="vForm">
       <h1 class="m-title">Sua jornada dev começa <span class="c-green">aqui.</span></h1>
-      <p class="m-lead">Em 3 minutos você vê na TV como é estudar Sistemas para Internet, do 1º ao 6º semestre.</p>
+      <p class="m-lead">Em cerca de 4 minutos você vê na TV como é estudar Sistemas para Internet, do 1º ao 6º semestre.</p>
       <p class="form-notice" id="formNotice" role="status"></p>
 
       <form id="leadForm" novalidate>
@@ -70,7 +70,7 @@
           Começar
         </span>
       </button>
-      <p class="m-note">A apresentação dura cerca de 3 minutos.</p>
+      <p class="m-note">A apresentação dura cerca de 4 minutos, com narração na TV.</p>
     </section>
 
     <!-- 3. ao vivo -->
@@ -92,6 +92,7 @@
 
     <!-- 4. crachá -->
     <section class="view" id="vDone" hidden>
+      <p class="done-title">DEV PATH concluído <span aria-hidden="true">✓</span></p>
       <p class="m-kicker">Seu crachá do futuro tecnólogo</p>
       <article class="m-badge" id="mBadge"></article>
       <button class="btn-main" id="saveBadge" type="button">Salvar crachá para os stories</button>
@@ -100,7 +101,14 @@
         <p class="m-note">Toque e segure a imagem para salvar na galeria.</p>
         <a class="btn-ghost" id="shotDl" download="cracha-devpath.png">Baixar imagem</a>
       </div>
-      <a class="btn-ghost" id="vestLink" target="_blank" rel="noopener">Inscrições no vestibular Fatec</a>
+      <!-- próximos passos (links em js/content.js → links) -->
+      <nav class="next-steps" aria-label="Próximos passos">
+        <a class="btn-ghost" id="courseLink" target="_blank" rel="noopener">Conhecer o curso</a>
+        <a class="btn-ghost" id="vestLink" target="_blank" rel="noopener">Ver processo seletivo</a>
+        <a class="btn-ghost" id="followLink" target="_blank" rel="noopener" hidden>Seguir a Fatec</a>
+        <button class="btn-ghost" id="infoBtn" type="button">Receber informações</button>
+        <p class="info-note" id="infoNote" role="status" hidden></p>
+      </nav>
       <a class="btn-text" id="fatecLink" target="_blank" rel="noopener">Site da Fatec Jales</a>
       <button class="btn-text" id="againBtn">Ver a apresentação de novo</button>
       <button class="btn-text btn-del" id="deleteBtn">Excluir meus dados</button>

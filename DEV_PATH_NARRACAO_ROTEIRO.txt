@@ -1,0 +1,23 @@
+00:00:00–00:00:06  Em seis semestres, uma ideia evolui até o lançamento. Cada etapa conecta conhecimento, prática e novas possibilidades.
+
+00:00:07–00:00:20  No primeiro semestre, você aprende a pensar como quem cria. Lógica, fundamentos da web e design começam a transformar curiosidade em raciocínio de desenvolvedor.
+
+00:00:22–00:00:35  No segundo semestre, as ideias ganham forma. Você aprofunda interfaces, estrutura de dados, redes e organização visual para construir experiências mais consistentes.
+
+00:00:37–00:00:50  No terceiro semestre, o sistema começa a ganhar inteligência. Banco de dados, programação para a web, servidores e engenharia de software fazem a aplicação receber, guardar e usar informações.
+
+00:00:52–00:01:05  No quarto semestre, tudo começa a se conectar. Servidores, banco de dados, segurança, navegação e gestão de projetos passam a trabalhar como partes de uma arquitetura completa.
+
+00:01:07–00:01:20  No quinto semestre, tecnologia vira produto. Mobile, prototipagem, usabilidade, servidores e marketing eletrônico aproximam código, pessoas e necessidades reais.
+
+00:01:22–00:01:35  No sexto semestre, você integra, empreende e entrega. O conhecimento acumulado se transforma em projeto, solução, visão de negócio e preparação para o mercado.
+
+00:01:37–00:01:46  E o que você poderá criar? Sites, aplicativos, lojas virtuais, dashboards, APIs, integrações, protótipos e sistemas para empresas.
+
+00:01:47–00:01:56  E onde isso pode levar você? Desenvolvimento web, mobile, dados, sistemas, servidores, cloud e empreendedorismo em tecnologia.
+
+00:01:57–00:02:04  Tecnologia já está presente em praticamente todos os setores. Comércio, indústria, serviços, educação, saúde e novos negócios dependem cada vez mais de soluções digitais.
+
+00:02:05–00:02:14  Na Fatec, você encontra formação pública, tecnológica e conectada ao mercado, com aprendizado progressivo e projeto final aplicado.
+
+00:02:15–00:02:32  Talvez o próximo sistema que você usa todos os dias seja criado por você. Descubra o que você pode construir. Seja Fatec com o curso de Sistemas para Internet.

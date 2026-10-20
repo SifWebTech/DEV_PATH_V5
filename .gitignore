@@ -1,3 +1,9 @@
 # dados pessoais dos visitantes (LGPD) e estado local do servidor
 data/
 node_modules/
+
+# amostras de voz geradas para comparar (ferramentas/gerar_narracao.py --amostras)
+ferramentas/amostras-vozes/
+
+# vídeos gravados da apresentação (grandes demais para o GitHub)
+*.mp4

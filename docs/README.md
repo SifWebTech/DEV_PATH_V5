@@ -16,6 +16,9 @@ O `README.md` da raiz ensina a *usar* o projeto no estande; aqui o assunto é *c
 | 6 | [06-dados-json-csv.md](06-dados-json-csv.md) | `package.json`, `estado.json`, `eventos.jsonl`, `leads.csv`, `.porta` |
 | 7 | [07-bat-ps1.md](07-bat-ps1.md) | `INICIAR.bat` e `abrir-telas.ps1`, linha a linha |
 | 8 | [08-git.md](08-git.md) | como salvar o trabalho com Git e mandar para o GitHub |
+| 9 | [09-auditoria-narracao-audio.md](09-auditoria-narracao-audio.md) | como a V5 estava antes da narração, riscos e plano |
+| 10 | [10-sistema-narracao.md](10-sistema-narracao.md) | narração, vozes, música, ducking, marcadores, autoplay, fallbacks |
+| 11 | [11-roteiro-narracao.md](11-roteiro-narracao.md) | o texto integral falado na TV, quem fala e a duração |
 
 ## Mapa do projeto
 

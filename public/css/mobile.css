@@ -136,3 +136,10 @@ input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px #2
 
 .form-notice { margin-top: 16px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--green); color: var(--green); background: #2bff8812; font-size: 14px; line-height: 1.5; }
 .form-notice:empty { display: none; }
+
+/* fim da experiência: "DEV PATH CONCLUÍDO ✓" e próximos passos */
+.done-title { margin-bottom: 18px; text-align: center; font: 800 20px var(--display); letter-spacing: 1px; text-transform: uppercase; color: var(--green); text-shadow: var(--green-glow); }
+.next-steps { display: grid; gap: 12px; margin-top: 26px; }
+#vDone .next-steps .btn-ghost { margin-top: 0; text-transform: uppercase; letter-spacing: .5px; }
+.next-steps [hidden], #fatecLink[hidden] { display: none; }
+.info-note { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--green); color: var(--green); background: #2bff8812; font-size: 14px; line-height: 1.5; }

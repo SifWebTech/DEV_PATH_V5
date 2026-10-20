@@ -18,6 +18,7 @@ const tvClients = new Set();    // respostas SSE das TVs
 const phoneClients = new Map(); // id → Set de respostas SSE
 const opClients = new Set();    // painéis do operador
 let tvScene = null;             // { index, total, label, paused } — o que a TV mostra agora
+let tvAudio = null;             // { pronto, mudo, legendas, narracao, voz } — o som da TV (para o painel)
 let todayCount = 0;
 
 // Nome do evento atual: o do painel, o da variável EVENTO ou "Estande 02/10/2026"
@@ -136,6 +137,10 @@ function setEvento(nome) {
   toOp('funil', {});
 }
 
+function setTvAudio(audio) {
+  tvAudio = audio;
+}
+
 function setScene(scene) {
   tvScene = scene;
   if (current) toPhone(current, 'scene', { index: scene.index, total: scene.total, label: scene.label });
@@ -145,8 +150,9 @@ module.exports = {
   leads, queue, tvClients, phoneClients, opClients,
   get current() { return current; },
   get tvScene() { return tvScene; },
+  get tvAudio() { return tvAudio; },
   get todayCount() { return todayCount; },
   evento, restore, sse, toTV, toPhone, toOp, publicLead, phoneStatus,
-  advance, finishCurrent, addLead, start, forget, setEvento, setScene,
+  advance, finishCurrent, addLead, start, forget, setEvento, setScene, setTvAudio,
   clearScene() { tvScene = null; },
 };

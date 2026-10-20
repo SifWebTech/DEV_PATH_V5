@@ -1,7 +1,7 @@
 # DEV PATH V5 — onde paramos
 
 > Diário de trabalho do projeto. Quando voltar, peça "onde paramos?" e este arquivo é o ponto de partida.
-> Última atualização: **02/10/2026**
+> Última atualização: **20/10/2026**
 
 ## Contexto
 
@@ -22,6 +22,8 @@
 | 02/10/2026 | `0ad9027` | **Fases 1 a 4 da arquitetura V5** (detalhes abaixo). |
 | 03/10/2026 | `a62e081` | Circuito do fundo mais discreto: opacidade .6 e pulsos mais lentos. |
 | 03/10/2026 | `9e2c0fc` | **Documentação técnica** em `docs/`: um arquivo por assunto (HTML, CSS, fontes WOFF2, JS do navegador, servidor, JSON/CSV, BAT/PS1, Git), explicando cada comando e o porquê de cada sequência. |
+| 13/10/2026 | (fora do Git) | Vídeo da apresentação gravado com narração (`DEV_PATH_VIDEO_COM_NARRACAO_FINAL.mp4`, `.srt`, roteiro). Os `.mp4` ficam fora do Git (`*.mp4` no `.gitignore`: são grandes demais). |
+| 19–20/10/2026 | branch `feat/narracao-audio-devpath` | **Narração, música e efeitos na TV** (docs 09, 10, 11): narradora Thalita + narrador Antonio (vozes neurais, MP3 gerados por `ferramentas/gerar_narracao.py`), "Olá, {nome}" pela voz neural do Edge, cena avança no fim da fala, ducking, destaques sincronizados palavra a palavra, "competência desbloqueada", legenda, botão "Ativar áudio", mudo/legenda/narração pelo painel, 3 trilhas animadas originais (`ferramentas/gerar_musica.py`), celular com "DEV PATH CONCLUÍDO ✓" e próximos passos. Testado no Edge e no Chrome (31 verificações). |
 
 ## Fases da V5 (todas concluídas)
 
@@ -35,6 +37,10 @@
 
 ## Pendências (estado atual)
 
+- [ ] **Escolher a música**: ouvir `public/audio/music/opcao-1/2/3` e pôr a escolhida em `public/js/narration.js → config.music` (hoje: opção 3, electro-pop).
+- [ ] Preencher os links do celular em `public/js/content.js → links` (`curso`, `instagram`, `contato`: estão como TODO, sem URL inventada).
+- [ ] Próxima etapa pedida: **migração para a nuvem (multi-rede)**, na branch `feat/cloud-multinetwork`.
+
 - [x] **Ajuste do circuito salvo** no commit `a62e081` (03/10/2026):
   - `public/css/tv.css`: `#circuit` com `opacity: .6` (circuito do fundo mais transparente).
   - `public/js/circuit.js`, linha 86, alterada pelo usuário: pulsos mais lentos e com cauda menor
@@ -44,7 +50,7 @@
 - [ ] **Ensaio completo** no notebook + TV + celular real antes do evento.
 - [ ] Na **primeira execução** da V5 com os dados reais, o servidor adiciona a coluna "evento" ao `data/leads.csv` e salva o original em `data/leads-backup-v4.csv`. É automático; só conferir.
 - [ ] Antes do evento: dar o **nome do evento** no painel e, se quiser, trocar a senha (`set ADMIN_KEY=...`).
-- [ ] Opcional: o comentário em `public/js/tv.js` (perto do fim) diz "15 = crachá", mas são 14 cenas (o README está certo).
+- [x] Comentário "15 = crachá" em `tv.js` corrigido para 14.
 
 ## Ajustes rápidos que já foram explicados
 

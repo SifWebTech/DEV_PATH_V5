@@ -17,6 +17,23 @@ A V5 mede o estande como uma ação de marketing: cada passo do visitante (abriu
                                      celular vira controle de reações 🔥💚🤯🚀
 ```
 
+## Narração, música e efeitos
+
+A TV fala: uma **narradora (Thalita)** e um **narrador (Antonio)** se intercalam, com vozes neurais gravadas em MP3; a voz chama o visitante pelo nome ("Olá, Felipe."), conduz os seis semestres e cada cena avança quando a fala termina. Enquanto a voz fala, a música de fundo abaixa sozinha (ducking) e os itens citados acendem na tela no instante em que são ditos ("COMPETÊNCIA DESBLOQUEADA ✓" no fim de cada semestre). A legenda mostra o mesmo texto.
+
+| Tecla na TV | Painel `/operador` | Faz |
+|---|---|---|
+| M | Desligar/Ligar som | mudo |
+| L | Legenda | legenda liga/desliga |
+| N | Narração | narração liga/desliga (sem voz, cada cena volta a usar o tempo fixo) |
+
+- **Som na TV:** o `INICIAR.bat` abre a TV já com o som liberado. Se a TV mostrar **"ATIVAR ÁUDIO E INICIAR EVENTO"**, clique uma vez nela (ou aperte uma tecla) antes de chamar o público.
+- **Volume, textos e música:** `public/js/narration.js` (`config.volume`, `config.music`, `scenes`).
+- **Mudou um texto?** Rode `python ferramentas/gerar_narracao.py` (precisa de internet e de `python -m pip install edge-tts`): ele regrava só os MP3 que mudaram.
+- **Outra música:** `python ferramentas/gerar_musica.py` gera as 3 opções animadas em `public/audio/music/`; escolha em `config.music`.
+- Tudo funciona sem os MP3 (voz do navegador e trilha sintetizada) e sem som nenhum (legenda + tempo fixo).
+- Como funciona por dentro: [docs/10-sistema-narracao.md](docs/10-sistema-narracao.md). Roteiro completo: [docs/11-roteiro-narracao.md](docs/11-roteiro-narracao.md).
+
 ## Como rodar no estande (notebook + TV pelo HDMI)
 
 1. Instale o [Node.js](https://nodejs.org) (versão 18 ou mais nova). Não precisa de `npm install`.
@@ -28,6 +45,8 @@ A V5 mede o estande como uma ação de marketing: cada passo do visitante (abriu
 5. Na primeira vez, o Windows pergunta se o Node pode usar a rede: marque **Redes privadas** e permita.
 
 A janela preta do servidor mostra o endereço do celular e a senha. Não feche essa janela durante o evento.
+
+A TV abre no **Edge** (ele tem as vozes neurais usadas no "Olá, {nome}"); sem Edge, no Chrome.
 
 Para fechar a apresentação na TV: clique nela e aperte **Alt + F4**. Se ela abrir no notebook em vez da TV, arraste a janela para a TV (ou use **Windows + Shift + →**) e aperte **F**.
 
@@ -60,6 +79,7 @@ Entre com a senha (padrão **`fatec`**, aparece na janela preta). O painel mostr
 | → / ← | avança / volta cena |
 | Espaço | pausa / continua |
 | Esc | encerra e volta ao QR Code (chama o próximo da fila) |
+| M / L / N | som / legenda / narração |
 | F | tela cheia |
 | H | mostra a ajuda |
 
@@ -103,6 +123,7 @@ DEV_PATH_V5/
 ├── INICIAR.bat          duplo clique: servidor + TV em tela cheia + painel
 ├── abrir-telas.ps1      detecta a TV (HDMI) e abre cada tela no lugar certo
 ├── server.js            liga o servidor (Node puro, sem npm install)
+├── ferramentas/         gerar_narracao.py (vozes neurais) e gerar_musica.py (trilhas)
 ├── server/
 │   ├── config.js        opções (porta, senha, evento, pastas)
 │   ├── http.js          rotas da API e arquivos estáticos
@@ -121,7 +142,9 @@ DEV_PATH_V5/
     ├── m.html           celular
     ├── admin.html       painel do operador: TV, funil, leads (/operador)
     ├── css/             base.css (cores e fontes), tv.css, mobile.css
-    ├── js/              content.js (textos), tv.js, circuit.js (fundo), mobile.js
+    ├── js/              content.js (textos), tv.js, circuit.js (fundo), mobile.js,
+    │                    narration.js (falas), narrator.js, audio-engine.js
+    ├── audio/           narração (MP3), música e efeitos
     ├── fonts/           Unbounded + JetBrains Mono (offline)
     └── vendor/          gerador de QR Code (offline)
 ```
