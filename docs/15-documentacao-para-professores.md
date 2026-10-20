@@ -165,7 +165,7 @@ Também aparecem: **o que mais chama a atenção** (interesses), **cadastros por
 | Narração | vozes neurais do Microsoft Edge (Francisca e Antonio) | voz natural em português do Brasil, de graça |
 | Nome falado | o servidor gera o áudio "Olá, {nome}!" na hora | o navegador da TV bloqueia a voz dele quando abre sozinho |
 | Música | 9 trilhas originais geradas por código (Python + NumPy) | sem direitos autorais de terceiros |
-| Fundo animado | Canvas 2D + CSS | o circuito fica mais transparente a cada cena e some nas últimas telas (de 60% a 10%; tabela em `tv.css`) |
+| Fundo animado | Canvas 2D + CSS | o circuito fica mais transparente a cada cena e some nas últimas telas (de 60% a 5%; tabela em `tv.css`) |
 | Versões do código | Git e GitHub | histórico de tudo o que mudou |
 
 ### 8.1 Áudio da apresentação
