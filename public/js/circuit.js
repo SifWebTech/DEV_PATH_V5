@@ -3,7 +3,7 @@
  * As trilhas são desenhadas uma vez num canvas fora da tela; a cada
  * quadro só os pulsos são pintados por cima.
  *
- *   circuit.setEnergy(0..1)  → mais pulsos, mais rápidos (sobe a cada semestre)
+ *   circuit.setEnergy(0..1)  → mais pulsos e cauda mais longa (sobe a cada semestre); a velocidade é sempre a mesma
  *   circuit.burst()          → onda de pulsos (usado no lançamento)
  *   A transparência do circuito fica no tv.css (#circuit e body[data-cena]).
  */
@@ -84,7 +84,8 @@
 
   function spawn() {
     const t = traces[Math.floor(Math.random() * traces.length)];
-    pulses.push({ t, d: 0, speed: 250 + Math.random() * 100 + energy * 1000, tail: 150 + energy * 150 });
+    // velocidade igual em todas as telas: 370 a 470 px/s (a da tela do código QR); a energia não acelera mais os pulsos
+    pulses.push({ t, d: 0, speed: 370 + Math.random() * 100, tail: 150 + energy * 150 });
   }
 
   function frame(now) {
