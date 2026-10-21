@@ -133,7 +133,7 @@ A ordem segue as **camadas**, de trás para a frente, como folhas de papel empil
 - `&lt;` e `&gt;` são os caracteres `<` e `>` escritos como **entidades**. Se escrevêssemos `<` cru, o navegador acharia que é o início de uma tag.
 - `<i>/</i>`: a barra fica dentro de um `<i>` só para o CSS pintá-la de laranja; o resto do logo é verde.
 - `<b>path</b>`: idem, para o CSS pintar "path" de azul e mais fino.
-- `.course-neon`: o nome do curso em neon, grande, no centro do topo. Cada palavra fica num `<span>` próprio porque o CSS (`base.css`) anima as cores branco, azul e vermelho (as da Fatec) com um atraso diferente em cada palavra. A mesma classe aparece no celular, no painel do operador e nos crachás.
+- `.course-neon`: o nome do curso em neon, grande, no centro do topo, com a fonte **Tilt Neon** (desenhada para parecer tubo de neon): letra escura, contorno claro (`-webkit-text-stroke`) e brilho forte em volta (`text-shadow`). Cada palavra fica num `<span>` próprio porque o CSS (`base.css`) anima as cores branco, azul e vermelho (as da Fatec) com um atraso diferente em cada palavra. A mesma classe aparece no celular, no painel do operador e nos crachás.
 - `<ol id="hudProgress">` começa **vazia**. O `tv.js` preenche com um tracinho por cena (14 tracinhos). É `<ol>` (lista **ordenada**) porque as cenas têm ordem.
 - `hud-live` mostra "ao vivo: Ana", "pausado", "modo demonstração"...
 

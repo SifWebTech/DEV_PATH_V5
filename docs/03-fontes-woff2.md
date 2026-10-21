@@ -6,6 +6,7 @@ Arquivos em `public/fonts/`:
 |---|---|---|---|---|---|---|
 | `unbounded.woff2` | Unbounded | títulos (`--display`) | 50.904 bytes (~50 KB) | 105.212 bytes | 297 | 200 a 900 |
 | `jetbrains-mono.woff2` | JetBrains Mono | texto corrido e "código" (`--mono`) | 31.432 bytes (~31 KB) | 78.528 bytes | 394 | 400 a 800 |
+| `tilt-neon.woff2` | Tilt Neon | nome do curso em neon (`.course-neon`), desenhada para parecer tubo de neon | 19.776 bytes (~19 KB) | — | só o conjunto latino | 400 |
 
 *(Os números foram lidos de dentro dos próprios arquivos: cabeçalho WOFF2, tabela `maxp` com a contagem de glifos e tabela `fvar` com os eixos.)*
 
@@ -61,7 +62,7 @@ A V3 carregava as fontes do Google Fonts (pela internet). Na V4 elas foram trazi
 3. **Privacidade (LGPD):** carregar do Google envia o IP de cada visitante para um servidor de fora.
 4. **O crachá PNG** desenhado no celular precisa da fonte já carregada (ver 3.7).
 
-Licença: Unbounded e JetBrains Mono são distribuídas sob a **SIL Open Font License (OFL)**, que permite usar, embutir e redistribuir as fontes num projeto como este.
+Licença: Unbounded, JetBrains Mono e Tilt Neon são distribuídas sob a **SIL Open Font License (OFL)**, que permite usar, embutir e redistribuir as fontes num projeto como este.
 
 ## 3.4 Fontes variáveis: por que um arquivo só por família
 

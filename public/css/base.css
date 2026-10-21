@@ -11,6 +11,12 @@
   font-weight: 100 800;
   font-display: swap;
 }
+/* Tilt Neon: fonte desenhada para parecer tubo de neon (nome do curso) */
+@font-face {
+  font-family: 'Tilt Neon';
+  src: url('../fonts/tilt-neon.woff2') format('woff2');
+  font-display: swap;
+}
 
 :root {
   /* Paleta neon: laranja, verde, azul e branco sobre azul-noite */
@@ -80,16 +86,17 @@ button { cursor: pointer; }
 .course-neon {
   --red: #ff2e4d;
   display: inline-flex; flex-wrap: wrap; column-gap: .32em; row-gap: .08em;
-  font: 800 var(--course-size, 40px)/1.05 var(--display); letter-spacing: -.02em; text-transform: uppercase;
+  font: 400 calc(var(--course-size, 40px) * 1.2)/1.05 'Tilt Neon', var(--display); letter-spacing: .03em; text-transform: uppercase;
   animation: neon-flicker 7s steps(1) infinite;
 }
-.course-neon span { display: inline-block; animation: fatec-neon 6s linear infinite; }
+.course-neon span { display: inline-block; -webkit-text-stroke: max(1px, .035em) #fff; animation: fatec-neon 6s linear infinite; }
 .course-neon span:nth-child(2) { animation-delay: -1.2s; }
 .course-neon span:nth-child(3) { animation-delay: -2.4s; }
 @keyframes fatec-neon {
-  0%, 100% { color: #b9c6d8; text-shadow: 0 0 3px #ffffff88, 0 0 12px #9fd8ff55, 0 0 30px #9fd8ff33; }
-  33% { color: #1683cc; text-shadow: 0 0 3px #22b8ff99, 0 0 12px #22b8ff77, 0 0 30px #22b8ff44; }
-  66% { color: #c41a36; text-shadow: 0 0 3px #ff2e4d99, 0 0 12px #ff2e4d77, 0 0 30px #ff2e4d44; }
+  /* letra escura + contorno claro (o "tubo") + brilho forte em volta */
+  0%, 100% { color: #b9c6d8; -webkit-text-stroke-color: #fff; text-shadow: 0 0 8px #ffffffaa, 0 0 22px #cfe8ffaa, 0 0 46px #9fd8ffaa, 0 0 90px #9fd8ff66; }
+  33% { color: #1683cc; -webkit-text-stroke-color: #8fdcff; text-shadow: 0 0 8px #22b8ffcc, 0 0 22px #22b8ffcc, 0 0 46px #22b8ffaa, 0 0 90px #22b8ff77; }
+  66% { color: #c41a36; -webkit-text-stroke-color: #ff9aa9; text-shadow: 0 0 8px #ff2e4dcc, 0 0 22px #ff2e4dcc, 0 0 46px #ff2e4daa, 0 0 90px #ff2e4d77; }
 }
 /* pisca rápido de vez em quando, como letreiro de neon */
 @keyframes neon-flicker {
