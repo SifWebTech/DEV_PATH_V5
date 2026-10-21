@@ -86,6 +86,13 @@ function resumo(evento) {
   const cenas = new Map();
   const reacoes = new Map();
   const cadastros = new Set(), excluidos = new Set(), concluiram = new Set(), interrompidas = new Set();
+  // Onde assistiram: no telão (fila) ou no próprio celular (modo "celular"), por cadastro
+  const modos = { telao: { comecaram: new Set(), concluiram: new Set() }, celular: { comecaram: new Set(), concluiram: new Set() } };
+  for (const e of list) {
+    const m = modos[e.modo === 'celular' ? 'celular' : 'telao'];
+    if (e.tipo === 'inicio') m.comecaram.add(e.lead);
+    else if (e.tipo === 'concluido') m.concluiram.add(e.lead);
+  }
   for (const e of list) {
     if (e.tipo === 'lead') {
       cadastros.add(e.lead);
@@ -134,6 +141,7 @@ function resumo(evento) {
     // apresentações terminadas, por cadastro: viu até o crachá ou foi interrompido (e não voltou)
     assistiram: concluiram.size,
     interrompidos: interrompidas.size,
+    onde: Object.fromEntries(Object.entries(modos).map(([k, m]) => [k, { comecaram: m.comecaram.size, concluiram: m.concluiram.size }])),
     eventos: [...todos].map(([nome, leads]) => ({ nome, leads })),
   };
 }

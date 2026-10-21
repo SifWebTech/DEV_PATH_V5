@@ -22,7 +22,7 @@ const config = require('./config');
 const { CSV_FILE, EVENTS_FILE, STATE_FILE, DATA_DIR, EVENTO_LEGADO } = config;
 
 const BOM = '﻿';
-const CSV_HEADER = ['data_hora', 'nome', 'contato', 'tipo_contato', 'interesse', 'consentimento', 'id', 'evento'];
+const CSV_HEADER = ['data_hora', 'nome', 'contato', 'tipo_contato', 'interesse', 'consentimento', 'id', 'evento', 'email'];
 
 const mem = { leads: [], events: null, state: null };
 let backend = 'arquivos';
@@ -55,7 +55,7 @@ const uncell = (s = '') => {
   const v = s.startsWith('"') && s.endsWith('"') ? s.slice(1, -1).replace(/""/g, '"') : s;
   return v.replace(/^'/, '');
 };
-const csvRow = (l) => [l.when, l.name, l.contact, l.contactType, l.interest, l.consent, l.id, l.evento].map(csvCell).join(';');
+const csvRow = (l) => [l.when, l.name, l.contact, l.contactType, l.interest, l.consent, l.id, l.evento, l.email].map(csvCell).join(';');
 
 function csvText(rows) {
   return BOM + [CSV_HEADER.join(';'), ...rows.map(csvRow)].join('\n') + '\n';
@@ -67,17 +67,17 @@ function loadCsv() {
     return [];
   }
   const lines = fs.readFileSync(CSV_FILE, 'utf8').replace(/^﻿/, '').split(/\r?\n/);
-  // Planilha da V4 (sem a coluna "evento"): guarda uma cópia e atualiza só o cabeçalho.
+  // Planilha antiga (V4 sem "evento", V5 sem "email"): guarda uma cópia e atualiza só o cabeçalho.
   if (lines[0] !== CSV_HEADER.join(';')) {
-    const backup = path.join(DATA_DIR, 'leads-backup-v4.csv');
+    const backup = path.join(DATA_DIR, lines[0].includes('evento') ? 'leads-backup-v5.csv' : 'leads-backup-v4.csv');
     if (!fs.existsSync(backup)) fs.copyFileSync(CSV_FILE, backup);
     lines[0] = CSV_HEADER.join(';');
     writeAtomic(CSV_FILE, BOM + lines.join('\n'));
     console.log(`  Planilha de leads atualizada para a V5 (cópia da original em ${backup}).`);
   }
   return lines.slice(1).filter(Boolean).map((line) => {
-    const [when, name, contact, contactType, interest, consent, id, evento] = line.split(';').map(uncell);
-    return { when, name, contact, contactType, interest, consent, id, evento: evento || EVENTO_LEGADO };
+    const [when, name, contact, contactType, interest, consent, id, evento, email] = line.split(';').map(uncell);
+    return { when, name, contact, contactType, interest, consent, id, evento: evento || EVENTO_LEGADO, email: email || '' };
   });
 }
 
@@ -106,11 +106,11 @@ async function openPostgres() {
   try { await migrate(direct); } finally { if (direct !== pool) await direct.end().catch(() => {}); }
   backend = 'postgres';
 
-  const leads = await sql(`SELECT id, registered_at, name, contact, contact_type, interest, consent, evento, event_code, display_code
+  const leads = await sql(`SELECT id, registered_at, name, contact, contact_type, interest, consent, evento, event_code, display_code, email
                              FROM leads ORDER BY registered_at, id`);
   mem.leads = leads.rows.map((r) => ({
     when: r.registered_at, name: r.name, contact: r.contact, contactType: r.contact_type, interest: r.interest,
-    consent: r.consent ? 'sim' : 'não', id: r.id, evento: r.evento, eventCode: r.event_code, display: r.display_code,
+    consent: r.consent ? 'sim' : 'não', id: r.id, evento: r.evento, eventCode: r.event_code, display: r.display_code, email: r.email || '',
   }));
   const ev = await sql('SELECT quando, tipo, evento, dados FROM interactions ORDER BY id');
   mem.events = ev.rows.map((r) => ({ quando: r.quando, tipo: r.tipo, evento: r.evento, ...r.dados }));
@@ -175,14 +175,14 @@ const readLeads = () => mem.leads.slice();
 function appendLead(lead, contactCell) {
   const row = {
     when: lead.when, name: lead.name, contact: contactCell, contactType: lead.contactType, interest: lead.interest,
-    consent: 'sim', id: lead.id, evento: lead.evento, eventCode: lead.eventCode, display: lead.display,
+    consent: 'sim', id: lead.id, evento: lead.evento, eventCode: lead.eventCode, display: lead.display, email: lead.email || '',
   };
   mem.leads.push(row);
   if (backend === 'arquivos') fs.appendFileSync(CSV_FILE, csvRow(row) + '\n');
   queue('lead', () => sql(
-    `INSERT INTO leads (id, registered_at, name, contact, contact_type, interest, consent, evento, event_code, display_code)
-     VALUES ($1, $2, $3, $4, $5, $6, true, $7, $8, $9) ON CONFLICT (id) DO NOTHING`,
-    [row.id, row.when, row.name, row.contact, row.contactType, row.interest, row.evento, row.eventCode || null, row.display || null],
+    `INSERT INTO leads (id, registered_at, name, contact, contact_type, interest, consent, evento, event_code, display_code, email)
+     VALUES ($1, $2, $3, $4, $5, $6, true, $7, $8, $9, $10) ON CONFLICT (id) DO NOTHING`,
+    [row.id, row.when, row.name, row.contact, row.contactType, row.interest, row.evento, row.eventCode || null, row.display || null, row.email || null],
   ));
 }
 

@@ -33,12 +33,12 @@ Antes da apresentação (ferramentas, rodam no notebook com internet):
 |---|---|
 | `public/js/narration-timing.js` | Gerado: instante de cada palavra em cada MP3 (sincronização exata). |
 | `ferramentas/gerar_narracao.py` | Gera os MP3 da narração com as vozes neurais Thalita e Antonio (grátis, via edge-tts). |
-| `ferramentas/gerar_musica.py` | Compõe as 3 trilhas animadas (código, sem licença de terceiros). |
+| `ferramentas/gerar_musica.py` | Compõe as 9 trilhas animadas (código, sem licença de terceiros). |
 | `public/js/narration.js` | **Manifesto**: textos, MP3, quem fala (F/M), marcadores, volumes. É o único arquivo a editar no dia a dia. |
 | `public/js/narrator.js` | Escolhe como falar cada trecho, fala, dispara legenda e marcadores. Único lugar que usa `speechSynthesis`. |
 | `public/js/audio-engine.js` | Web Audio: música, narração MP3, efeitos, fades, ducking, mudo. |
 | `public/js/tv.js` | Liga tudo às cenas: `narrate()`, `MARK` (reações), `setupAudio()`, botão de ativar áudio, atalhos. |
-| `public/audio/` | 23 MP3 de narração + 3 trilhas (ver `public/audio/README.md`). |
+| `public/audio/` | 23 MP3 de narração + 9 trilhas, das quais tocam a 9, a 8 e a 7 (ver `public/audio/README.md`). |
 | `server/http.js` | Serve os áudios (com `Range`), `POST /api/tv/audio` e os comandos `mute`, `legendas`, `narracao`. |
 
 Por que o manifesto é um `.js` e não `data/narration.json`: `data/` fica fora do Git e não é servida ao navegador; um `.js` igual ao `content.js` aceita comentários e funciona até com a TV aberta direto do arquivo.

@@ -20,7 +20,7 @@
     <!-- 1. cadastro -->
     <section class="view" id="vForm">
       <h1 class="m-title">Sua jornada dev começa <span class="c-green">aqui.</span></h1>
-      <p class="m-lead">Em cerca de 4 minutos você vê na TV como é estudar Sistemas para Internet, do 1º ao 6º semestre.</p>
+      <p class="m-lead">Em cerca de 4 minutos você vê, no telão ou aqui no celular, como é estudar Sistemas para Internet, do 1º ao 6º semestre.</p>
       <p class="form-notice" id="formNotice" role="status"></p>
 
       <form id="leadForm" novalidate>
@@ -30,16 +30,17 @@
           <small class="err" data-err="name"></small>
         </label>
 
-        <div class="field">
-          <span id="contactLabel">Onde a gente te encontra?</span>
-          <div class="seg" role="radiogroup" aria-labelledby="contactLabel">
-            <button type="button" role="radio" aria-checked="true" data-ctype="email">E-mail</button>
-            <button type="button" role="radio" aria-checked="false" data-ctype="instagram">Instagram</button>
-            <button type="button" role="radio" aria-checked="false" data-ctype="whatsapp">WhatsApp</button>
-          </div>
-          <input name="contact" id="fContact" type="email" inputmode="email" autocomplete="email" maxlength="80" placeholder="voce@email.com" required>
+        <label class="field">
+          <span>Seu WhatsApp</span>
+          <input name="contact" id="fContact" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="(17) 99999-0000" required>
           <small class="err" data-err="contact"></small>
-        </div>
+        </label>
+
+        <label class="field">
+          <span>E-mail <em class="opt">(opcional)</em></span>
+          <input name="email" id="fEmail" type="email" inputmode="email" autocomplete="email" maxlength="80" placeholder="voce@email.com">
+          <small class="err" data-err="email"></small>
+        </label>
 
         <fieldset class="field">
           <legend>O que mais chama sua atenção?</legend>
@@ -49,7 +50,7 @@
 
         <label class="consent">
           <input type="checkbox" id="fConsent">
-          <span>Autorizo a Fatec Jales a usar esses dados para me enviar informações sobre o curso e o vestibular pelo contato informado. Posso excluir meus dados a qualquer momento, inclusive por esta página.</span>
+          <span>Autorizo a Fatec Jales a usar esses dados para me enviar informações sobre o curso e o vestibular pelo WhatsApp (e pelo e-mail, se eu informar). Posso excluir meus dados a qualquer momento, inclusive por esta página.</span>
         </label>
         <small class="err" data-err="consent"></small>
 
@@ -58,24 +59,29 @@
       </form>
     </section>
 
-    <!-- 2. pronto para começar -->
+    <!-- 2. pronto para começar: no celular (sem fila) ou no telão -->
     <section class="view" id="vReady" hidden>
       <p class="m-kicker" id="readyHello"></p>
-      <h1 class="m-title">Olhe para a TV e toque no botão.</h1>
-      <button class="start" id="startBtn" aria-label="Começar a apresentação na TV">
+      <h1 class="m-title">Onde você quer assistir?</h1>
+      <button class="start" id="soloBtn" aria-label="Assistir agora no meu celular">
         <span class="start-ring"></span>
         <span class="start-ring r2"></span>
         <span class="start-core">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
-          Começar
+          No meu celular
         </span>
       </button>
-      <p class="m-note">A apresentação dura cerca de 4 minutos, com narração na TV.</p>
+      <p class="m-note">Começa agora, sem fila. Deixe o som ligado e o celular deitado.</p>
+      <button class="btn-ghost tv-choice" id="startBtn" type="button">Ver no telão</button>
+      <p class="m-note" id="tvQueue"></p>
+      <button class="btn-text" id="badgeLink" type="button" hidden>Ver meu crachá</button>
+      <button class="btn-text" id="notMe" type="button">Não é você? Fazer um novo cadastro</button>
     </section>
 
     <!-- 3. ao vivo -->
     <section class="view" id="vLive" hidden>
       <div class="live-status" id="liveStatus"></div>
+      <button class="btn-main" id="switchSolo" type="button" hidden>Não quer esperar? Assistir agora no celular</button>
       <div class="live-scene">
         <p>Agora na TV</p>
         <h2 id="sceneLabel">Preparando…</h2>

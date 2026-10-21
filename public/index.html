@@ -40,12 +40,31 @@
       <!-- Narração (js/narrator.js): competência desbloqueada e legenda -->
       <div class="unlock-badge" id="unlock" aria-hidden="true"><b>Competência desbloqueada <i>✓</i></b><span id="unlockLabel"></span></div>
       <p class="caption" id="caption" aria-hidden="true"></p>
+      <button type="button" class="solo-exit" id="soloExit" hidden>✕ Sair</button>
+
+      <!-- QR fixo no canto do telão, durante a apresentação: quem passa entra e assiste no próprio celular -->
+      <aside class="corner-qr" id="cornerQr" aria-label="QR Code para assistir no celular" hidden>
+        <p>Assista no<br><b>seu celular</b></p>
+        <div class="corner-qr-code" id="cornerQrCode"></div>
+      </aside>
 
       <!-- Preparação do telão: o navegador só toca som depois de um clique (some sozinho quando o som é liberado) -->
       <div class="audio-gate" id="audioGate" hidden>
         <button type="button" class="gate-btn">Ativar áudio e iniciar evento</button>
         <p>Clique aqui (ou aperte qualquer tecla) uma vez, antes de chamar o público. Depois disso a TV não precisa de mais nenhum clique.</p>
       </div>
+
+      <!-- No celular (/assistir): o toque que libera o som e começa a apresentação -->
+      <div class="audio-gate solo-gate" id="soloGate" hidden>
+        <button type="button" class="gate-btn">Toque para começar</button>
+        <p>Deixe o som ligado. A apresentação dura cerca de 4 minutos.</p>
+      </div>
+    </div>
+
+    <!-- No celular em pé: pede para deitar (a apresentação é a mesma do telão, em 16:9) -->
+    <div class="rotate-hint" id="rotateHint">
+      <span class="rotate-phone" aria-hidden="true"></span>
+      <p>Gire o celular para assistir</p>
     </div>
   </div>
 

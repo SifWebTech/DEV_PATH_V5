@@ -4,6 +4,7 @@
  *   evento   FATEC2026            (config.EVENT_CODE)
  *   telão    TELAO-01, TELAO-02…  (config.DISPLAYS): cada um com fila própria, TV própria e QR próprio
  *   sessão   uma ida do visitante à TV (id aleatório), do "Começar" até o crachá
+ *            (ou a apresentação no próprio celular, sem fila: display "CELULAR")
  *
  * O QR de cada telão aponta para /join/<código>. O código é opaco (HMAC do SESSION_SECRET):
  * não revela nada e não muda entre reinícios, então um QR impresso continua valendo.
@@ -210,6 +211,39 @@ function start(id) {
   return phoneStatus(id);
 }
 
+// Desistiu de esperar o telão (vai assistir no celular): sai da fila. Quem já está na TV não sai por aqui.
+function leaveQueue(id) {
+  const lead = leads.get(id);
+  const d = displayOf(lead);
+  const pos = d.queue.indexOf(id);
+  if (pos < 0) return;
+  d.queue.splice(pos, 1);
+  if (lead.session) store.recordSession({ id: lead.session, leadId: id, eventCode: EVENT, display: d.code, status: 'canceled' });
+  lead.session = null;
+  persist();
+  broadcastQueue(d);
+}
+
+// Apresentação no próprio celular, sem fila: fase = inicio | concluido | interrompido.
+// Entra no mesmo funil do telão, marcada com modo "celular" (o painel separa telão × celular).
+function solo(id, fase) {
+  const lead = leads.get(id);
+  leaveQueue(id);
+  if (fase === 'inicio') {
+    lead.done = false;
+    lead.session = crypto.randomUUID();
+    store.recordSession({ id: lead.session, leadId: id, eventCode: EVENT, display: 'CELULAR', status: 'running' });
+    funil.track('inicio', lead.evento, { lead: id, visitante: lead.visitante, modo: 'celular' });
+  } else {
+    if (fase === 'concluido') lead.done = true;
+    funil.track(fase, lead.evento, { lead: id, visitante: lead.visitante, modo: 'celular' });
+    if (lead.session) store.recordSession({ id: lead.session, leadId: id, eventCode: EVENT, display: 'CELULAR', status: fase === 'concluido' ? 'completed' : 'interrupted' });
+    lead.session = null;
+  }
+  persist();
+  toOp('funil', {});
+}
+
 // Remove o lead da sessão (pedido de exclusão). A planilha/banco é tratada em leads.js.
 function forget(id) {
   const lead = leads.get(id);
@@ -254,7 +288,7 @@ module.exports = {
   EVENT, leads, displays, phoneClients, opClients,
   get todayCount() { return todayCount; },
   evento, restore, sse, toTV, toAllTVs, toPhone, toOp, publicLead, phoneStatus,
-  advance, finishCurrent, dropStale, addLead, start, forget, setEvento, setScene, displayState,
+  advance, finishCurrent, dropStale, addLead, start, leaveQueue, solo, forget, setEvento, setScene, displayState,
   getDisplay, defaultDisplay, byJoin, displayOf, status, touch, persist,
   setTvAudio(d, audio) { d.audio = audio; touch(d, true); },
   clearScene(d) { d.scene = null; touch(d); },

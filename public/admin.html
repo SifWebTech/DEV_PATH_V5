@@ -311,7 +311,7 @@
       $('#kpis').innerHTML = [
         [c.ativos, c.excluidos ? `cadastros (${c.excluidos} excluído${c.excluidos > 1 ? 's' : ''} a pedido)` : 'cadastros'],
         [pct(f.lead, f.qr_aberto), 'de quem abriu o QR Code se cadastrou'],
-        [pct(m.assistiram, terminadas), `assistiram até o crachá (${m.interrompidos} interrompida${m.interrompidos === 1 ? '' : 's'})`],
+        [pct(m.assistiram, terminadas), `assistiram até o crachá: ${m.onde.telao.concluiram} no telão, ${m.onde.celular.concluiram} no celular (${m.interrompidos} interrompida${m.interrompidos === 1 ? '' : 's'})`],
         [f.vestibular_clique, 'abriram o site do vestibular pelo celular'],
       ].map(([v, t]) => `<div class="kpi"><b>${v}</b><span>${t}</span></div>`).join('');
 
@@ -352,7 +352,7 @@
       $('#csv').href = '/api/op/leads.csv' + leadQuery();
       $('#stats').innerHTML = `<b>${todayCount}</b> hoje, <b>${leads.length}</b> ${leadQuery() ? 'no filtro' : 'no total'}`;
       $('#rows').innerHTML = leads.length
-        ? leads.map((l) => `<tr><td>${esc(l.when)}</td><td>${esc(l.name)}</td><td>${esc(l.contact)}</td>
+        ? leads.map((l) => `<tr><td>${esc(l.when)}</td><td>${esc(l.name)}</td><td>${esc(l.contact)}${l.email ? `<br><small>${esc(l.email)}</small>` : ''}</td>
             <td class="int">${esc(INTEREST[l.interest] || l.interest)}</td><td class="ev">${esc(l.evento)}</td>
             <td><button class="del" data-del="${esc(l.id)}" data-name="${esc(l.name)}">Excluir</button></td></tr>`).join('')
         : '<tr><td colspan="6" style="color:var(--dim);text-align:center;padding:26px">Nenhum cadastro aqui ainda. Eles aparecem assim que alguém preencher pelo QR Code.</td></tr>';

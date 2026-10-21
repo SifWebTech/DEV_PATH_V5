@@ -58,9 +58,9 @@ async function main() {
   let novos = 0;
   for (const l of leads) {
     const r = await db.query(
-      `INSERT INTO leads (id, registered_at, name, contact, contact_type, interest, consent, evento, event_code, display_code)
-       VALUES ($1, $2, $3, $4, $5, $6, true, $7, $8, $9) ON CONFLICT (id) DO NOTHING`,
-      [l.id, l.when, l.name, l.contact, l.contactType, l.interest, l.evento, config.EVENT_CODE, config.DISPLAYS[0]]);
+      `INSERT INTO leads (id, registered_at, name, contact, contact_type, interest, consent, evento, event_code, display_code, email)
+       VALUES ($1, $2, $3, $4, $5, $6, true, $7, $8, $9, $10) ON CONFLICT (id) DO NOTHING`,
+      [l.id, l.when, l.name, l.contact, l.contactType, l.interest, l.evento, config.EVENT_CODE, config.DISPLAYS[0], l.email || null]);
     novos += r.rowCount;
   }
   const vazio = (await db.query('SELECT count(*)::int AS n FROM interactions')).rows[0].n === 0;

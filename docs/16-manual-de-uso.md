@@ -84,11 +84,18 @@ Abre a página de cadastro no celular dele.
 
 ### Passo 8. Preenche o cadastro
 
-Nome, onde quer ser encontrado (**e-mail, Instagram ou WhatsApp**), o que mais chama a atenção e a **autorização** de contato. Depois toca em **Salvar e continuar**.
+Nome, **WhatsApp** (obrigatório), **e-mail** (opcional), o que mais chama a atenção e a **autorização** de contato. Depois toca em **Salvar e continuar**.
 
 <img src="img/03-celular-preenchido.png" width="260" alt="Cadastro preenchido">
 
-### Passo 9. Toca em Começar
+### Passo 9. Escolhe onde assistir: no celular ou no telão
+
+- **No meu celular**: a mesma apresentação da TV começa na hora, sem fila, com narração e o crachá no fim. O celular precisa ficar **deitado** (em pé, aparece "Gire o celular" e a apresentação pausa).
+- **Ver no telão**: entra na fila do telão (a tela mostra quantas pessoas estão na frente). Na fila, o botão **"Não quer esperar? Assistir agora no celular"** troca para o celular a qualquer momento.
+
+Durante a apresentação, o telão mostra um **QR Code pequeno no canto inferior direito** (no crachá, no esquerdo): quem está passando lê, se cadastra e assiste no próprio celular, sem esperar a vez.
+
+Quem lê o QR de novo com o mesmo celular volta para esta escolha (não vai direto ao crachá) e pode tocar em **"Não é você? Fazer um novo cadastro"** para emprestar o celular a outra pessoa.
 
 <img src="img/04-celular-comecar.png" width="260" alt="Botão Começar">
 

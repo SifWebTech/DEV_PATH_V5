@@ -42,7 +42,8 @@
 | 20/10/2026 | `6369d37` | **Pulsos do circuito com a mesma velocidade em todas as telas** (370 a 470 px/s, a da tela do código QR): a energia de cada tela não acelera mais os pulsos; ela só muda a quantidade e a cauda. |
 | 20/10/2026 | `ba97c1e` | **Mesma quantidade de pulsos em todas as telas**: ~7 novos por segundo (a da tela do código QR); a onda de 70 pulsos no lançamento (6º semestre) foi desligada. A energia de cada tela agora só muda a cauda dos pulsos. |
 | 20/10/2026 | `138d356` | **Circuito some até 5% no crachá** (`tv.css`): últimas telas .27, .20, .14, .09 e .05. |
-| 20/10/2026 | (este commit) | **Trilha com 4 músicas, na ordem 9, 8, 7 e 6** (rock acelerado, funk groove, rock com bateria e pop punk), tocando em loop. As outras cinco continuam na pasta `public/audio/music/`. |
+| 20/10/2026 | `fe6f224` | **Trilha com 4 músicas, na ordem 9, 8, 7 e 6** (rock acelerado, funk groove, rock com bateria e pop punk), tocando em loop. As outras cinco continuam na pasta `public/audio/music/`. |
+| 21/10/2026 | (este commit) | **Assistir no telão ou no próprio celular.** Depois do cadastro, o celular pergunta onde assistir: **no celular** (`/assistir`, a mesma apresentação da TV, deitada, sem fila, com narração, música e crachá) ou **no telão** (fila, como antes, com a previsão de espera). Quem está na fila pode trocar para o celular (`/api/fila/sair`). O **telão mostra um QR pequeno fixo** no canto inferior direito durante toda a apresentação (no crachá, no esquerdo), sem cobrir nada. **WhatsApp obrigatório e e-mail opcional** no cadastro (coluna `email`, migration `002_email.sql`). Funil e painel separam **telão × celular** (`modo: celular`, sessões com display `CELULAR`). Ler o QR de novo não abre mais direto o crachá: volta à escolha, com "Não é você? Fazer um novo cadastro". Limite de cadastros por IP subiu (40/min) para o Wi-Fi do evento. **Trilha só com as 3 músicas com solo de bateria** (9, 8 e 7). Testado no Edge (20/20 verificações, celular e TV). |
 
 ## Fases da V5 (todas concluídas)
 
@@ -57,7 +58,7 @@
 
 ## Pendências (estado atual)
 
-- [x] **Música**: quatro trilhas tocam em sequência, em loop, na ordem 9, 8, 7 e 6 (`public/js/narration.js → config.music`). Para tirar ou pôr uma, apague ou acrescente a linha dela na lista.
+- [x] **Música**: as três trilhas com solo de bateria tocam em sequência, em loop, na ordem 9, 8 e 7 (`public/js/narration.js → config.music`). Para tirar ou pôr uma, apague ou acrescente a linha dela na lista.
 - [ ] Preencher os links do celular em `public/js/content.js → links` (`curso`, `instagram`, `contato`: estão como TODO, sem URL inventada).
 - [x] Migração para a nuvem (multi-rede) implementada, testada e na `main` (docs 12 e 13).
 - [x] Provedor escolhido: **Render (servidor) + Neon (PostgreSQL)**, grátis. Projeto pronto (`render.yaml`, docs 14) e no GitHub.

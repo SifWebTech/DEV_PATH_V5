@@ -64,7 +64,7 @@ flowchart LR
 | # | O que acontece | Tela |
 |---|---|---|
 | 1 | A TV mostra a chamada "Não apenas use tecnologia. Aprenda a criá-la." e o código para o celular. A cada 90 s, um narrador convida quem passa. | <img src="img/01-tv-espera-qr.png" width="320" alt=""> |
-| 2 | O visitante aponta a câmera e abre o cadastro: nome, onde quer ser encontrado (e-mail, Instagram ou WhatsApp), o que mais chama a atenção dele e a autorização de contato (LGPD). | <img src="img/03-celular-preenchido.png" width="150" alt=""> |
+| 2 | O visitante aponta a câmera e abre o cadastro: nome, WhatsApp (obrigatório) e e-mail (opcional), o que mais chama a atenção dele e a autorização de contato (LGPD). | <img src="img/03-celular-preenchido.png" width="150" alt=""> |
 | 3 | O celular diz "Tudo certo, Maria. Olhe para a TV e toque no botão." | <img src="img/04-celular-comecar.png" width="150" alt=""> |
 | 4 | Ao tocar em **Começar**, a TV chama o visitante pelo nome ("Olá, Maria! Que bom ter você aqui!") e começa a jornada. | <img src="img/06-tv-boas-vindas.png" width="320" alt=""> |
 | 5 | Durante a apresentação, o celular vira um **controle de reações** (🔥💚🤯🚀) que aparecem na TV. | <img src="img/07-celular-ao-vivo.png" width="150" alt=""> |
@@ -173,7 +173,7 @@ Também aparecem: **o que mais chama a atenção** (interesses), **cadastros por
 - **Duas vozes** se alternam como num diálogo: a narradora (Francisca) e o narrador (Antonio). Todo o texto está **100% em português do Brasil**.
 - **Entonação por frase:** exclamações saem mais rápidas, agudas e fortes, e perguntas sobem no fim. Isso deixa a fala dinâmica.
 - **Ducking:** a música abaixa sozinha enquanto alguém fala e volta depois.
-- **Músicas em sequência**: foram compostas 9 opções (eletrônicas e de rock, três com solo de guitarra e baixo e três com solo de bateria e contrabaixo). A apresentação usa quatro, na ordem 9, 8, 7 e 6. Cada uma toca inteira e emenda na seguinte.
+- **Músicas em sequência**: foram compostas 9 opções (eletrônicas e de rock, três com solo de guitarra e baixo e três com solo de bateria e contrabaixo). A apresentação usa as três com solo de bateria, na ordem 9, 8 e 7. Cada uma toca inteira e emenda na seguinte.
 - **Legenda** com o mesmo texto da fala (acessibilidade e ambiente barulhento).
 
 ### 8.2 Dois modos de funcionamento

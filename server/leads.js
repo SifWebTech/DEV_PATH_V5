@@ -1,7 +1,7 @@
 /*
  * Cadastro de leads: validação, gravação (planilha ou banco) e exclusão (LGPD).
  * O cadastro pertence ao telão do QR escaneado (código opaco do /join/<código>).
- * Contato aceito: e-mail, @ do Instagram ou WhatsApp com DDD.
+ * Contato: WhatsApp com DDD (obrigatório) e e-mail (opcional). Cadastros antigos podem ter e-mail ou Instagram.
  */
 'use strict';
 
@@ -12,7 +12,6 @@ const sessao = require('./sessao');
 const { stamp } = require('./util');
 const { INTERESTS } = require('./config');
 
-const CONTACT_TYPES = ['email', 'instagram', 'whatsapp'];
 const VISITOR_RE = /^[A-Za-z0-9-]{8,40}$/;
 
 // "(17) 99999-0000", "+55 17 99999 0000" → "5517999990000"; null se não for um número brasileiro
@@ -29,21 +28,15 @@ function validateLead(b) {
   const errors = {};
   if (name.length < 2 || name.length > 40) errors.name = 'Digite seu nome (2 a 40 letras).';
 
-  // O celular informa o tipo; sem ele (versão antiga da página), deduz como na V4
-  let contactType = CONTACT_TYPES.includes(b.contactType) ? b.contactType : (raw.includes('@') && !raw.startsWith('@') ? 'email' : 'instagram');
-  let contact = raw;
-  if (contactType === 'email') {
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(raw) || raw.length > 80) errors.contact = 'Digite um e-mail válido.';
-  } else if (contactType === 'instagram') {
-    if (!/^@?[A-Za-z0-9._]{2,30}$/.test(raw)) errors.contact = 'Digite seu @ do Instagram.';
-    else contact = raw.startsWith('@') ? raw : '@' + raw;
-  } else {
-    contact = normalizePhone(raw);
-    if (!contact) errors.contact = 'Digite o WhatsApp com DDD, ex.: (17) 99999-0000.';
-  }
+  // WhatsApp é obrigatório: é por ele que vão as mensagens do vestibular. O e-mail é opcional.
+  const contactType = 'whatsapp';
+  const contact = normalizePhone(raw);
+  if (!contact) errors.contact = 'Digite o WhatsApp com DDD, ex.: (17) 99999-0000.';
+  const email = String(b.email || '').trim().toLowerCase();
+  if (email && (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || email.length > 80)) errors.email = 'Confira o e-mail (ou deixe em branco).';
   if (!INTERESTS.includes(interest)) errors.interest = 'Escolha o que mais chama sua atenção.';
   if (b.consent !== true) errors.consent = 'Precisamos da sua autorização para entrar em contato.';
-  return { errors, lead: { name, contact, contactType, interest } };
+  return { errors, lead: { name, contact, contactType, email, interest } };
 }
 
 // Na planilha, Instagram e WhatsApp viram links clicáveis (e não começam com @ ou +, que o Excel trata como fórmula)

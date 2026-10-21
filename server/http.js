@@ -3,9 +3,11 @@
  *
  *   Páginas  /presentation/<EVENTO>/<TELÃO>  TV           ( / e /tv levam ao telão padrão )
  *            /join/<código>                   celular      ( /m leva ao telão padrão )
+ *            /assistir                        a apresentação no próprio celular, sem fila
  *            /operador                        painel
  *   Celular  GET  /api/join/<código>
  *            POST /api/lead, /api/lead/excluir, /api/start (ou /api/sessions/<id>/start), /api/react, /api/evento
+ *            POST /api/fila/sair, /api/solo   (desistir do telão; começo e fim da apresentação no celular)
  *            GET  /ir/vestibular?lead=…   → registra o clique e abre o vestibular com UTM
  *   TV       GET  /api/displays/<TELÃO>/state, /api/voz/ola/<id do cadastro>.mp3 (saudação com o nome)
  *            POST /api/tv/scene, /api/tv/done, /api/tv/audio, /api/tv/heartbeat   (body: { display })
@@ -64,8 +66,9 @@ function securityHeaders(req, res) {
   if (isHttps(req)) res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
 }
 
-// Limite de pedidos por aparelho (janela de 1 minuto). Protege cadastro e START de abuso/robôs.
-const LIMITES = { lead: 8, start: 20, evento: 60, react: 240, api: 600 };
+// Limite de pedidos por IP (janela de 1 minuto). Protege cadastro e START de abuso/robôs.
+// Num Wi-Fi de evento (ou na rede do celular) muita gente sai pelo mesmo IP: o cadastro aceita uma turma inteira.
+const LIMITES = { lead: 40, start: 60, evento: 120, react: 240, api: 1200 };
 const hits = new Map();
 function limited(req, bucket) {
   const key = `${bucket}|${clientIp(req)}`;
@@ -261,6 +264,23 @@ async function api(req, res, url) {
     return send(res, 200, sessao.start(id));
   }
 
+  // desistiu da fila do telão (vai assistir no celular)
+  if (p === '/api/fila/sair') {
+    if (limited(req, 'start')) return send(res, 429, { error: 'Espere um pouco antes de tentar de novo.' });
+    if (!sessao.leads.has(body.id)) return send(res, 404, { error: 'Cadastro não encontrado. Preencha novamente.' });
+    sessao.leaveQueue(body.id);
+    return send(res, 200, sessao.phoneStatus(body.id));
+  }
+
+  // apresentação no próprio celular (/assistir): começo e fim, para o funil e o painel
+  if (p === '/api/solo') {
+    if (limited(req, 'start')) return send(res, 429, { error: 'Espere um pouco antes de tentar de novo.' });
+    if (!sessao.leads.has(body.id)) return send(res, 404, { error: 'Cadastro não encontrado. Preencha novamente.' });
+    if (!['inicio', 'concluido', 'interrompido'].includes(body.fase)) return send(res, 400, { error: 'fase' });
+    sessao.solo(body.id, body.fase);
+    return send(res, 204, '');
+  }
+
   if (p === '/api/react') {
     if (limited(req, 'react')) return send(res, 429, { error: 'slow' });
     const lead = sessao.leads.get(body.id);
@@ -339,6 +359,7 @@ const redirect = (res, to) => { res.writeHead(302, { Location: to, 'Cache-Contro
 // Qual arquivo de public/ responde a este caminho (null = 404)
 function resolvePage(p) {
   if (p === '/operador' || p === '/admin') return '/admin.html';
+  if (p === '/assistir') return '/index.html'; // a mesma apresentação da TV, no celular (o cadastro vem do próprio aparelho)
   let m = p.match(/^\/presentation\/([A-Za-z0-9-]+)\/([A-Za-z0-9-]+)\/?$/);
   if (m) return m[1].toUpperCase() === sessao.EVENT && sessao.getDisplay(m[2]) ? '/index.html' : null;
   m = p.match(/^\/join\/([A-Za-z0-9]{4,16})\/?$/);

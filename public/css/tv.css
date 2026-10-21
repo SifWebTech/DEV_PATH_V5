@@ -557,3 +557,44 @@ body[data-cena="14"] #circuit { opacity: .05; }
 }
 .gate-btn:focus-visible { outline: 3px solid var(--white); outline-offset: 6px; }
 .audio-gate p { max-width: 900px; font-size: 22px; line-height: 1.5; color: var(--dim); }
+
+/* QR fixo no canto inferior direito durante a apresentação: é o canto livre em quase todas as cenas
+ * (a legenda fica no meio, o selo e o aviso em cima à direita). No crachá, o cartão ocupa a direita
+ * e o QR passa para a esquerda. Discreto: sem animação; o branco do código fica nítido para a câmera. */
+.corner-qr {
+  position: absolute; z-index: 14; right: 24px; bottom: 20px;
+  display: grid; justify-items: center; gap: 8px; padding: 10px 10px 12px; border-radius: 14px;
+  background: #081028d9; border: 1px solid var(--line); opacity: .92;
+}
+#stage[data-scene="finale"] .corner-qr { right: auto; left: 24px; }
+.corner-qr[hidden] { display: none; }
+.corner-qr p { margin: 0; font-size: 12px; line-height: 1.25; letter-spacing: 1px; text-transform: uppercase; color: var(--dim); text-align: center; }
+.corner-qr b { color: var(--green); }
+.corner-qr-code { width: 128px; height: 128px; border-radius: 6px; overflow: hidden; }
+.corner-qr-code svg { display: block; width: 100%; height: 100%; }
+/* as reações do celular sobem ao lado do QR, não por cima dele */
+#reactions { right: 200px; }
+
+/* ---------- no celular (/assistir): a mesma apresentação, deitada ---------- */
+body.solo { cursor: default; }
+body.solo #reactions, body.solo #help { display: none; }
+.solo-exit {
+  position: absolute; z-index: 18; right: 24px; bottom: 20px; padding: 14px 26px; border-radius: 30px;
+  border: 1px solid var(--line); background: #081028cc; color: var(--dim); font: 600 26px var(--mono); cursor: pointer;
+}
+.solo-exit[hidden] { display: none; }
+.solo-gate .gate-btn { font-size: 54px; padding: 44px 84px; }
+.solo-gate p { font-size: 32px; }
+
+.rotate-hint { display: none; }
+@media (orientation: portrait) {
+  body.solo .rotate-hint {
+    position: fixed; inset: 0; z-index: 50; display: grid; place-content: center; justify-items: center; gap: 22px;
+    background: var(--ink); color: var(--white); font: 700 20px var(--display); text-align: center; padding: 24px;
+  }
+}
+.rotate-phone {
+  width: 54px; height: 92px; border: 4px solid var(--green); border-radius: 12px; box-shadow: var(--green-glow);
+  animation: rotatePhone 2.4s var(--ease-out) infinite;
+}
+@keyframes rotatePhone { 0%, 25% { transform: rotate(0); } 60%, 100% { transform: rotate(-90deg); } }

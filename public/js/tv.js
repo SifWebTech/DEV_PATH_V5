@@ -25,6 +25,9 @@
   const NARR = window.DEVPATH_NARRACAO?.config || {};
   // Qual telão é esta TV: /presentation/<EVENTO>/<TELÃO> (aberto em outro endereço, o servidor usa o padrão)
   const ROUTE = location.pathname.match(/^\/presentation\/([A-Za-z0-9-]+)\/([A-Za-z0-9-]+)/);
+  // /assistir: a mesma apresentação no celular do visitante, sem fila e sem conexão de TV.
+  // O cadastro vem do próprio aparelho (o mobile.js guardou em localStorage) e, no fim, volta para o crachá.
+  const SOLO = location.pathname === '/assistir';
 
   const stage = $('#stage');
   const root = $('#sceneRoot');
@@ -164,8 +167,8 @@
           <p class="qr-cta">Aponte a câmera do celular</p>
           <ol class="qr-steps">
             <li><b>1</b>Faça seu cadastro</li>
-            <li><b>2</b>Toque em começar</li>
-            <li><b>3</b>Assista aqui na tela</li>
+            <li><b>2</b>Escolha: telão ou celular</li>
+            <li><b>3</b>Assista agora</li>
           </ol>
           <p class="qr-url" id="qrUrl"></p>
           <p class="idle-count"><b id="todayCount">${S.todayCount}</b> futuros devs conectados hoje</p>
@@ -595,7 +598,8 @@
             <div>
               <p class="cta-big">Descubra o que você pode criar.</p>
               <p>Inscrições e calendário em <b>vestibularfatec.com.br</b></p>
-              ${S.lead?.id ? '<p class="cta-phone">Seu crachá também chegou no seu celular.</p>' : ''}
+              ${SOLO ? '<p class="cta-phone">Em seguida, seu crachá aparece aqui para salvar.</p>'
+                : S.lead?.id ? '<p class="cta-phone">Seu crachá também chegou no seu celular.</p>' : ''}
             </div>
           </div>
         </div>
@@ -738,6 +742,7 @@
     stopNarration();
     hideUnlock();
     cancelAnimationFrame(ekg.raf);
+    if (SOLO) return soloEnd(completo);
     S.i = -1;
     S.lead = null;   // nome e objetivo saem da tela junto com a cena
     S.paused = false;
@@ -755,8 +760,10 @@
       list.innerHTML = STEPS.map((s, k) => `<li class="${k < S.i ? 'done' : k === S.i ? 'on' : ''}" title="${esc(s.label)}"><i></i></li>`).join('');
     }
     const live = $('#hudLiveText');
-    $('#hudLive').classList.toggle('off', !S.online);
-    if (S.i >= 0) live.textContent = S.paused ? 'pausado' : S.lead?.id ? 'experiência conectada' : 'demonstração';
+    updateCornerQr();
+    $('#hudLive').classList.toggle('off', !S.online && !SOLO);
+    if (SOLO) live.textContent = S.paused ? 'pausado' : 'no seu celular';
+    else if (S.i >= 0) live.textContent = S.paused ? 'pausado' : S.lead?.id ? 'experiência conectada' : 'demonstração';
     else live.textContent = S.online ? 'conectado' : S.everOnline ? 'reconectando…' : 'modo demonstração';
     if (!S.online && S.everOnline) live.textContent = 'reconectando…'; // vale também no meio da apresentação
     // quem está assistindo e o objetivo escolhido no celular (some quando volta ao QR Code)
@@ -765,6 +772,18 @@
     $('#hudName').textContent = name;
     $('#hudGoal').textContent = name ? profile().goal : '';
     updateAudioUi();
+  }
+
+  // QR fixo no canto: aparece em todas as cenas da apresentação no telão (na espera, o QR grande já está na tela)
+  let cornerUrl = '';
+  function updateCornerQr() {
+    const box = $('#cornerQr');
+    const show = !SOLO && S.online && !!S.mobileUrl && S.i >= 0;
+    if (show && cornerUrl !== S.mobileUrl) {
+      cornerUrl = S.mobileUrl;
+      $('#cornerQrCode').innerHTML = qrSvg(cornerUrl);
+    }
+    box.hidden = !show;
   }
 
   /* ---------- reações e avisos vindos do celular ---------- */
@@ -864,8 +883,56 @@
     setTimeout(() => { if (S.i < 0 && !$('.scene-idle')) renderIdle(); }, 1500);
   }
 
+  /* ============================================================
+   * NO CELULAR (/assistir): toque para começar, celular deitado, volta para o crachá
+   * ============================================================ */
+  const soloPost = (fase) => fetch('/api/solo', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
+    body: JSON.stringify({ id: S.lead?.id, fase }),
+  }).catch(() => {});
+
+  function soloSetup() {
+    let lead = null;
+    try { lead = JSON.parse(localStorage.getItem('devpath-lead')); } catch {}
+    if (!lead?.id) return location.replace('/m'); // sem cadastro neste aparelho: volta ao formulário
+    S.lead = lead;
+    document.body.classList.add('solo');
+    const gate = $('#soloGate');
+    gate.hidden = false;
+    gate.addEventListener('click', async () => {
+      gate.hidden = true;
+      // tela cheia e deitado (Android); no iPhone fica o aviso "gire o celular"
+      try { await document.documentElement.requestFullscreen?.({ navigationUI: 'hide' }); } catch {}
+      try { await screen.orientation?.lock?.('landscape'); } catch {}
+      Narrator.prime();
+      await AudioEngine.unlock();
+      $('#soloExit').hidden = false;
+      soloPost('inicio');
+      begin(lead);
+    }, { once: true });
+    $('#soloExit').addEventListener('click', () => end(false));
+
+    // em pé no meio da apresentação: pausa; deitou de novo: continua
+    const portrait = matchMedia('(orientation: portrait)');
+    let autoPaused = false;
+    portrait.addEventListener('change', () => {
+      if (S.i < 0) return;
+      if (portrait.matches && !S.paused) { autoPaused = true; togglePause(); }
+      else if (!portrait.matches && autoPaused) { autoPaused = false; if (S.paused) togglePause(); }
+    });
+  }
+
+  // completo: vai direto para o crachá no celular; saiu antes: volta para a escolha telão × celular
+  function soloEnd(completo) {
+    const back = '/join/' + encodeURIComponent(S.lead?.joinCode || '');
+    soloPost(completo ? 'concluido' : 'interrompido');
+    try { if (document.fullscreenElement) document.exitFullscreen(); } catch {}
+    location.replace(S.lead?.joinCode ? back + (completo ? '#cracha' : '') : '/m' + (completo ? '#cracha' : ''));
+  }
+
   /* ---------- atalhos do operador ---------- */
   addEventListener('keydown', (e) => {
+    if (SOLO) return; // no celular não há operador
     if (!$('#audioGate').hidden && !e.repeat) { e.preventDefault(); unlockAudio(); return; } // 1ª tecla só libera o som
     const k = e.key.toLowerCase();
     if (k === 'm') return toggleMute();
@@ -931,7 +998,7 @@
   function updateAudioUi() {
     const gate = $('#audioGate');
     if (!gate) return;
-    gate.hidden = !audioBlocked() || S.i >= 0; // só na preparação: nunca cobre a apresentação
+    gate.hidden = SOLO || !audioBlocked() || S.i >= 0; // só na preparação: nunca cobre a apresentação
     const ind = $('#hudAudio');
     const txt = audioBlocked() ? 'som bloqueado' : AudioEngine.muted ? 'som desligado' : !Narrator.enabled ? 'sem narração' : '';
     ind.hidden = !txt;
@@ -978,7 +1045,7 @@
   function scheduleAttract() {
     clearTimeout(S.attract);
     const every = Number(NARR.idleCallEvery) || 0;
-    if (!every || S.i >= 0) return;
+    if (!every || S.i >= 0 || SOLO) return;
     S.attract = setTimeout(async () => {
       if (S.i >= 0) return;
       if (AudioEngine.ready && !AudioEngine.muted && Narrator.enabled) {
@@ -1021,7 +1088,8 @@
   }
 
   setupAudio();
-  connect();
+  if (SOLO) soloSetup();
+  else connect();
 
   /* ---------- ensaio: index.html?cena=4&nome=Ana&perfil=design&pausar ----------
    * Abre direto numa cena (1 = terminal ... 14 = crachá) para ensaiar ou revisar. */

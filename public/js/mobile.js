@@ -33,7 +33,6 @@
   const joinCode = (location.pathname.match(/^\/join\/([A-Za-z0-9]+)/) || [])[1] || '';
   let lead = store.get();
   let es = null;
-  let ctype = 'email';
   let interest = '';
 
   const postJSON = (url, body) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -57,26 +56,13 @@
     setErr('interest', '');
   });
 
-  // e-mail, Instagram ou WhatsApp: cada um com o teclado certo no celular
-  const CONTACT = {
-    email: { type: 'email', mode: 'email', auto: 'email', hint: 'voce@email.com', max: 80 },
-    instagram: { type: 'text', mode: 'text', auto: 'username', hint: '@seuperfil', max: 31 },
-    whatsapp: { type: 'tel', mode: 'tel', auto: 'tel', hint: '(17) 99999-0000', max: 20 },
-  };
-  document.querySelectorAll('[data-ctype]').forEach((b) => b.addEventListener('click', () => {
-    ctype = b.dataset.ctype;
-    document.querySelectorAll('[data-ctype]').forEach((x) => x.setAttribute('aria-checked', String(x === b)));
-    const input = $('#fContact');
-    const cfg = CONTACT[ctype];
-    input.value = '';
-    input.type = cfg.type;
-    input.inputMode = cfg.mode;
-    input.autocomplete = cfg.auto;
-    input.placeholder = cfg.hint;
-    input.maxLength = cfg.max;
-    input.focus();
+  // WhatsApp: vai formatando "(17) 99999-0000" enquanto a pessoa digita
+  $('#fContact').addEventListener('input', (e) => {
+    const d = e.target.value.replace(/\D/g, '').replace(/^55(?=\d{10,11}$)/, '').slice(0, 11);
+    e.target.value = d.length > 6 ? `(${d.slice(0, 2)}) ${d.slice(2, d.length - 4)}-${d.slice(-4)}`
+      : d.length > 2 ? `(${d.slice(0, 2)}) ${d.slice(2)}` : d;
     setErr('contact', '');
-  }));
+  });
 
   function setErr(field, msg) {
     const el = document.querySelector(`[data-err="${field}"]`);
@@ -88,13 +74,14 @@
 
   $('#leadForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    ['name', 'contact', 'interest', 'consent'].forEach((f) => setErr(f, ''));
+    ['name', 'contact', 'email', 'interest', 'consent'].forEach((f) => setErr(f, ''));
     $('#formError').textContent = '';
     $('#formNotice').textContent = '';
     const body = {
       name: $('#fName').value,
       contact: $('#fContact').value,
-      contactType: ctype,
+      contactType: 'whatsapp',
+      email: $('#fEmail').value,
       interest,
       consent: $('#fConsent').checked,
       visitante,
@@ -111,7 +98,7 @@
         if (data.errors?.form) $('#formError').textContent = data.errors.form;
         document.querySelector('.err:not(:empty)')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else if (res.ok) {
-        lead = data;
+        lead = { ...data, joinCode }; // joinCode: a apresentação no celular (/assistir) volta para esta página
         store.set(lead);
         goReady();
       } else throw new Error();
@@ -124,10 +111,52 @@
   });
 
   /* ---------- pronto ---------- */
-  function goReady() {
-    $('#readyHello').textContent = `Tudo certo, ${lead.name.split(' ')[0]}.`;
+  function goReady(jaAssistiu = false) {
+    const nome = lead.name.split(' ')[0];
+    $('#readyHello').textContent = `Tudo certo, ${nome}.`;
+    $('#notMe').textContent = `Não é ${nome}? Fazer um novo cadastro`;
+    $('#badgeLink').hidden = !jaAssistiu;
     show('vReady');
+    tvQueue();
   }
+
+  // Outra pessoa usando este celular: esquece o cadastro guardado aqui (no servidor ele continua)
+  $('#notMe').addEventListener('click', () => {
+    $('#leadForm').reset();
+    interest = '';
+    chips.querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-checked', 'false'));
+    forgetLead();
+  });
+  $('#badgeLink').addEventListener('click', () => showBadge());
+
+  // Quanto falta para o telão ficar livre (cada apresentação leva cerca de 4 minutos)
+  async function tvQueue() {
+    const note = $('#tvQueue');
+    note.textContent = '';
+    try {
+      const st = await (await fetch('/api/displays/' + encodeURIComponent(lead.display || '') + '/state', { cache: 'no-store' })).json();
+      const waiting = st.queue + (st.current ? 1 : 0);
+      if (st.status === 'OFFLINE') note.textContent = 'O telão está desligado agora.';
+      else if (!waiting) note.textContent = 'O telão está livre agora.';
+      else note.textContent = `${waiting} ${waiting === 1 ? 'pessoa' : 'pessoas'} na frente no telão (cerca de ${waiting * 4} min).`;
+    } catch {}
+  }
+
+  // A mesma apresentação do telão, aqui no celular: o cadastro vai junto pelo localStorage
+  const watchHere = () => location.assign('/assistir');
+  $('#soloBtn').addEventListener('click', () => {
+    $('#soloBtn').classList.add('pressed');
+    navigator.vibrate?.(40);
+    watchHere();
+  });
+
+  // Estava na fila do telão e cansou de esperar: sai da fila e assiste no celular
+  $('#switchSolo').addEventListener('click', async () => {
+    try { await postJSON('/api/fila/sair', { id: lead.id }); } catch {}
+    es?.close();
+    es = null;
+    watchHere();
+  });
 
   $('#startBtn').addEventListener('click', async () => {
     const btn = $('#startBtn');
@@ -149,7 +178,13 @@
   function listen() {
     if (es) return;
     es = new EventSource('/api/stream?role=phone&id=' + encodeURIComponent(lead.id));
-    es.addEventListener('status', (e) => applyStatus(JSON.parse(e.data)));
+    let first = true; // a 1ª resposta (ao abrir a página) não abre o crachá: quem decide é a abertura, lá embaixo
+    es.addEventListener('status', (e) => {
+      const st = JSON.parse(e.data);
+      if (first && st.state === 'done') { first = false; return; }
+      first = false;
+      applyStatus(st);
+    });
     es.addEventListener('scene', (e) => {
       const d = JSON.parse(e.data);
       $('#sceneLabel').textContent = d.label;
@@ -159,6 +194,8 @@
 
   function applyStatus(st) {
     const box = $('#liveStatus');
+    // na fila (não sendo o próximo de um telão livre): pode trocar para o celular a qualquer momento
+    $('#switchSolo').hidden = st.state !== 'queued' || (st.position === 1 && !st.busy && st.tvOnline !== false);
     if (st.state === 'queued') {
       show('vLive');
       box.className = 'live-status wait';
@@ -224,7 +261,9 @@
     note.textContent = 'Pronto! Você já está na lista: a Fatec Jales vai mandar as novidades do curso e do vestibular pelo contato que você cadastrou.';
     note.hidden = false;
   });
-  $('#againBtn').addEventListener('click', () => { $('#startBtn').classList.remove('pressed'); goReady(); });
+  const unpress = () => ['#startBtn', '#soloBtn'].forEach((s) => $(s).classList.remove('pressed'));
+  $('#againBtn').addEventListener('click', () => { unpress(); goReady(); });
+  addEventListener('pageshow', (e) => { if (e.persisted) unpress(); }); // voltou pelo botão "voltar" do navegador
 
   // Imagem 1080×1920 (formato dos stories), desenhada no próprio celular — funciona sem internet
   $('#saveBadge').addEventListener('click', async () => {
@@ -422,12 +461,22 @@
 
   /* ---------- abertura ---------- */
   track('qr_aberto');
-  if (lead?.id) {
-    listen(); // o servidor responde com o estado atual (fila, ao vivo, concluído)
+  // Cadastro guardado de um QR de outro telão: não serve aqui (iria para a fila de outra TV), começa do zero
+  if (lead?.id && lead.joinCode && joinCode && lead.joinCode !== joinCode) forgetLead();
+  if (lead?.id && location.hash === '#cracha') {
+    // voltou da apresentação no celular (/assistir): direto para o crachá
+    history.replaceState(null, '', location.pathname);
+    showBadge();
+  } else if (lead?.id) {
+    // O crachá só aparece direto quando uma apresentação termina com a página aberta. Ao ler o QR de novo
+    // (cadastro já guardado neste celular), a primeira resposta do servidor nunca abre o crachá:
+    // vai para a escolha (assistir de novo, ver o crachá ou "não é você? novo cadastro").
+    goReady(); // já mostra a escolha (sem piscar o formulário); a resposta do servidor ajusta (fila, ao vivo…)
+    listen();
     es.addEventListener('status', function first(e) {
       es.removeEventListener('status', first);
       const st = JSON.parse(e.data);
-      if (st.state === 'ready') goReady();
+      if (st.state === 'ready' || st.state === 'done') goReady(st.state === 'done');
     });
   } else show('vForm');
 })();

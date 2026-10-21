@@ -40,9 +40,7 @@ input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px #2
 .err { color: var(--orange); font-size: 13px; }
 .err:empty { display: none; }
 
-.seg { display: grid; grid-template-columns: 1fr 1fr 1fr; padding: 4px; border-radius: 12px; background: #081028; border: 1px solid #2b4a8a; }
-.seg button { height: 40px; min-width: 0; border: 0; border-radius: 9px; background: none; font-size: 14px; color: var(--dim); }
-.seg button[aria-checked=true] { background: var(--blue); color: var(--ink); font-weight: 700; box-shadow: 0 0 16px #22b8ff66; }
+.field .opt { font: 400 13px var(--mono); font-style: normal; color: var(--dim); }
 
 .chips { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .chip {
@@ -86,12 +84,17 @@ input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px #2
 @keyframes ring { from { transform: scale(.75); opacity: 1; } to { transform: scale(1.35); opacity: 0; } }
 .start:active .start-core { transform: scale(.94); }
 .start.pressed .start-core { background: var(--green); box-shadow: 0 0 30px #2bff88, 0 0 80px #2bff8888; }
+#soloBtn .start-core { padding: 0 24px; font-size: 17px; line-height: 1.15; text-align: center; }
+/* a outra opção: entrar na fila do telão */
+.tv-choice { margin-top: 28px; }
+.tv-choice + .m-note { margin-top: 10px; }
+#switchSolo { margin-top: 14px; }
 
 /* ao vivo */
 .live-status { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-radius: 12px; font-size: 15px; }
 .live-status.on { border: 1px solid var(--green); color: var(--green); background: #2bff8812; }
 .live-status.on i { width: 10px; height: 10px; border-radius: 50%; background: var(--green); box-shadow: var(--green-glow); animation: blink 1.2s infinite; }
-.live-status.wait { border: 1px solid var(--orange); color: var(--orange); background: #ff7a1a12; }
+.live-status.wait { display: block; line-height: 1.5; border: 1px solid var(--orange); color: var(--orange); background: #ff7a1a12; }
 @keyframes blink { 50% { opacity: .3; } }
 .live-scene { margin-top: 26px; padding: 24px 20px; border-radius: 18px; border: 1px solid var(--line); background: #081028cc; }
 .live-scene p { font-size: 13px; color: var(--dim); }

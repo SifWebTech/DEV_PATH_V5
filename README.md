@@ -43,7 +43,7 @@ A TV fala, 100% em português do Brasil: uma **narradora (Francisca)** e um **na
 - **Som na TV:** o `INICIAR.bat` abre a TV já com o som liberado. Se a TV mostrar **"ATIVAR ÁUDIO E INICIAR EVENTO"**, clique uma vez nela (ou aperte uma tecla) antes de chamar o público.
 - **Volume, textos e música:** `public/js/narration.js` (`config.volume`, `config.music`, `scenes`).
 - **Mudou um texto?** Rode `python ferramentas/gerar_narracao.py` (precisa de internet, do ffmpeg e de `python -m pip install edge-tts numpy`): ele regrava só os MP3 que mudaram. Para comparar as três vozes do Brasil: `--amostras`.
-- **Música:** `python ferramentas/gerar_musica.py` gera as 9 trilhas originais em `public/audio/music/` (eletrônicas, rock com solo de guitarra e de baixo, rock com solo de bateria e de contrabaixo). Hoje as 9 tocam em sequência, em loop; a lista fica em `config.music`.
+- **Música:** `python ferramentas/gerar_musica.py` gera as 9 trilhas originais em `public/audio/music/` (eletrônicas, rock com solo de guitarra e de baixo, rock com solo de bateria e de contrabaixo). Hoje tocam as três com solo de bateria (9, 8 e 7), em sequência e em loop; a lista fica em `config.music`.
 - Tudo funciona sem os MP3 (voz do navegador e trilha sintetizada) e sem som nenhum (legenda + tempo fixo).
 - Como funciona por dentro: [docs/10-sistema-narracao.md](docs/10-sistema-narracao.md). Roteiro completo: [docs/11-roteiro-narracao.md](docs/11-roteiro-narracao.md).
 
@@ -104,8 +104,8 @@ Entre com a senha (padrão **`fatec`**, aparece na janela preta). O painel mostr
 
 ## Leads e dados
 
-- Os cadastros ficam em **`data/leads.csv`** (abre direto no Excel, separador `;`, com acentos). Colunas: data e hora, nome, contato, tipo de contato, interesse, consentimento, id e evento.
-- O visitante escolhe como quer ser contatado: **e-mail, Instagram ou WhatsApp**. Instagram e WhatsApp viram links clicáveis na planilha (`instagram.com/perfil`, `wa.me/5517999990000`).
+- Os cadastros ficam em **`data/leads.csv`** (abre direto no Excel, separador `;`, com acentos) ou na tabela `leads` do banco. Colunas: data e hora, nome, contato, tipo de contato, interesse, consentimento, id, evento e e-mail.
+- **WhatsApp é obrigatório** (é por ele que vão as mensagens do vestibular) e o **e-mail é opcional**. O WhatsApp vira link clicável na planilha (`wa.me/5517999990000`). Cadastros antigos podem ter e-mail ou Instagram no lugar do WhatsApp.
 - O formulário exige consentimento (LGPD) e informa a finalidade. **O próprio visitante pode excluir os dados** pelo celular ("Excluir meus dados"), e o operador também pode, pelo painel.
 - `data/eventos.jsonl` guarda o funil: uma linha por evento, só com ids aleatórios (sem nome nem contato). Por isso as métricas continuam valendo mesmo depois de um lead ser excluído.
 - `data/estado.json` guarda a fila e quem está na TV. Se o notebook travar ou a janela preta for fechada, rode o `INICIAR.bat` de novo: o servidor volta com a fila e os celulares reconectam sozinhos.
