@@ -611,7 +611,7 @@
             <p class="badge-role">${esc(profile().role)}</p>
             <ul class="badge-stack">${profile().stack.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
             <footer>
-              <div><img class="fatec-logo" src="img/fatec-jales.png" alt="Fatec Jales Prof. José Camargo" style="--fatec-h: 60px"><b>Sistemas para Internet</b></div>
+              <div><img class="fatec-logo" src="img/fatec-jales.png" alt="Fatec Jales Prof. José Camargo" style="--fatec-h: 60px"><b class="course-neon"><span>Sistemas</span><span>para</span><span>Internet</span></b></div>
               <div class="barcode">${bars}</div>
             </footer>
           </article>

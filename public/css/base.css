@@ -74,3 +74,25 @@ button { cursor: pointer; }
   padding: 4px 8px; border-radius: 8px; background: #fff;
   box-shadow: 0 0 0 1px #ffffff26, 0 6px 20px #00000080;
 }
+
+/* Nome do curso em neon, ao lado do logo da Fatec em todas as telas.
+ * As cores passam por branco, azul e vermelho (as cores da Fatec), uma palavra atrás da outra. */
+.course-neon {
+  --red: #ff2e4d;
+  display: inline-flex; flex-wrap: wrap; column-gap: .32em; row-gap: .08em;
+  font: 800 var(--course-size, 40px)/1.05 var(--display); letter-spacing: -.02em; text-transform: uppercase;
+  animation: neon-flicker 7s steps(1) infinite;
+}
+.course-neon span { display: inline-block; animation: fatec-neon 6s linear infinite; }
+.course-neon span:nth-child(2) { animation-delay: -1.2s; }
+.course-neon span:nth-child(3) { animation-delay: -2.4s; }
+@keyframes fatec-neon {
+  0%, 100% { color: #fff; text-shadow: 0 0 4px #fff, 0 0 14px #ffffffcc, 0 0 34px #9fd8ff88, 0 0 60px #9fd8ff44; }
+  33% { color: #e6f7ff; text-shadow: 0 0 4px #22b8ff, 0 0 14px #22b8ff, 0 0 34px #22b8ffaa, 0 0 70px #22b8ff66; }
+  66% { color: #ffe3e8; text-shadow: 0 0 4px var(--red), 0 0 14px var(--red), 0 0 34px #ff2e4daa, 0 0 70px #ff2e4d66; }
+}
+/* pisca rápido de vez em quando, como letreiro de neon */
+@keyframes neon-flicker {
+  0%, 41%, 43%, 45%, 100% { opacity: 1; }
+  42%, 44% { opacity: .55; }
+}

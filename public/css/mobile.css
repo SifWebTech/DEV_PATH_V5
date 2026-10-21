@@ -10,7 +10,9 @@ body {
   padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
 }
 
-.m-head { display: flex; align-items: center; gap: 10px; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+.m-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+/* nome do curso em neon, grande, ocupando a linha toda embaixo do logo */
+.m-course { flex: 1 0 100%; justify-content: center; margin: 12px 0 4px; text-align: center; --course-size: clamp(24px, 8.4vw, 36px); }
 .logo-mark { font: 800 22px var(--mono); color: var(--green); text-shadow: var(--green-glow); letter-spacing: -2px; }
 .logo-mark i { font-style: normal; color: var(--orange); text-shadow: var(--orange-glow); }
 .logo-word { font: 700 19px var(--display); letter-spacing: -.5px; }
@@ -127,7 +129,7 @@ input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px #2
 .m-badge ul { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .m-badge li { font-size: 12px; padding: 6px 10px; border-radius: 20px; border: 1px solid #22b8ff66; color: var(--blue); }
 .m-badge footer { display: grid; justify-items: start; gap: 8px; margin-top: 22px; padding-top: 16px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--dim); }
-.m-badge footer b { color: var(--white); }
+.m-badge footer b { --course-size: 15px; }
 #vDone .btn-main { margin-top: 26px; }
 #vDone .btn-ghost { margin-top: 14px; }
 .btn-del { margin-top: 26px; font-size: 13px; color: #5e719a; }

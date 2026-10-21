@@ -56,7 +56,10 @@ body[data-cena="14"] #circuit { opacity: .05; }
 .logo-mark i { font-style: normal; color: var(--orange); text-shadow: var(--orange-glow); }
 .logo-word { font: 700 30px var(--display); letter-spacing: -1px; }
 .logo-word b { font-weight: 300; color: var(--blue); }
-.logo-sub { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; white-space: nowrap; font-size: 13px; line-height: 1.35; color: var(--dim); padding-left: 16px; border-left: 1px solid var(--line); --fatec-h: 79px; }
+.logo-sub { display: flex; padding-left: 16px; border-left: 1px solid var(--line); --fatec-h: 79px; }
+/* nome do curso em destaque no centro do cabeçalho, com a barra de progresso embaixo */
+.hud-center { display: grid; justify-items: center; gap: 16px; }
+.hud-course { --course-size: 44px; white-space: nowrap; flex-wrap: nowrap; }
 
 .hud-progress { display: flex; gap: 8px; list-style: none; margin: 0; padding: 0; justify-content: center; }
 .hud-progress li { width: 48px; height: 4px; border-radius: 2px; background: #ffffff1a; overflow: hidden; }
@@ -487,7 +490,7 @@ body[data-cena="14"] #circuit { opacity: .05; }
 .badge-stack li { font-size: 16px; padding: 8px 14px; border-radius: 30px; border: 1px solid #22b8ff66; color: var(--blue); }
 .badge footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 36px; padding-top: 24px; border-top: 1px dashed var(--line); }
 .badge footer div:first-child { display: grid; justify-items: start; gap: 10px; font-size: 16px; color: var(--dim); }
-.badge footer b { color: var(--white); font-size: 18px; }
+.badge footer b { --course-size: 20px; }
 .barcode { display: flex; gap: 2px; height: 44px; }
 .barcode i { background: var(--white); opacity: .85; }
 

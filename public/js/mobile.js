@@ -242,7 +242,7 @@
       <h2>${esc(lead.name)}</h2>
       <p class="m-role">${esc(p.role)}</p>
       <ul>${p.stack.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
-      <footer><img class="fatec-logo" src="img/fatec-jales.png" alt="Fatec Jales Prof. José Camargo" style="--fatec-h: 44px"><b>Sistemas para Internet</b></footer>`;
+      <footer><img class="fatec-logo" src="img/fatec-jales.png" alt="Fatec Jales Prof. José Camargo" style="--fatec-h: 44px"><b class="course-neon"><span>Sistemas</span><span>para</span><span>Internet</span></b></footer>`;
     // o servidor registra o clique e redireciona com a UTM do evento
     $('#vestLink').href = '/ir/vestibular?lead=' + encodeURIComponent(lead.id);
     $('#shot').hidden = true;
