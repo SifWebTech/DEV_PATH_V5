@@ -16,19 +16,19 @@ body:hover { cursor: default; }
  * 5% no crachá. O tv.js marca a tela atual em <body data-cena="1"> … "14" (ordem de STEPS em tv.js:
  * 1 terminal, 2 gancho, 3 mapa, 4–9 semestres, 10 criar, 11 carreiras, 12 mercado, 13 Fatec, 14 crachá).
  * Na tela do código QR não há data-cena e vale o opacity .6 acima. A velocidade dos pulsos não muda. */
-body[data-cena="1"]  #circuit { opacity: .60; }
-body[data-cena="2"]  #circuit { opacity: .57; }
-body[data-cena="3"]  #circuit { opacity: .54; }
-body[data-cena="4"]  #circuit { opacity: .50; }
-body[data-cena="5"]  #circuit { opacity: .47; }
-body[data-cena="6"]  #circuit { opacity: .44; }
-body[data-cena="7"]  #circuit { opacity: .41; }
-body[data-cena="8"]  #circuit { opacity: .38; }
-body[data-cena="9"]  #circuit { opacity: .35; }
-body[data-cena="10"] #circuit { opacity: .27; }
-body[data-cena="11"] #circuit { opacity: .20; }
-body[data-cena="12"] #circuit { opacity: .14; }
-body[data-cena="13"] #circuit { opacity: .09; }
+body[data-cena="1"]  #circuit { opacity: .50; }
+body[data-cena="2"]  #circuit { opacity: .48; }
+body[data-cena="3"]  #circuit { opacity: .45; }
+body[data-cena="4"]  #circuit { opacity: .42; }
+body[data-cena="5"]  #circuit { opacity: .39; }
+body[data-cena="6"]  #circuit { opacity: .37; }
+body[data-cena="7"]  #circuit { opacity: .34; }
+body[data-cena="8"]  #circuit { opacity: .32; }
+body[data-cena="9"]  #circuit { opacity: .30; }
+body[data-cena="10"] #circuit { opacity: .23; }
+body[data-cena="11"] #circuit { opacity: .17; }
+body[data-cena="12"] #circuit { opacity: .12; }
+body[data-cena="13"] #circuit { opacity: .08; }
 body[data-cena="14"] #circuit { opacity: .05; }
 .scanlines {
   position: fixed; inset: 0; z-index: 1; pointer-events: none;
