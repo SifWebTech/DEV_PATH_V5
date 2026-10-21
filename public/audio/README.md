@@ -3,7 +3,7 @@
 | Pasta | Conteúdo | Como é feito |
 |---|---|---|
 | `narration/` | 23 MP3 da narração (narradora **Thalita** e narrador **Antonio**, vozes neurais) | `python ferramentas/gerar_narracao.py` |
-| `music/` | 3 trilhas originais e animadas, em loop | `python ferramentas/gerar_musica.py` |
+| `music/` | 9 trilhas originais; tocam as 3 com solo de bateria, em sequência e em loop | `python ferramentas/gerar_musica.py` |
 | `sfx/` | vazio: os efeitos são sintetizados pelo navegador | — |
 
 Se algum arquivo faltar, a TV se vira sozinha:
@@ -21,12 +21,11 @@ Para trocar um arquivo, copie o novo com **o nome exato** e recarregue a TV (F5)
 | Arquivo | Estilo |
 |---|---|
 | `opcao-1-synthwave.mp3` | 118 BPM, Dó maior: synthwave moderno, baixo pulsante, melodia com vibrato |
-| `opcao-2-future-house.mp3` | 124 BPM, Sol maior: future house, baixo no contratempo, acordes "stab", palmas (**a que toca hoje**) |
+| `opcao-2-future-house.mp3` | 124 BPM, Sol maior: future house, baixo no contratempo, acordes "stab", palmas |
 | `opcao-3-electro-pop.mp3` | 128 BPM, Ré maior: electro-pop, acordes sincopados, sinos |
 | `opcao-4-rock-guitarra.mp3` | 140 BPM, Mi menor: rock, guitarra distorcida em galope, **solo de guitarra e solo de baixo** |
 | `opcao-5-funk-rock.mp3` | 116 BPM, Lá (blues): funk rock, guitarra "chique-chique", baixo com slap, **solo de guitarra e solo de baixo** |
 | `opcao-6-pop-punk.mp3` | 160 BPM, Ré maior: pop punk, power chords em colcheias, **solo rápido de guitarra e solo de baixo** |
-
 | `opcao-7-rock-bateria.mp3` | 132 BPM, Lá menor: hard rock, **solo de bateria** (bumbo duplo, tons, rufada) **e solo de contrabaixo** |
 | `opcao-8-funk-groove.mp3` | 108 BPM, Mi (blues): funk, **solo de bateria** sincopado **e solo de contrabaixo** com slap |
 | `opcao-9-rock-acelerado.mp3` | 172 BPM, Sol maior: rock acelerado, **solo de bateria** em alta **e solo de contrabaixo** |
@@ -34,7 +33,7 @@ Para trocar um arquivo, copie o novo com **o nome exato** e recarregue a TV (F5)
 Opções 4–6: compassos 1–4 guitarra e bateria, 5–16 banda inteira, 17–24 solo de guitarra, 25–28 solo de baixo e 29–32 todo mundo junto.
 Opções 7–9: compassos 1–4 guitarra e bateria, 5–12 banda inteira, 13–20 solo de bateria, 21–28 solo de contrabaixo e 29–32 todo mundo junto.
 
-A trilha em uso é `config.music` em `js/narration.js`. Hoje é uma **lista com quatro**: cada música toca inteira e passa para a seguinte com 2 s de transição, e depois da última volta à primeira (ordem: 9, 8, 7 e 6). Para tocar uma só, troque a lista por um nome de arquivo. Todas são composições originais geradas por código: não há licença de terceiros.
+A trilha em uso é `config.music` em `js/narration.js`. Hoje é uma **lista com as três que têm solo de bateria**: cada música toca inteira e passa para a seguinte com 2 s de transição, e depois da última volta à primeira (ordem: 9, 8 e 7). Para tocar uma só, troque a lista por um nome de arquivo. Todas são composições originais geradas por código: não há licença de terceiros.
 Para usar uma música de fora, ela precisa ter licença (feita por vocês, domínio público ou banco com licença de uso); música de streaming não pode. Exporte em volume normal: o código controla o volume (`config.volume.music`) e abaixa durante a narração.
 
 ## Efeitos: `sfx/`

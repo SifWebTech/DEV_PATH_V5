@@ -51,12 +51,11 @@ window.DEVPATH_NARRACAO = {
     //   com solo de guitarra e de baixo: opcao-4-rock-guitarra.mp3 · opcao-5-funk-rock.mp3 · opcao-6-pop-punk.mp3
     //   com solo de bateria e de contrabaixo: opcao-7-rock-bateria.mp3 · opcao-8-funk-groove.mp3 · opcao-9-rock-acelerado.mp3
     // Pode ser um MP3 só (toca em loop) ou uma lista: cada música toca inteira e passa para a seguinte,
-    // com 2 s de transição; depois da última, volta à primeira. Ordem escolhida: 9, 8, 7 e 6.
+    // com 2 s de transição; depois da última, volta à primeira. Só as que têm solo de bateria: 9, 8 e 7.
     music: [
       'audio/music/opcao-9-rock-acelerado.mp3',   // solo de bateria e contrabaixo
       'audio/music/opcao-8-funk-groove.mp3',      // solo de bateria e contrabaixo
       'audio/music/opcao-7-rock-bateria.mp3',     // solo de bateria e contrabaixo
-      'audio/music/opcao-6-pop-punk.mp3',         // solo de guitarra e baixo
     ],
     synthMusic: true,         // sem o MP3 acima, o navegador sintetiza uma trilha discreta (false = silêncio)
     sfx: {
