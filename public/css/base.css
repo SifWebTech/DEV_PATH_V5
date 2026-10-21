@@ -87,9 +87,9 @@ button { cursor: pointer; }
 .course-neon span:nth-child(2) { animation-delay: -1.2s; }
 .course-neon span:nth-child(3) { animation-delay: -2.4s; }
 @keyframes fatec-neon {
-  0%, 100% { color: #fff; text-shadow: 0 0 4px #fff, 0 0 14px #ffffffcc, 0 0 34px #9fd8ff88, 0 0 60px #9fd8ff44; }
-  33% { color: #e6f7ff; text-shadow: 0 0 4px #22b8ff, 0 0 14px #22b8ff, 0 0 34px #22b8ffaa, 0 0 70px #22b8ff66; }
-  66% { color: #ffe3e8; text-shadow: 0 0 4px var(--red), 0 0 14px var(--red), 0 0 34px #ff2e4daa, 0 0 70px #ff2e4d66; }
+  0%, 100% { color: #b9c6d8; text-shadow: 0 0 3px #ffffff88, 0 0 12px #9fd8ff55, 0 0 30px #9fd8ff33; }
+  33% { color: #1683cc; text-shadow: 0 0 3px #22b8ff99, 0 0 12px #22b8ff77, 0 0 30px #22b8ff44; }
+  66% { color: #c41a36; text-shadow: 0 0 3px #ff2e4d99, 0 0 12px #ff2e4d77, 0 0 30px #ff2e4d44; }
 }
 /* pisca rápido de vez em quando, como letreiro de neon */
 @keyframes neon-flicker {
