@@ -120,9 +120,12 @@ A ordem segue as **camadas**, de trás para a frente, como folhas de papel empil
   <div class="logo" aria-label="DEV PATH">
     <span class="logo-mark">&lt;<i>/</i>&gt;</span>
     <span class="logo-word">dev<b>path</b></span>
-    <span class="logo-sub">Sistemas para Internet<br>Fatec Jales</span>
+    <span class="logo-sub"><img class="fatec-logo" src="img/fatec-jales.png" alt="Fatec Jales Prof. José Camargo"></span>
   </div>
-  <ol class="hud-progress" id="hudProgress" aria-label="Progresso da apresentação"></ol>
+  <div class="hud-center">
+    <p class="course-neon hud-course"><span>Sistemas</span><span>para</span><span>Internet</span></p>
+    <ol class="hud-progress" id="hudProgress" aria-label="Progresso da apresentação"></ol>
+  </div>
   <div class="hud-live" id="hudLive"><span class="live-dot"></span><span id="hudLiveText">aguardando conexão</span></div>
 </header>
 ```
@@ -130,6 +133,7 @@ A ordem segue as **camadas**, de trás para a frente, como folhas de papel empil
 - `&lt;` e `&gt;` são os caracteres `<` e `>` escritos como **entidades**. Se escrevêssemos `<` cru, o navegador acharia que é o início de uma tag.
 - `<i>/</i>`: a barra fica dentro de um `<i>` só para o CSS pintá-la de laranja; o resto do logo é verde.
 - `<b>path</b>`: idem, para o CSS pintar "path" de azul e mais fino.
+- `.course-neon`: o nome do curso em neon, grande, no centro do topo. Cada palavra fica num `<span>` próprio porque o CSS (`base.css`) anima as cores branco, azul e vermelho (as da Fatec) com um atraso diferente em cada palavra. A mesma classe aparece no celular, no painel do operador e nos crachás.
 - `<ol id="hudProgress">` começa **vazia**. O `tv.js` preenche com um tracinho por cena (14 tracinhos). É `<ol>` (lista **ordenada**) porque as cenas têm ordem.
 - `hud-live` mostra "ao vivo: Ana", "pausado", "modo demonstração"...
 

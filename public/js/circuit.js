@@ -84,7 +84,7 @@
 
   function spawn() {
     const t = traces[Math.floor(Math.random() * traces.length)];
-    // velocidade igual em todas as telas: 370 a 470 px/s (a da tela do código QR); a energia não acelera mais os pulsos
+    // velocidade igual em todas as telas: 300 a 400 px/s (a da tela do código QR); a energia não acelera mais os pulsos
     pulses.push({ t, d: 0, speed: 300 + Math.random() * 100, tail: 150 + energy * 150 });
   }
 

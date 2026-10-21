@@ -227,7 +227,7 @@ body:hover { cursor: default; }
 ```css
 #circuit { position: fixed; inset: 0; ... z-index: 0; opacity: .6; }
 ```
-O canvas do circuito cobre a tela inteira, atrás de tudo. `opacity: .6` (60%) é o ajuste de transparência que ainda está **sem commit** (ver `PROGRESSO.md`).
+O canvas do circuito cobre a tela inteira, atrás de tudo. `opacity: .6` (60%) vale na tela do código QR. Durante a apresentação, as regras `body[data-cena="1"]` … `"14"` logo abaixo trocam a transparência a cada tela: começa em .50 e vai sumindo até .05 no crachá (o `tv.js` só marca a tela atual em `<body data-cena>`).
 
 ```css
 .scanlines { background: repeating-linear-gradient(0deg, #ffffff05 0 1px, transparent 1px 3px); mix-blend-mode: overlay; pointer-events: none; }
